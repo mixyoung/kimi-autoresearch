@@ -44,11 +44,30 @@ git clone https://github.com/mixyoung/kimi-autoresearch.git .agents/skills/kimi-
 git clone https://github.com/mixyoung/kimi-autoresearch.git ~/.agents/skills/kimi-autoresearch
 ```
 
-### 方法三：Windows 安装
+### 方法三：Windows 安装（推荐）
 
+**方式 A：自动安装脚本（推荐）**
+```powershell
+# 以管理员身份打开 PowerShell，执行：
+cd E:\33_dev_env\kimi-autoresearch
+.\install-windows.ps1
+
+# 或指定源目录
+.\install-windows.ps1 -Source "E:\your-path\kimi-autoresearch"
+```
+
+**方式 B：手动克隆**
 ```powershell
 # 克隆到用户目录
- git clone https://github.com/mixyoung/kimi-autoresearch.git "$env:USERPROFILE\.agents\skills\kimi-autoresearch"
+git clone https://github.com/mixyoung/kimi-autoresearch.git "$env:USERPROFILE\.agents\skills\kimi-autoresearch"
+```
+
+**方式 C：符号链接（开发推荐）**
+```powershell
+# 创建符号链接（需要管理员，可实时同步开发目录）
+New-Item -ItemType SymbolicLink `
+  -Path "$env:USERPROFILE\.agents\skills\kimi-autoresearch" `
+  -Target "E:\33_dev_env\kimi-autoresearch"
 ```
 
 ### 方法四：技能包安装
