@@ -147,7 +147,7 @@ scripts/
 ├── autoresearch_exec.py          # CI/CD 模式
 ├── autoresearch_parallel.py      # 并行实验
 ├── autoresearch_web_search.py    # Web 搜索
-└── ... (共 20 个脚本)
+└── ... (共 20 个 Python 脚本)
 ```
 
 ## 📚 文档

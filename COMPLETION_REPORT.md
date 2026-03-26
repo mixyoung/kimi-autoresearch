@@ -12,7 +12,7 @@
 
 | 类别 | 数量 | 行数 | 说明 |
 |------|------|------|------|
-| Python 脚本 | **21** | ~5,400 | 核心功能实现 |
+| Python 脚本 | **20** | ~5,400 | 核心功能实现 |
 | 参考文档 | **14** | ~6,000 | Markdown 协议 |
 | 配置示例 | 3 | 100 | JSON 配置 |
 | CI/CD 配置 | 1 | 100 | GitHub Actions |
@@ -42,7 +42,7 @@
 | state_manager.py | 100 | 状态管理 | ✅ |
 | get_baseline.py | 81 | 基线测量 | ✅ |
 | log_result.py | 63 | 结果记录 | ✅ |
-| **总计** | **~5,400** | | ✅ |
+| **总计** | **~5,200** | | ✅ |
 
 ---
 
@@ -160,7 +160,7 @@ python scripts/autoresearch_utils.py stats
 │   ├── web-search-protocol.md
 │   ├── **i18n.md**                 # **国际化文档**
 │   └── quick-reference.md
-└── scripts/                      # **21** 个脚本
+└── scripts/                      # **20** 个 Python 脚本
     ├── autoresearch_main.py
     ├── autoresearch_workflow.py
     ├── autoresearch_init_run.py
@@ -193,7 +193,7 @@ python scripts/autoresearch_utils.py stats
 |------|--------|--------|--------|-------|------|----------|------|
 | codex-autoresearch | 7 | 20+ | 15+ | ✅ | ✅ | ❌ | 基准 |
 | uditgoenka | 9 | 0 | 10+ | ⚠️ | ❌ | ❌ | 基准 |
-| **kimi-autoresearch** | **10** | **21** | **14** | **✅** | **✅** | **✅** | **100%** |
+| **kimi-autoresearch** | **10** | **20** | **14** | **✅** | **✅** | **✅** | **100%** |
 
 ### 独特优势
 
@@ -230,7 +230,7 @@ python scripts/autoresearch_utils.py stats
 
 ### 生产就绪确认
 
-✅ **功能完整**: 10 种模式，**21** 个脚本  
+✅ **功能完整**: 10 种模式，**20** 个脚本  
 ✅ **文档齐全**: **14** 个参考文档，3 个示例  
 ✅ **CI/CD 就绪**: GitHub Actions 配置  
 ✅ **测试覆盖**: 健康检查，错误处理  
