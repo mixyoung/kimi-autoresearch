@@ -117,8 +117,34 @@ python scripts/autoresearch_decision.py --action check-stuck
 | 5+ consecutive discards | **PIVOT** - try fundamentally different approach |
 | 2+ pivots without improvement | **WEB SEARCH** - search for external solutions |
 
-### Step 10: Repeat
-Continue until: target reached, iteration cap, manual stop, or hard blocker.
+### Step 10: Check Relay (for long runs)
+
+For runs longer than 23 hours, implement automatic relay:
+
+```bash
+# Check if relay is needed (at 22 hours)
+# Read .autoresearch-infinite.json
+# If runtime > 79200 seconds (22 hours):
+```
+
+**Relay Protocol:**
+1. Save all state
+2. Generate summary
+3. Update `.autoresearch-infinite.json`
+4. Print "[RELAY_NEEDED]"
+5. Stop gracefully
+
+**Next Session:**
+```bash
+# New Background Agent reads relay signal
+# Loads state from previous session
+# Continues seamlessly
+```
+
+Use `autoresearch_infinite.py` for automatic relay management.
+
+### Step 11: Repeat
+Continue until: target reached, iteration cap, manual stop, hard blocker, or relay triggered.
 
 ## Phase 5: Summary
 
@@ -148,3 +174,75 @@ Continue until: target reached, iteration cap, manual stop, or hard blocker.
 - **Minimal diff**: Change only what's necessary
 - **Reversible**: Each change should be independently revertable
 - **Testable**: Change should be verifiable in isolation
+
+## Session Resilience (Long Runs)
+
+For runs longer than 40 iterations or 24 hours:
+
+### Auto Re-anchor
+
+Every 10 iterations, verify protocol memory:
+
+```bash
+python scripts/autoresearch_resilience.py check
+```
+
+If check fails:
+1. Re-read SKILL.md
+2. Re-read loop-protocol.md
+3. Log re-anchor event
+
+### Session Split
+
+At 40 iterations or 2+ context compactions:
+
+```bash
+python scripts/autoresearch_resilience.py split --iteration 40
+```
+
+**Result:**
+- Save checkpoint
+- Pause gracefully
+- User re-invokes to continue
+
+### State Consistency
+
+Verify TSV and JSON consistency:
+
+```bash
+python scripts/autoresearch_resilience.py check
+```
+
+See [session-resilience-protocol.md](session-resilience-protocol.md) for details.
+
+## Infinite Mode
+
+Break the 24-hour barrier with automatic relay:
+
+```bash
+python scripts/autoresearch_infinite.py start --goal "..."
+```
+
+**Mechanism:**
+- Session 1: 23 hours → relay
+- Session 2: 23 hours → relay
+- Session 3+: continues indefinitely
+
+See [autoresearch_infinite.py](../scripts/autoresearch_infinite.py) for implementation.
+
+## Monitoring
+
+Real-time progress tracking:
+
+```bash
+# HTML dashboard
+python scripts/autoresearch_monitor.py dashboard --open
+
+# Text report
+python scripts/autoresearch_monitor.py report
+
+# Live watch
+python scripts/autoresearch_monitor.py watch --interval 5
+```
+
+See [autoresearch_monitor.py](../scripts/autoresearch_monitor.py) for details.

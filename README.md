@@ -26,6 +26,9 @@
 - 🌐 **Kimi 原生** - 专为 Kimi Code CLI 优化
 - 💻 **跨平台** - 支持 Windows、macOS、Linux
 - 🌍 **国际化** - 支持中英文切换
+- ♾️ **无限运行** - 突破24小时限制，自动接力运行
+- 🛡️ **会话弹性** - 长时间运行自动重新锚定协议
+- 📈 **实时监控** - HTML仪表板、进度报告、趋势分析
 
 ## 📦 安装
 
@@ -144,21 +147,32 @@ scripts/
 ├── autoresearch_health_check.py  # 健康检查
 ├── autoresearch_launch_gate.py   # 启动门控
 ├── autoresearch_background.py    # 后台控制
+├── autoresearch_daemon.py        # 无人值守 Daemon ⭐NEW
+├── autoresearch_infinite.py      # 无限运行模式 ⭐NEW
+├── autoresearch_resilience.py    # 会话弹性协议 ⭐NEW
+├── autoresearch_monitor.py       # 实时监控仪表板 ⭐NEW
 ├── autoresearch_exec.py          # CI/CD 模式
 ├── autoresearch_parallel.py      # 并行实验
 ├── autoresearch_web_search.py    # Web 搜索
-└── ... (共 20 个 Python 脚本)
+├── autoresearch_version.py       # 版本管理
+└── ... (共 23+ 个 Python 脚本)
 ```
 
 ## 📚 文档
 
+### 核心文档
 - [快速参考](references/quick-reference.md) - 常用命令速查
 - [循环协议](references/loop-protocol.md) - 核心迭代机制
+- [详细场景指南](references/scenario-guides-detailed.md) - 10个完整使用场景 ⭐NEW
+- [项目对比](references/COMPARISON.md) - 与codex-autoresearch对比
+
+### 模式文档
 - [Plan 模式](references/mode-plan.md) - 配置向导
 - [Debug 模式](references/mode-debug.md) - 科学调试
 - [Ship 模式](references/mode-ship.md) - 发布工作流
 - [并行实验](references/parallel-experiments.md) - 多工作树并行
 - [Web 搜索](references/web-search-protocol.md) - 自动搜索集成
+- [会话弹性](references/session-resilience-protocol.md) - 长时间运行稳定性
 
 查看 [references/](references/) 目录获取完整文档。
 
@@ -218,6 +232,56 @@ python scripts/autoresearch_daemon.py stop
 - 做出决策
 
 **这与 `codex exec` 的能力等价！**
+
+### ♾️ 无限运行模式（突破24小时限制）
+
+```bash
+# 启动无限运行（自动接力，永不停歇）
+python scripts/autoresearch_infinite.py start \
+  --goal "Refactor entire codebase" \
+  --scope "src/" \
+  --verify "npm test 2>&1 | grep -c failing" \
+  --direction lower
+
+# 在 Kimi 中启动第一个会话
+Agent(
+    description="Autoresearch infinite runner",
+    prompt=read(".autoresearch-infinite-prompt.txt"),
+    run_in_background=True
+)
+
+# 自动接力机制：
+# - 每个会话运行23小时
+# - 自动保存状态并触发接力
+# - 新会话无缝继续
+# - 可运行数天、数周...
+```
+
+### 📊 实时监控
+
+```bash
+# 生成 HTML 仪表板
+python scripts/autoresearch_monitor.py dashboard --open
+
+# 查看文本报告
+python scripts/autoresearch_monitor.py report
+
+# 实时监控变化
+python scripts/autoresearch_monitor.py watch --interval 5
+```
+
+### 🛡️ 会话弹性
+
+```bash
+# 检查协议指纹
+python scripts/autoresearch_resilience.py check
+
+# 生成弹性报告
+python scripts/autoresearch_resilience.py report
+
+# 执行重新锚定
+python scripts/autoresearch_resilience.py reanchor --iteration 40
+```
 
 ## 🔄 CI/CD 集成
 

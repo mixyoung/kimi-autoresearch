@@ -172,6 +172,8 @@ git revert --no-edit HEAD  # if discard
 
 These scripts perform mechanical tasks only. They do NOT analyze code or generate changes.
 
+### 基础工具
+
 ```bash
 # Initialize run - setup state and TSV
 python scripts/autoresearch_init_run.py \
@@ -200,6 +202,73 @@ python scripts/log_result.py --iteration 1 --commit abc123 \
 # Lessons management
 python scripts/autoresearch_lessons.py add "This worked well" --type positive
 python scripts/autoresearch_lessons.py list
+```
+
+### 无人值守 Daemon ⭐NEW
+
+```bash
+# Start daemon configuration
+python scripts/autoresearch_daemon.py start \
+  --goal "Add type hints" \
+  --scope "src/" \
+  --verify "mypy src/ | grep -c error" \
+  --iterations 100
+
+# Check daemon status
+python scripts/autoresearch_daemon.py status
+
+# Pause/Resume/Stop
+python scripts/autoresearch_daemon.py pause
+python scripts/autoresearch_daemon.py resume
+python scripts/autoresearch_daemon.py stop
+```
+
+### 无限运行模式 ⭐NEW
+
+```bash
+# Start infinite run (no time limit)
+python scripts/autoresearch_infinite.py start \
+  --goal "Refactor entire codebase" \
+  --scope "src/" \
+  --verify "npm test | grep -c failing"
+
+# Check infinite run status
+python scripts/autoresearch_infinite.py status
+
+# Trigger manual relay
+python scripts/autoresearch_infinite.py relay
+
+# Stop infinite run
+python scripts/autoresearch_infinite.py stop
+```
+
+### 实时监控 ⭐NEW
+
+```bash
+# Generate HTML dashboard
+python scripts/autoresearch_monitor.py dashboard --open
+
+# Generate text report
+python scripts/autoresearch_monitor.py report
+
+# Watch for changes (live updates)
+python scripts/autoresearch_monitor.py watch --interval 5
+```
+
+### 会话弹性 ⭐NEW
+
+```bash
+# Run protocol fingerprint check
+python scripts/autoresearch_resilience.py check
+
+# Generate resilience report
+python scripts/autoresearch_resilience.py report
+
+# Perform reanchor (reload protocol)
+python scripts/autoresearch_resilience.py reanchor --iteration 40
+
+# Perform session split
+python scripts/autoresearch_resilience.py split --iteration 40
 ```
 
 **Note**: The actual iteration loop is driven by Kimi following the protocol in SKILL.md. Python scripts are pure tools for recording, git operations, and verification.
