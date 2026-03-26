@@ -403,6 +403,54 @@ Shell(
 )
 ```
 
+### 🚀 Infinite Mode - No Time Limit!
+
+Break the 24-hour barrier with automatic relay:
+
+```bash
+# 1. Start infinite mode
+python scripts/autoresearch_infinite.py start \
+  --goal "Optimize entire codebase" \
+  --scope "src/" \
+  --verify "npm test 2>&1 | grep -c failing" \
+  --direction lower
+
+# 2. Launch first Background Agent
+Agent(
+    description="Autoresearch infinite runner",
+    prompt=read(".autoresearch-infinite-prompt.txt"),
+    run_in_background=True
+)
+
+# 3. Runs indefinitely!
+#    - Each session runs for 23 hours
+#    - Automatically triggers relay
+#    - New session continues seamlessly
+#    - No manual intervention needed
+#    - Can run for days, weeks, months...
+```
+
+**How it works**:
+1. Session 1 runs for 23 hours
+2. At 22 hours: prepares relay, saves state
+3. Session 2 starts, continues from where Session 1 left off
+4. Session 3, 4, 5... continues indefinitely
+5. State preserved across all sessions
+
+**Use cases**:
+- Long-term optimization projects
+- Large codebase refactoring
+- Continuous improvement
+- "Set and forget" for weeks
+
+```bash
+# Check infinite run status
+python scripts/autoresearch_infinite.py status
+
+# Stop infinite run
+python scripts/autoresearch_infinite.py stop
+```
+
 ## Example Workflows
 
 ### Example 1: Type Safety

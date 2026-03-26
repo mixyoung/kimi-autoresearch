@@ -111,9 +111,18 @@ For each iteration:
    - If stuck (5+ discards): Try different strategy
    - Otherwise: Continue to next iteration
 
-9. **REPORT**
-   - Every 5 iterations, write progress to autoresearch-daemon.log
-   - Include: current iteration, metric, recent changes
+9. **CHECK RELAY** (Critical for long runs)
+   - Track your running time
+   - At 22 hours (79200 seconds): Prepare for relay
+     - Save all state
+     - Generate relay prompt
+     - Print "[RELAY_NEEDED]"
+     - Stop gracefully
+   - The next session will continue automatically
+
+10. **REPORT**
+    - Every 5 iterations, write progress to autoresearch-daemon.log
+    - Include: current iteration, metric, recent changes
 
 ## Important Rules
 
