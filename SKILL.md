@@ -178,16 +178,84 @@ Exit codes:
 - Establish baseline measurement
 - User confirms configuration
 
-### Phase 3: Iteration Loop
-- Run until iteration cap or interrupted
-- Each iteration: change → commit → verify → decide
-- Use `scripts/autoresearch_decision.py` for keep/discard decisions
-- Use `scripts/autoresearch_launch_gate.py` to check stuck patterns
-- Log results to TSV with `scripts/log_result.py`
+### Phase 3: Iteration Loop (Kimi-Driven)
+
+**IMPORTANT**: Each iteration MUST be executed by Kimi, not automated scripts.
+
+For each iteration, Kimi MUST:
+
+1. **Read Context**
+   - Read all files in the defined scope
+   - Read `autoresearch-results.tsv` to understand history
+   - Read git log (`git log --oneline -10`) to see what worked/failed
+   - Read `autoresearch-lessons.md` for prior learnings
+
+2. **Analyze & Hypothesize**
+   - Understand the codebase structure
+   - Identify specific improvement opportunities
+   - Form **ONE concrete hypothesis** about what to change
+   - Document why this change might improve the metric
+   - Consider: What worked before? What failed? What's untried?
+
+3. **Execute Change (Manual)**
+   - Make **ONE atomic change** to the code using Kimi's editing tools
+   - Ensure the change is minimal and focused
+   - Do NOT batch multiple changes
+   - The change should be easily revertable
+
+4. **Commit**
+   ```bash
+   python scripts/check_git.py --action commit --message "experiment: <description>"
+   ```
+
+5. **Verify**
+   - Run the verify command
+   - Extract the metric from output
+   - Record the new metric value
+
+6. **Decide**
+   ```bash
+   python scripts/autoresearch_decision.py \
+     --action decide \
+     --current <new_metric> \
+     --baseline <baseline> \
+     --direction <higher|lower> \
+     --guard-passed <true|false>
+   ```
+   
+   Based on result:
+   - **KEEP**: Extract lesson, update baseline for next iteration
+   - **DISCARD**: Run `python scripts/check_git.py --action revert`
+   - **REWORK**: Attempt fix (max 2 times)
+
+7. **Log Result**
+   ```bash
+   python scripts/log_result.py \
+     --iteration <num> \
+     --commit <hash> \
+     --metric <value> \
+     --status <keep|discard|crash> \
+     --description "<what was tried>"
+   ```
+
+8. **Check Stuck Pattern**
+   ```bash
+   python scripts/autoresearch_decision.py --action check-stuck
+   ```
+   
+   If stuck:
+   - 3+ discards: **REFINE** - adjust within current strategy
+   - 5+ discards: **PIVOT** - try fundamentally different approach
+   - 2+ pivots: **Web Search** - search for external solutions
+
+9. **Repeat**
+   - Continue to next iteration
+   - Stop if: target reached, iteration cap, manual stop, or hard blocker
 
 ### Phase 4: Summary
 - Print baseline → best summary
 - Extract lessons learned
+- Generate report with `scripts/generate_report.py`
 
 ## Results Logging
 
@@ -337,31 +405,23 @@ Iterations: 15
 - `autoresearch-lessons.md` - Cross-run learning
 - `autoresearch-report.md` - Final summary report
 
-## Helper Scripts
+## Helper Scripts (Pure Tools - No AI)
 
-Located in `scripts/`:
+These scripts perform mechanical tasks only. They do NOT analyze code or generate changes.
 
 | Script | Purpose |
 |--------|---------|
-| `autoresearch_main.py` | Unified CLI entry point |
-| `autoresearch_workflow.py` | Complete workflow orchestrator |
-| `autoresearch_init_run.py` | Initialize new run with config |
-| `autoresearch_decision.py` | Keep/discard decisions + stuck detection |
-| `autoresearch_health_check.py` | Pre-run health checks |
+| `autoresearch_init_run.py` | Initialize run state and TSV log |
+| `autoresearch_decision.py` | Numerical keep/discard decision helper |
+| `autoresearch_health_check.py` | Pre-run environment checks |
 | `autoresearch_launch_gate.py` | Resume or fresh start decision |
-| `autoresearch_background.py` | Background runtime controller |
-| `autoresearch_exec.py` | CI/CD exec mode |
-| `autoresearch_lessons.py` | Lessons management |
-| `autoresearch_web_search.py` | **Web search when stuck** |
-| `autoresearch_parallel.py` | Parallel experiments |
-| `autoresearch_predict.py` | Multi-persona prediction |
-| `autoresearch_utils.py` | Utility commands |
-| `check_git.py` | Git operations wrapper |
-| `get_baseline.py` | Get baseline metric |
-| `log_result.py` | Log iteration to TSV |
-| `run_iteration.py` | Execute single iteration |
-| `state_manager.py` | State management |
-| `generate_report.py` | Generate final report |
+| `check_git.py` | Git commit/revert operations |
+| `get_baseline.py` | Run verify command and extract metric |
+| `log_result.py` | Append result to TSV log |
+| `state_manager.py` | Read/write state.json |
+| `generate_report.py` | Generate summary report |
+
+**Note**: Scripts like `autoresearch_main.py`, `autoresearch_workflow.py` are entry points that set up the environment, but the actual iteration loop is driven by Kimi following the protocol above.
 
 ## References
 

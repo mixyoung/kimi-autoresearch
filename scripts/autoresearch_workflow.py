@@ -127,51 +127,52 @@ def workflow_baseline(config: dict[str, Any]) -> tuple[bool, float]:
 
 def workflow_iteration(iteration: int, config: dict[str, Any], 
                       baseline: float) -> tuple[str, float]:
-    """Run a single iteration using autonomous engine."""
-    print(f"\n--- Iteration {iteration} ---")
+    """
+    Guide Kimi through a single iteration.
     
-    # Import autonomous engine
-    from autoresearch_autonomous import AutonomousEngine
+    NOTE: This function only prints guidance. Kimi must manually:
+    1. Read the code and context
+    2. Decide what to change
+    3. Execute the change using Kimi's editing tools
+    4. Use helper scripts for commit/verify/log
+    """
+    print(f"\n{'='*60}")
+    print(f"  Iteration {iteration}")
+    print(f"{'='*60}")
+    print()
+    print("Kimi: Please follow the iteration protocol from SKILL.md")
+    print()
+    print("1. Read Context:")
+    print(f"   - Scope: {config.get('scope', 'current directory')}")
+    print("   - Read autoresearch-results.tsv for history")
+    print("   - Read git log to see what worked/failed")
+    print()
+    print("2. Analyze & Hypothesize:")
+    print("   - Understand the codebase")
+    print("   - Identify ONE specific improvement")
+    print("   - Form a concrete hypothesis")
+    print()
+    print("3. Execute Change:")
+    print("   - Make ONE atomic change using Kimi's tools")
+    print("   - Keep changes minimal and focused")
+    print()
+    print("4. Commit:")
+    print('   python scripts/check_git.py --action commit --message "experiment: <description>"')
+    print()
+    print("5. Verify:")
+    verify_cmd = config.get('verify', 'Not configured')
+    print(f"   Run: {verify_cmd}")
+    print()
+    print("6. Decide & Log:")
+    print("   python scripts/autoresearch_decision.py --action decide ...")
+    print("   python scripts/log_result.py ...")
+    print()
+    print("Return 'keep' if improved, 'discard' if not.")
+    print()
     
-    # Create mini config for single iteration
-    iter_config = {
-        'goal': config['goal'],
-        'scope': config.get('scope', '.'),
-        'verify': config.get('verify', ''),
-        'guard': config.get('guard', ''),
-        'direction': config.get('direction', 'lower'),
-        'iterations': 1,
-        'target': config.get('target')
-    }
-    
-    # Run one iteration using autonomous engine
-    engine = AutonomousEngine(iter_config)
-    
-    # Get suggestions if not already cached
-    if not hasattr(workflow_iteration, '_suggestions'):
-        print_step("Analyzing code...")
-        workflow_iteration._suggestions = engine._analyze_code()
-        print_step(f"Found {len(workflow_iteration._suggestions)} suggestions", 'ok')
-    
-    engine.suggestions = workflow_iteration._suggestions
-    engine.baseline = baseline
-    engine.current_metric = baseline
-    
-    # Run single iteration
-    result = engine._run_iteration()
-    
-    # Update cache
-    workflow_iteration._suggestions = engine.suggestions
-    
-    if result == 'keep':
-        print_step("Change improved metric", 'ok')
-        return 'keep', engine.current_metric
-    elif result == 'target_reached':
-        print_step("Target reached!", 'ok')
-        return 'keep', engine.current_metric
-    else:
-        print_step("Change did not improve", 'warn')
-        return 'discard', baseline
+    # In semi-auto mode, we return a placeholder
+    # In real usage, Kimi would manually execute and report result
+    return 'manual', baseline
 
 
 def protocol_fingerprint_check() -> dict[str, bool]:
@@ -329,8 +330,6 @@ Examples:
     parser.add_argument('--target', type=float)
     parser.add_argument('--config', type=str,
                        help='Config file (JSON)')
-    parser.add_argument('--autonomous', action='store_true',
-                       help='Use fully autonomous mode (no human intervention)')
     
     args = parser.parse_args()
     
@@ -346,26 +345,6 @@ Examples:
         if getattr(args, key) is not None:
             config[key] = getattr(args, key)
     
-    # Autonomous mode: use fully automated engine
-    if args.autonomous:
-        print("=" * 60)
-        print("  Autoresearch Workflow (AUTONOMOUS MODE)")
-        print("=" * 60)
-        
-        from autoresearch_autonomous import AutonomousEngine
-        engine = AutonomousEngine(config)
-        result = engine.run()
-        
-        print("\n" + "=" * 60)
-        if result['status'] in ['completed', 'target_reached']:
-            print("  ✓ Autonomous Run Complete")
-        else:
-            print("  ⚠ Autonomous Run Stopped")
-        print("=" * 60)
-        
-        sys.exit(0 if result['status'] in ['completed', 'target_reached'] else 1)
-    
-    # Original semi-automatic mode
     print("=" * 60)
     print("  Autoresearch Workflow")
     print("=" * 60)
