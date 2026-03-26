@@ -1,6 +1,6 @@
 # Kimi Autoresearch
 
-[![GitHub release](https://img.shields.io/github/v/release/mixyoung/kimi-autoresearch.svg)](https://github.com/mixyoung/kimi-autoresearch/releases)
+[![version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/mixyoung/kimi-autoresearch/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![GitHub stars](https://img.shields.io/github/stars/mixyoung/kimi-autoresearch.svg?style=social)](https://github.com/mixyoung/kimi-autoresearch/stargazers)
