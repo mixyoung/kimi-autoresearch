@@ -162,6 +162,63 @@ scripts/
 
 查看 [references/](references/) 目录获取完整文档。
 
+## 🤖 真正无人值守模式（New!）
+
+利用 **Kimi Background Agent**，实现真正的自主无限迭代！
+
+### 快速开始
+
+```bash
+# 1. 配置并启动 Daemon
+python scripts/autoresearch_daemon.py start \
+  --goal "Add type hints to all functions" \
+  --scope "src/" \
+  --verify "mypy src/ | grep -c error" \
+  --direction lower \
+  --iterations 100
+
+# 2. 启动 Background Agent（在 Kimi 中执行）
+Agent(
+    description="Autoresearch daemon",
+    prompt=read(".autoresearch-daemon-prompt.txt"),
+    run_in_background=True
+)
+
+# 3. 去做别的事情，Agent 会自动：
+#    - 分析代码
+#    - 做出改进
+#    - 验证结果
+#    - 循环迭代
+#    - 每5次迭代报告进度
+```
+
+### Daemon 控制
+
+```bash
+# 查看状态
+python scripts/autoresearch_daemon.py status
+
+# 暂停（当前迭代完成后停止）
+python scripts/autoresearch_daemon.py pause
+
+# 恢复
+python scripts/autoresearch_daemon.py resume
+
+# 停止
+python scripts/autoresearch_daemon.py stop
+```
+
+### 能力验证
+
+✅ **已验证**：Background Agent 可以自主：
+- 读取文件
+- 修改代码
+- 执行命令
+- git 操作
+- 做出决策
+
+**这与 `codex exec` 的能力等价！**
+
 ## 🔄 CI/CD 集成
 
 GitHub Actions 工作流示例：

@@ -321,30 +321,86 @@ In Kimi environment, this automatically uses `SearchWeb` tool when triggered.
 
 ## Running in Background
 
-For long-running sessions, use Kimi's background task:
+### True Autonomous Mode (New)
+
+Kimi Background Agent can run autoresearch fully autonomously:
+
+```bash
+# 1. Start daemon configuration
+python scripts/autoresearch_daemon.py start \
+  --goal "Add type hints" \
+  --scope "src/" \
+  --verify "mypy src/ | grep -c error" \
+  --direction lower \
+  --iterations 100
+
+# This generates a prompt file and instructions
+
+# 2. Launch the Background Agent
+Agent(
+    description="Autoresearch daemon",
+    prompt=read(".autoresearch-daemon-prompt.txt"),
+    run_in_background=True
+)
+
+# 3. Agent runs autonomously:
+#    - Reads state and history
+#    - Makes decisions
+#    - Modifies code
+#    - Commits changes
+#    - Verifies results
+#    - Logs progress
+#    - Repeats until done
+```
+
+### Daemon Control
+
+```bash
+# Check status
+python scripts/autoresearch_daemon.py status
+
+# Pause (agent will check state and stop at next iteration)
+python scripts/autoresearch_daemon.py pause
+
+# Resume
+python scripts/autoresearch_daemon.py resume
+
+# Stop
+python scripts/autoresearch_daemon.py stop
+```
+
+### Background Task Capabilities
+
+**Verified**: Background Agent can autonomously:
+- ✅ Read files
+- ✅ Modify files
+- ✅ Execute shell commands
+- ✅ Run git operations
+- ✅ Make decisions
+- ✅ Iterate without user intervention
+
+**Max runtime**: 24 hours (86400 seconds)
+
+### Simple Background Mode
+
+For shorter tasks (< 1 hour):
 
 ```
 $kimi-autoresearch
-Goal: Optimize performance
-Iterations: 100
+Goal: Quick optimization
+Iterations: 20
 Background: true
 ```
 
-Or use the background controller:
+Or use Shell background:
 
-```bash
-# Start background runtime
-python scripts/autoresearch_background.py start
-
-# Check status
-python scripts/autoresearch_background.py status
-
-# Pause/Resume
-python scripts/autoresearch_background.py pause
-python scripts/autoresearch_background.py resume
-
-# Stop
-python scripts/autoresearch_background.py stop
+```python
+Shell(
+    command="python scripts/autoresearch_workflow.py --config config.json",
+    run_in_background=True,
+    description="Autoresearch optimization",
+    timeout=3600
+)
 ```
 
 ## Example Workflows
