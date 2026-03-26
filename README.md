@@ -49,7 +49,7 @@ git clone https://github.com/mixyoung/kimi-autoresearch.git ~/.agents/skills/kim
 **方式 A：自动安装脚本（推荐）**
 ```powershell
 # 以管理员身份打开 PowerShell，执行：
-cd E:\33_dev_env\kimi-autoresearch
+cd C:\path\to\kimi-autoresearch
 .\install-windows.ps1
 
 # 或指定源目录
@@ -67,7 +67,7 @@ git clone https://github.com/mixyoung/kimi-autoresearch.git "$env:USERPROFILE\.a
 # 创建符号链接（需要管理员，可实时同步开发目录）
 New-Item -ItemType SymbolicLink `
   -Path "$env:USERPROFILE\.agents\skills\kimi-autoresearch" `
-  -Target "E:\33_dev_env\kimi-autoresearch"
+  -Target "C:\path\to\kimi-autoresearch"
 ```
 
 ### 方法四：技能包安装

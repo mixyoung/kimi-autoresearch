@@ -1,7 +1,7 @@
 # Kimi Autoresearch Windows Install Script
 # Run as admin: PowerShell -ExecutionPolicy Bypass -File install-windows.ps1
 
-param([string]$Source = "E:\33_dev_env\kimi-autoresearch")
+param([string]$Source = (Get-Location).Path)
 
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "Kimi Autoresearch Windows Installer" -ForegroundColor Cyan
