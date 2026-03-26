@@ -222,7 +222,7 @@ jobs:
 
 ## 📄 许可证
 
-[MIT](LICENSE) © 2024 Kimi Autoresearch Contributors
+[MIT](LICENSE)
 
 ## 🙏 致谢
 
