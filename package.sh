@@ -6,7 +6,7 @@
 
 set -e
 
-VERSION="1.0.2"
+VERSION="1.1.0"
 PACKAGE_NAME="kimi-autoresearch"
 OUTPUT_DIR="dist"
 

@@ -5,7 +5,7 @@ description: Autonomous iterative improvement engine for Kimi Code CLI. Runs a m
 
 # Kimi Autoresearch
 
-[![version](https://img.shields.io/badge/version-1.0.2-blue.svg)](https://github.com/mixyoung/kimi-autoresearch/releases)
+[![version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/mixyoung/kimi-autoresearch/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A self-directed iterative system for Kimi that continuously cycles through: **modify → verify → retain or discard → repeat**.
