@@ -35,66 +35,90 @@ Extract or confirm:
 2. Record baseline metric
 3. Log iteration 0 as baseline
 
-## Phase 4: Iteration Loop
+## Phase 4: Iteration Loop (Kimi-Driven)
+
+**IMPORTANT**: Each iteration MUST be executed by Kimi (or human), NOT automated.
 
 For each iteration:
 
-```python
-def iterate(iteration_num):
-    # 1. Review state
-    read_results_log()
-    read_git_history()
-    
-    # 2. Pick hypothesis
-    hypothesis = select_hypothesis(
-        what_worked=successful_changes,
-        what_failed=discarded_changes,
-        lessons=lessons_learned
-    )
-    
-    # 3. Make ONE atomic change
-    apply_change(hypothesis)
-    
-    # 4. Git commit
-    git_add_all()
-    git_commit(f"experiment: {hypothesis.description}")
-    commit_hash = get_current_commit()
-    
-    # 5. Verify
-    exit_code, output = run(verify_command)
-    current_metric = extract_number(output)
-    
-    # 6. Guard check
-    guard_passed = True
-    if guard_command:
-        guard_exit, _ = run(guard_command)
-        guard_passed = guard_exit == 0
-    
-    # 7. Decide
-    improved = is_improved(current_metric, baseline, direction)
-    
-    if improved and guard_passed:
-        status = 'keep'
-        baseline = current_metric  # Update baseline for next iteration
-        extract_lesson(hypothesis, success=True)
-    else:
-        status = 'discard'
-        git_revert_head()
-        extract_lesson(hypothesis, success=False)
-    
-    # 8. Log
-    log_result(iteration_num, commit_hash, current_metric, 
-               delta, status, hypothesis.description)
-    
-    # 9. Check for stuck patterns
-    update_stuck_counters(status)
-    if consecutive_discards >= 3:
-        refine_strategy()
-    if consecutive_discards >= 5:
-        pivot_strategy()
-    
-    return status
+### Step 1: Review State
+- Read `autoresearch-results.tsv` for full history
+- Read `git log --oneline -10` to see recent experiments
+- Read `autoresearch-lessons.md` for prior learnings
+- Review what worked, what failed, what's untried
+
+### Step 2: Pick Hypothesis
+- **Analyze**: Understand the codebase structure and current state
+- **Hypothesize**: Form ONE concrete hypothesis about what to change
+- **Document**: Why this change might improve the metric
+- **Strategies**: Use greedy, dependency-order, risk-order, or evolutionary approaches
+
+### Step 3: Make ONE Atomic Change
+- Use Kimi's editing tools to modify code
+- Make minimal, focused changes
+- Ensure change is reversible (independent commit)
+- Do NOT batch multiple changes
+
+### Step 4: Git Commit
+```bash
+python scripts/check_git.py --action commit --message "experiment: <description>"
 ```
+
+### Step 5: Verify
+```bash
+# Run the verify command
+<verify_command>
+# Extract metric from output
+```
+
+### Step 6: Guard Check (if configured)
+```bash
+<guard_command>  # Must pass (exit 0) for change to be kept
+```
+
+### Step 7: Decide
+```bash
+python scripts/autoresearch_decision.py \
+  --action decide \
+  --current <new_metric> \
+  --baseline <baseline> \
+  --direction <higher|lower> \
+  --guard-passed <true|false>
+```
+
+**Actions**:
+- **KEEP**: Change improved metric and guard passed
+  - Update baseline for next iteration
+  - Extract lesson: what worked
+- **DISCARD**: Change did not improve or guard failed
+  - Revert: `python scripts/check_git.py --action revert`
+  - Extract lesson: what failed
+- **REWORK**: Metric improved but guard failed (max 2 attempts)
+
+### Step 8: Log Result
+```bash
+python scripts/log_result.py \
+  --iteration <num> \
+  --commit <hash> \
+  --metric <value> \
+  --delta <+/-change> \
+  --status <keep|discard|crash> \
+  --description "<what was tried>"
+```
+
+### Step 9: Check Stuck Pattern
+```bash
+python scripts/autoresearch_decision.py --action check-stuck
+```
+
+| Pattern | Action |
+|---------|--------|
+| 3+ consecutive discards | **REFINE** - adjust within current strategy |
+| 5+ consecutive discards | **PIVOT** - try fundamentally different approach |
+| 2+ pivots without improvement | **WEB SEARCH** - search for external solutions |
+
+### Step 10: Repeat
+Continue until: target reached, iteration cap, manual stop, or hard blocker.
 
 ## Phase 5: Summary
 

@@ -14,11 +14,24 @@
 | 特性 | Karpathy | codex-autoresearch | uditgoenka | **kimi-autoresearch** |
 |------|----------|-------------------|------------|----------------------|
 | **核心循环** | modify → verify → keep/discard → repeat | ✅ 完整 | ✅ 完整 | ✅ **完整** |
+| **智能位置** | 外部 Agent | **Codex** | **Claude** | **Kimi** |
+| **脚本角色** | 辅助记录 | 纯工具 | 纯工具 | **纯工具** |
 | **作用域读取** | 单文件 | 所有文件+git历史 | 所有文件+日志 | **所有文件+日志** |
 | **历史感知** | Git log | Git log + TSV | Git log + TSV | **Git log + TSV** |
 | **回滚机制** | git reset | git revert | git revert | **git revert** |
 | **卡住检测** | ❌ | ✅ REFINE/PIVOT | ✅ 5次后升级 | **✅ 5次后升级** |
 | **崩溃恢复** | ❌ 手动 | ✅ 自动 | ✅ 自动修复 | **✅ 自动修复** |
+
+### 架构理念差异
+
+| 项目 | 架构模式 | 说明 |
+|------|---------|------|
+| **Karpathy** | 极简 Agent | 3个文件，Agent 全权负责 |
+| **codex-autoresearch** | Skill-guided Agent | SKILL.md 指导 Codex，Python 辅助 |
+| **uditgoenka** | Agent + Tools | Claude 主导，脚本打杂 |
+| **kimi-autoresearch** | **Skill-guided Agent** | SKILL.md 指导 Kimi，Python 纯工具 |
+
+**关键原则**: 所有项目中，Python 脚本都是**纯工具**（记录、git、验证），真正的智能（理解代码、生成修改、决策假设）都由 **AI Agent** 提供。kimi-autoresearch 已回归此模式。
 
 ---
 

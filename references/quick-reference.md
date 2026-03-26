@@ -168,36 +168,41 @@ git commit -m "experiment: description"
 git revert --no-edit HEAD  # if discard
 ```
 
-## Helper Scripts
+## Helper Scripts (Pure Tools - No AI)
+
+These scripts perform mechanical tasks only. They do NOT analyze code or generate changes.
 
 ```bash
-# Initialize run
+# Initialize run - setup state and TSV
 python scripts/autoresearch_init_run.py \
   --goal "Reduce errors" \
   --metric "error count" \
   --verify "tsc --noEmit 2>&1 | grep -c error"
 
-# Health check
+# Health check - verify environment
 python scripts/autoresearch_health_check.py
 
-# Background control
-python scripts/autoresearch_background.py status
-python scripts/autoresearch_background.py start
-python scripts/autoresearch_background.py stop
+# Git operations
+python scripts/check_git.py --action commit --message "experiment: description"
+python scripts/check_git.py --action revert
 
-# Lessons
+# Get baseline - run verify command
+python scripts/get_baseline.py --verify "your-command" --parse-number
+
+# Decision helper - numerical comparison
+python scripts/autoresearch_decision.py --action decide \
+  --current 42 --baseline 50 --direction lower --guard-passed true
+
+# Log result - append to TSV
+python scripts/log_result.py --iteration 1 --commit abc123 \
+  --metric 42 --status keep --description "Fixed types"
+
+# Lessons management
 python scripts/autoresearch_lessons.py add "This worked well" --type positive
 python scripts/autoresearch_lessons.py list
-python scripts/autoresearch_lessons.py summarize
-
-# CI/CD exec
-python scripts/autoresearch_exec.py \
-  --mode optimize \
-  --goal "Reduce bundle" \
-  --verify "du -k dist/main.js | cut -f1" \
-  --direction lower \
-  --iterations 10
 ```
+
+**Note**: The actual iteration loop is driven by Kimi following the protocol in SKILL.md. Python scripts are pure tools for recording, git operations, and verification.
 
 ## Kimi-Specific Tips
 
