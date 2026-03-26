@@ -25,6 +25,8 @@ def run_script(name: str, args: list[str]) -> tuple[int, str]:
             cmd,
             capture_output=True,
             text=True,
+            encoding='utf-8',
+            errors='ignore',
             timeout=300
         )
         return result.returncode, result.stdout + result.stderr
