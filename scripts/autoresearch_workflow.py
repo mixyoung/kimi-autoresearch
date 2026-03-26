@@ -21,7 +21,6 @@ def run_script(name: str, args: list, timeout: int = 300) -> tuple[int, str]:
     
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, 
-                              encoding='utf-8', errors='ignore',
                               timeout=timeout)
         return result.returncode, result.stdout + result.stderr
     except Exception as e:
