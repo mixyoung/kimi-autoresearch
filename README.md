@@ -48,6 +48,51 @@ git clone https://github.com/mixyoung/kimi-autoresearch.git ~/.agents/skills/kim
 ### 方法三：Windows 安装（推荐）
 
 **方式 A：自动安装脚本（推荐）**
+
+```powershell
+# 自动安装
+.\install-windows.ps1
+```
+
+---
+
+## 🤖 全自动模式（新功能）
+
+**无需人工干预，完全自主运行！**
+
+```bash
+# 全自动添加类型注解
+python scripts/autoresearch_autonomous.py \
+  --goal "add type hints" \
+  --scope "src/" \
+  --verify "python -m mypy src/ 2>&1 | grep -c error" \
+  --direction lower \
+  --iterations 20
+
+# 全自动删除未使用导入
+python scripts/autoresearch_autonomous.py \
+  --goal "remove unused imports" \
+  --scope "scripts/" \
+  --iterations 50
+
+# 或使用 workflow 的 --autonomous 标志
+python scripts/autoresearch_workflow.py \
+  --autonomous \
+  --goal "reduce type errors" \
+  --verify "mypy src/ 2>&1 | grep -c error" \
+  --direction lower
+```
+
+### 全自动工作流程
+
+1. **自动分析** - 扫描代码识别改进点
+2. **生成假设** - 基于分析生成修改建议
+3. **自动修改** - 执行代码变换
+4. **验证结果** - 运行测试/检查
+5. **智能决策** - 保留改进，回退无效修改
+6. **循环优化** - 直到达成目标或达到迭代上限
+
+**方式 A：自动安装脚本（推荐）**
 ```powershell
 # 以管理员身份打开 PowerShell，执行：
 cd C:\path\to\kimi-autoresearch
