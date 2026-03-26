@@ -10,11 +10,12 @@
 ### Added
 - 初始版本发布
 - 10 种工作模式实现
-- 20 个功能脚本
-- 13 个参考文档
+- 21 个功能脚本
+- 14 个参考文档
 - Web 搜索自动触发
 - 并行实验支持
 - CI/CD GitHub Actions 工作流
+- **国际化 (i18n) 支持** - 支持中英文切换
 
 ## [1.0.0] - 2024-03-26
 
@@ -32,7 +33,7 @@
   - Learn - 文档引擎
   - Exec - CI/CD 模式
 
-### 脚本 (20个)
+### 脚本 (21个)
 - `autoresearch_main.py` - 统一 CLI 入口
 - `autoresearch_workflow.py` - 工作流编排
 - `autoresearch_init_run.py` - 运行初始化
@@ -46,9 +47,10 @@
 - `autoresearch_lessons.py` - 学习管理
 - `autoresearch_predict.py` - 预测分析
 - `autoresearch_utils.py` - 工具函数
+- `autoresearch_i18n.py` - **国际化支持**
 - 以及 7 个基础脚本
 
-### 文档 (13个)
+### 文档 (14个)
 - `loop-protocol.md` - 核心协议
 - `mode-plan.md` - Plan 模式
 - `mode-debug.md` - Debug 模式
@@ -61,6 +63,7 @@
 - `mode-exec.md` - Exec 模式
 - `parallel-experiments.md` - 并行实验
 - `web-search-protocol.md` - Web 搜索
+- `i18n.md` - **国际化文档**
 - `quick-reference.md` - 快速参考
 
 ### 其他
@@ -74,7 +77,7 @@
 
 | 版本 | 日期 | 脚本数 | 模式数 | 文档数 | 特性 |
 |------|------|--------|--------|--------|------|
-| 1.0.0 | 2024-03-26 | 20 | 10 | 13 | 初始完整版本 |
+| 1.0.0 | 2024-03-26 | **21** | 10 | **14** | 初始完整版本 + i18n |
 
 ---
 
@@ -84,7 +87,8 @@
 - [ ] 单元测试覆盖
 - [ ] 更多配置示例
 - [ ] 性能优化
-- [ ] 多语言支持 (i18n)
+- [x] **多语言支持 (i18n)** - ✅ 已完成 (v1.0.0)
+- [ ] 更多语言（日语、法语等）
 - [ ] MCP 协议支持
 - [ ] Web UI 界面
 - [ ] 插件系统

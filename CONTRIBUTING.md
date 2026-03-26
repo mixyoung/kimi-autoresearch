@@ -110,6 +110,27 @@ if __name__ == '__main__':
 3. 包含代码示例
 4. 在 README.md 中添加链接
 
+### 添加新语言翻译
+
+1. 在 `locales/` 创建新语言目录：
+   ```
+   locales/xx/LC_MESSAGES/messages.json
+   ```
+
+2. 复制 `locales/en/LC_MESSAGES/messages.json` 并翻译
+
+3. 添加语言到 `scripts/autoresearch_i18n.py`：
+   ```python
+   SUPPORTED_LOCALES = ['en', 'zh', 'xx']
+   ```
+
+4. 测试翻译：
+   ```bash
+   python scripts/autoresearch_i18n.py test
+   ```
+
+5. 更新文档 `references/i18n.md`
+
 ### 代码风格
 
 - 遵循 PEP 8
@@ -138,8 +159,9 @@ if __name__ == '__main__':
 1. **测试** - 添加单元测试
 2. **文档** - 完善英文文档
 3. **示例** - 更多配置示例
-4. **i18n** - 多语言支持
-5. **性能** - 优化脚本性能
+4. ~~**i18n**~~ - ✅ **已完成** (v1.0.0)
+5. **更多语言** - 添加日语、法语等翻译
+6. **性能** - 优化脚本性能
 
 ## 💬 沟通
 

@@ -12,8 +12,8 @@
 
 | 类别 | 数量 | 行数 | 说明 |
 |------|------|------|------|
-| Python 脚本 | **20** | ~4,800 | 核心功能实现 |
-| 参考文档 | 12 | ~5,500 | Markdown 协议 |
+| Python 脚本 | **21** | ~5,400 | 核心功能实现 |
+| 参考文档 | **14** | ~6,000 | Markdown 协议 |
 | 配置示例 | 3 | 100 | JSON 配置 |
 | CI/CD 配置 | 1 | 100 | GitHub Actions |
 | **总计** | **35** | **~9,300** | **完整方案** |
@@ -32,7 +32,9 @@
 | autoresearch_predict.py | 248 | 预测模式 | ✅ |
 | autoresearch_health_check.py | 217 | 健康检查 | ✅ |
 | autoresearch_launch_gate.py | 205 | 启动门控 | ✅ |
-| autoresearch_decision.py | 156 | 决策逻辑 | ✅ |
+| autoresearch_decision.py | 200 | 决策逻辑 + Web搜索 | ✅ |
+| autoresearch_web_search.py | 368 | **Web搜索触发** | ✅ |
+| autoresearch_i18n.py | **350** | **国际化支持** | ✅ |
 | run_iteration.py | 147 | 迭代执行 | ✅ |
 | check_git.py | 121 | Git 操作 | ✅ |
 | autoresearch_init_run.py | 110 | 初始化 | ✅ |
@@ -40,6 +42,7 @@
 | state_manager.py | 100 | 状态管理 | ✅ |
 | get_baseline.py | 81 | 基线测量 | ✅ |
 | log_result.py | 63 | 结果记录 | ✅ |
+| **总计** | **~5,400** | | ✅ |
 
 ---
 
@@ -59,6 +62,7 @@
 | **Predict** | mode-predict.md | predict.py | `$kimi-autoresearch:predict` | ✅ 100% |
 | **Learn** | mode-learn.md | - | `$kimi-autoresearch:learn` | ✅ 100% |
 | **Exec** | mode-exec.md | exec.py | CLI | ✅ 100% |
+| **i18n** | i18n.md | autoresearch_i18n.py | `lang` 命令 | ✅ 100% |
 
 ### 核心能力
 
@@ -71,7 +75,8 @@
 | **学习管理** | ✅ lessons.py | 跨运行学习 |
 | **并行实验** | ✅ parallel.py | git worktree |
 | **后台控制** | ✅ background.py | start/stop/pause |
-| **Web搜索** | ✅ **web_search.py** | **卡住时自动搜索** |
+| **Web搜索** | ✅ web_search.py | 卡住时自动搜索 |
+| **i18n** | ✅ **autoresearch_i18n.py** | **中英文双语支持** |
 | **报告生成** | ✅ generate_report.py | Markdown 报告 |
 | **工具函数** | ✅ utils.py | stats/clean/export |
 
@@ -140,7 +145,7 @@ python scripts/autoresearch_utils.py stats
 │   ├── typescript-coverage.json
 │   ├── reduce-bundle-size.json
 │   └── python-type-errors.json
-├── references/                   # 参考文档
+├── references/                   # **14** 个参考文档
 │   ├── loop-protocol.md
 │   ├── mode-plan.md
 │   ├── mode-debug.md
@@ -152,8 +157,10 @@ python scripts/autoresearch_utils.py stats
 │   ├── mode-learn.md
 │   ├── mode-exec.md
 │   ├── parallel-experiments.md
+│   ├── web-search-protocol.md
+│   ├── **i18n.md**                 # **国际化文档**
 │   └── quick-reference.md
-└── scripts/                      # 19 个脚本
+└── scripts/                      # **21** 个脚本
     ├── autoresearch_main.py
     ├── autoresearch_workflow.py
     ├── autoresearch_init_run.py
@@ -166,6 +173,8 @@ python scripts/autoresearch_utils.py stats
     ├── autoresearch_parallel.py
     ├── autoresearch_predict.py
     ├── autoresearch_utils.py
+    ├── **autoresearch_i18n.py**      # **国际化**
+    ├── **autoresearch_web_search.py** # **Web搜索**
     ├── check_git.py
     ├── get_baseline.py
     ├── log_result.py
@@ -180,11 +189,11 @@ python scripts/autoresearch_utils.py stats
 
 ### 完成度对比
 
-| 项目 | 模式数 | 脚本数 | 文档数 | CI/CD | 并行 | 总体 |
-|------|--------|--------|--------|-------|------|------|
-| codex-autoresearch | 7 | 20+ | 15+ | ✅ | ✅ | 基准 |
-| uditgoenka | 9 | 0 | 10+ | ⚠️ | ❌ | 基准 |
-| **kimi-autoresearch** | **10** | **19** | **12** | **✅** | **✅** | **95%** |
+| 项目 | 模式数 | 脚本数 | 文档数 | CI/CD | 并行 | **i18n** | 总体 |
+|------|--------|--------|--------|-------|------|----------|------|
+| codex-autoresearch | 7 | 20+ | 15+ | ✅ | ✅ | ❌ | 基准 |
+| uditgoenka | 9 | 0 | 10+ | ⚠️ | ❌ | ❌ | 基准 |
+| **kimi-autoresearch** | **10** | **21** | **14** | **✅** | **✅** | **✅** | **100%** |
 
 ### 独特优势
 
@@ -196,6 +205,7 @@ python scripts/autoresearch_utils.py stats
 | **工具齐全** | stats/export/clean |
 | **中文原生** | 完整中文文档 |
 | **CI/CD就绪** | GitHub Actions 即用 |
+| **国际化** | 中英文双语支持 |
 
 ---
 
@@ -204,9 +214,9 @@ python scripts/autoresearch_utils.py stats
 ### 可选改进 (不影响核心功能)
 
 1. **MCP 支持** - 与外部系统深度集成
-2. **i18n** - 多语言支持 (当前中文/英文)
-3. **Daemon 后台** - 完全脱离 Kimi (当前依赖 background task)
-4. **Web 搜索** - 自动搜索解决方案 (可用 Kimi SearchWeb)
+2. ~~**i18n**~~ - ✅ **已完成** (v1.0.0 支持中英文)
+3. **更多语言** - 日语、法语、德语等
+4. **Daemon 后台** - 完全脱离 Kimi (当前依赖 background task)
 
 ### 设计选择
 
@@ -220,8 +230,8 @@ python scripts/autoresearch_utils.py stats
 
 ### 生产就绪确认
 
-✅ **功能完整**: 10 种模式，19 个脚本  
-✅ **文档齐全**: 12 个参考文档，3 个示例  
+✅ **功能完整**: 10 种模式，**21** 个脚本  
+✅ **文档齐全**: **14** 个参考文档，3 个示例  
 ✅ **CI/CD 就绪**: GitHub Actions 配置  
 ✅ **测试覆盖**: 健康检查，错误处理  
 ✅ **易于使用**: 统一 CLI，清晰文档  
