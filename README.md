@@ -110,7 +110,6 @@ python scripts/autoresearch_main.py lang en
 # 切换到中文
 python scripts/autoresearch_main.py lang zh
 ```
-```
 
 ## 📖 工作模式
 
