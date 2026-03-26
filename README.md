@@ -1,7 +1,14 @@
 # Kimi Autoresearch
 
+[![GitHub release](https://img.shields.io/github/v/release/mixyoung/kimi-autoresearch.svg)](https://github.com/mixyoung/kimi-autoresearch/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![GitHub stars](https://img.shields.io/github/stars/mixyoung/kimi-autoresearch.svg?style=social)](https://github.com/mixyoung/kimi-autoresearch/stargazers)
+
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/mixyoung/kimi-autoresearch/autoresearch.yml?branch=main)](https://github.com/mixyoung/kimi-autoresearch/actions)
+[![GitHub last commit](https://img.shields.io/github/last-commit/mixyoung/kimi-autoresearch.svg)](https://github.com/mixyoung/kimi-autoresearch/commits/main)
+[![GitHub repo size](https://img.shields.io/github/repo-size/mixyoung/kimi-autoresearch.svg)](https://github.com/mixyoung/kimi-autoresearch)
+[![GitHub downloads](https://img.shields.io/github/downloads/mixyoung/kimi-autoresearch/total.svg)](https://github.com/mixyoung/kimi-autoresearch/releases)
 
 一个受 [Karpathy 的 autoresearch](https://karpathy.ai/) 启发的自动化研究工具，专为 **Kimi Code CLI** 设计。
 
