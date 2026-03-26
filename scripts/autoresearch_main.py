@@ -10,6 +10,10 @@ import os
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# Import i18n support
+sys.path.insert(0, SCRIPT_DIR)
+from autoresearch_i18n import _, init_locale, set_locale, get_locale_name
+
 
 def run_script(name: str, args: list[str]) -> tuple[int, str]:
     """Run a helper script."""
@@ -141,6 +145,17 @@ def cmd_report(args):
     return code
 
 
+def cmd_lang(args):
+    """Handle language command."""
+    if args.locale:
+        if set_locale(args.locale):
+            print(f"Language switched to: {get_locale_name(args.locale)}")
+        return 0
+    else:
+        print(f"Current language: {get_locale_name(getattr(sys.modules[__name__], '_current_locale', 'zh'))}")
+        return 0
+
+
 def cmd_search(args):
     """Web search when stuck."""
     script_args = []
@@ -258,6 +273,10 @@ Examples:
     # report command
     subparsers.add_parser('report', help='Generate report')
     
+    # lang command
+    lang_parser = subparsers.add_parser('lang', help='Language settings')
+    lang_parser.add_argument('locale', nargs='?', help='Locale code (en/zh)')
+    
     # search command
     search_parser = subparsers.add_parser('search', help='Web search when stuck')
     search_subparsers = search_parser.add_subparsers(dest='subcommand')
@@ -286,8 +305,12 @@ Examples:
         'git': cmd_git,
         'log': cmd_log,
         'report': cmd_report,
+        'lang': cmd_lang,
         'search': cmd_search
     }
+    
+    # Initialize i18n
+    init_locale()
     
     code = commands[args.command](args)
     sys.exit(code)

@@ -25,6 +25,7 @@
 - 🚀 **CI/CD 就绪** - GitHub Actions 工作流支持
 - 🌐 **Kimi 原生** - 专为 Kimi Code CLI 优化
 - 💻 **跨平台** - 支持 Windows、macOS、Linux
+- 🌍 **国际化** - 支持中英文切换
 
 ## 📦 安装
 
@@ -96,6 +97,19 @@ python scripts/autoresearch_init_run.py \
 python scripts/autoresearch_workflow.py \
   --goal "Increase test coverage" \
   --verify "npm test -- --coverage | grep 'All files'"
+
+### 切换语言
+
+```bash
+# 查看当前语言
+python scripts/autoresearch_main.py lang
+
+# 切换到英文
+python scripts/autoresearch_main.py lang en
+
+# 切换到中文
+python scripts/autoresearch_main.py lang zh
+```
 ```
 
 ## 📖 工作模式
