@@ -1,0 +1,3450 @@
+{
+  "files_analyzed": 32,
+  "issues_count": 65,
+  "suggestions_count": 64,
+  "issues": [
+    {
+      "type": "missing_type_hint",
+      "file": "count_typed.py",
+      "line": 7,
+      "column": 0,
+      "message": "Function 'count_typed_functions' missing type hints (params: filename, return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to count_typed_functions"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_analyze.py",
+      "line": 182,
+      "column": 0,
+      "message": "Function 'cmd_trends' missing type hints (params: args, return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to cmd_trends"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_analyze.py",
+      "line": 230,
+      "column": 0,
+      "message": "Function 'cmd_windows' missing type hints (params: args, return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to cmd_windows"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_analyze.py",
+      "line": 274,
+      "column": 0,
+      "message": "Function 'cmd_strategies' missing type hints (params: args, return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to cmd_strategies"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_analyzer.py",
+      "line": 356,
+      "column": 0,
+      "message": "Function 'main' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to main"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_analyzer.py",
+      "line": 57,
+      "column": 4,
+      "message": "Function '__init__' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to __init__"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_analyzer.py",
+      "line": 226,
+      "column": 4,
+      "message": "Function '_has_docstring' missing type hints (params: node)",
+      "severity": "warning",
+      "suggestion": "Add type hints to _has_docstring"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_analyzer.py",
+      "line": 310,
+      "column": 4,
+      "message": "Function '__init__' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to __init__"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_applier.py",
+      "line": 289,
+      "column": 0,
+      "message": "Function 'main' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to main"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_applier.py",
+      "line": 55,
+      "column": 4,
+      "message": "Function '__init__' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to __init__"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_autonomous.py",
+      "line": 370,
+      "column": 0,
+      "message": "Function 'main' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to main"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_autonomous.py",
+      "line": 42,
+      "column": 4,
+      "message": "Function '__init__' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to __init__"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_autonomous.py",
+      "line": 345,
+      "column": 4,
+      "message": "Function '_log_result' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to _log_result"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_exec.py",
+      "line": 27,
+      "column": 0,
+      "message": "Function 'log' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to log"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_i18n.py",
+      "line": 112,
+      "column": 0,
+      "message": "Function 'cmd_switch' missing type hints (params: args)",
+      "severity": "warning",
+      "suggestion": "Add type hints to cmd_switch"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_i18n.py",
+      "line": 132,
+      "column": 0,
+      "message": "Function 'cmd_test' missing type hints (params: args)",
+      "severity": "warning",
+      "suggestion": "Add type hints to cmd_test"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_lessons.py",
+      "line": 17,
+      "column": 4,
+      "message": "Function '__init__' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to __init__"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_parallel.py",
+      "line": 20,
+      "column": 4,
+      "message": "Function '__init__' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to __init__"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_stuck_recovery.py",
+      "line": 163,
+      "column": 0,
+      "message": "Function 'cmd_check' missing type hints (params: args, return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to cmd_check"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_stuck_recovery.py",
+      "line": 195,
+      "column": 0,
+      "message": "Function 'cmd_trigger' missing type hints (params: args, return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to cmd_trigger"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_stuck_recovery.py",
+      "line": 248,
+      "column": 0,
+      "message": "Function 'cmd_simulate' missing type hints (params: args, return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to cmd_simulate"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_utils.py",
+      "line": 28,
+      "column": 0,
+      "message": "Function 'cmd_stats' missing type hints (params: args)",
+      "severity": "warning",
+      "suggestion": "Add type hints to cmd_stats"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_utils.py",
+      "line": 104,
+      "column": 0,
+      "message": "Function 'cmd_clean' missing type hints (params: args)",
+      "severity": "warning",
+      "suggestion": "Add type hints to cmd_clean"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_utils.py",
+      "line": 142,
+      "column": 0,
+      "message": "Function 'cmd_export' missing type hints (params: args)",
+      "severity": "warning",
+      "suggestion": "Add type hints to cmd_export"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_utils.py",
+      "line": 215,
+      "column": 0,
+      "message": "Function 'cmd_config' missing type hints (params: args)",
+      "severity": "warning",
+      "suggestion": "Add type hints to cmd_config"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_version.py",
+      "line": 25,
+      "column": 0,
+      "message": "Function 'get_project_root' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to get_project_root"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_version.py",
+      "line": 31,
+      "column": 0,
+      "message": "Function 'get_current_version' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to get_current_version"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_version.py",
+      "line": 42,
+      "column": 0,
+      "message": "Function 'bump_version' missing type hints (params: version, part, return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to bump_version"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_version.py",
+      "line": 55,
+      "column": 0,
+      "message": "Function 'update_file_version' missing type hints (params: file_path, pattern, replacement, new_version, return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to update_file_version"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_version.py",
+      "line": 71,
+      "column": 0,
+      "message": "Function 'update_all_versions' missing type hints (params: old_version, new_version, return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to update_all_versions"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_version.py",
+      "line": 107,
+      "column": 0,
+      "message": "Function 'update_changelog' missing type hints (params: new_version, changes, return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to update_changelog"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_version.py",
+      "line": 147,
+      "column": 0,
+      "message": "Function 'create_git_tag' missing type hints (params: version, message, return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to create_git_tag"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\autoresearch_version.py",
+      "line": 177,
+      "column": 0,
+      "message": "Function 'main' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to main"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\check_git.py",
+      "line": 51,
+      "column": 0,
+      "message": "Function 'main' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to main"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\get_baseline.py",
+      "line": 48,
+      "column": 0,
+      "message": "Function 'main' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to main"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\log_result.py",
+      "line": 40,
+      "column": 0,
+      "message": "Function 'main' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to main"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "scripts\\state_manager.py",
+      "line": 49,
+      "column": 0,
+      "message": "Function 'main' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to main"
+    },
+    {
+      "type": "read_error",
+      "file": "tests\\__init__.py",
+      "line": 1,
+      "column": 0,
+      "message": "Failed to read: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte",
+      "severity": "error",
+      "suggestion": null
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "tests\\test_decision.py",
+      "line": 19,
+      "column": 4,
+      "message": "Function 'test_decide_keep_discard_improved_and_guard_passed' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to test_decide_keep_discard_improved_and_guard_passed"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "tests\\test_decision.py",
+      "line": 31,
+      "column": 4,
+      "message": "Function 'test_decide_keep_discard_improved_but_guard_failed' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to test_decide_keep_discard_improved_but_guard_failed"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "tests\\test_decision.py",
+      "line": 42,
+      "column": 4,
+      "message": "Function 'test_decide_keep_discard_not_improved' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to test_decide_keep_discard_not_improved"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "tests\\test_decision.py",
+      "line": 54,
+      "column": 4,
+      "message": "Function 'test_decide_keep_discard_higher_direction' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to test_decide_keep_discard_higher_direction"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "tests\\test_decision.py",
+      "line": 66,
+      "column": 4,
+      "message": "Function 'test_check_stuck_pattern_not_stuck' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to test_check_stuck_pattern_not_stuck"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "tests\\test_decision.py",
+      "line": 77,
+      "column": 4,
+      "message": "Function 'test_check_stuck_pattern_refine' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to test_check_stuck_pattern_refine"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "tests\\test_decision.py",
+      "line": 88,
+      "column": 4,
+      "message": "Function 'test_check_stuck_pattern_pivot' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to test_check_stuck_pattern_pivot"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "tests\\test_decision.py",
+      "line": 99,
+      "column": 4,
+      "message": "Function 'test_check_stuck_pattern_search' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to test_check_stuck_pattern_search"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "tests\\test_decision.py",
+      "line": 110,
+      "column": 4,
+      "message": "Function 'test_update_stuck_counters_keep' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to test_update_stuck_counters_keep"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "tests\\test_decision.py",
+      "line": 120,
+      "column": 4,
+      "message": "Function 'test_update_stuck_counters_discard' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to test_update_stuck_counters_discard"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "tests\\test_git.py",
+      "line": 17,
+      "column": 4,
+      "message": "Function 'setUp' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to setUp"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "tests\\test_git.py",
+      "line": 23,
+      "column": 4,
+      "message": "Function 'tearDown' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to tearDown"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "tests\\test_git.py",
+      "line": 28,
+      "column": 4,
+      "message": "Function 'test_is_git_repo_false' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to test_is_git_repo_false"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "tests\\test_git.py",
+      "line": 32,
+      "column": 4,
+      "message": "Function 'test_run_git_status' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to test_run_git_status"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "tests\\test_git.py",
+      "line": 38,
+      "column": 4,
+      "message": "Function 'test_get_current_commit_unknown' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to test_get_current_commit_unknown"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "tests\\test_git.py",
+      "line": 47,
+      "column": 4,
+      "message": "Function 'setUp' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to setUp"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "tests\\test_git.py",
+      "line": 58,
+      "column": 4,
+      "message": "Function 'tearDown' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to tearDown"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "tests\\test_git.py",
+      "line": 63,
+      "column": 4,
+      "message": "Function 'test_is_git_repo_true' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to test_is_git_repo_true"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "tests\\test_git.py",
+      "line": 67,
+      "column": 4,
+      "message": "Function 'test_has_changes_false' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to test_has_changes_false"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "tests\\test_git.py",
+      "line": 71,
+      "column": 4,
+      "message": "Function 'test_has_changes_true' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to test_has_changes_true"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "tests\\test_git.py",
+      "line": 79,
+      "column": 4,
+      "message": "Function 'test_get_current_commit' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to test_get_current_commit"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "tests\\test_health_check.py",
+      "line": 23,
+      "column": 4,
+      "message": "Function 'test_check_git_repository' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to test_check_git_repository"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "tests\\test_health_check.py",
+      "line": 35,
+      "column": 4,
+      "message": "Function 'test_check_git_config' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to test_check_git_config"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "tests\\test_health_check.py",
+      "line": 47,
+      "column": 4,
+      "message": "Function 'test_check_worktree_clean' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to test_check_worktree_clean"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "tests\\test_health_check.py",
+      "line": 59,
+      "column": 4,
+      "message": "Function 'test_check_disk_space' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to test_check_disk_space"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "tests\\test_health_check.py",
+      "line": 74,
+      "column": 4,
+      "message": "Function 'test_check_required_tools' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to test_check_required_tools"
+    },
+    {
+      "type": "missing_type_hint",
+      "file": "tests\\test_health_check.py",
+      "line": 86,
+      "column": 4,
+      "message": "Function 'test_run_all_checks' missing type hints (return type)",
+      "severity": "warning",
+      "suggestion": "Add type hints to test_run_all_checks"
+    }
+  ],
+  "functions": [
+    {
+      "name": "count_typed_functions",
+      "line": 7,
+      "params": [
+        "filename"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "load_results",
+      "line": 23,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "list[dict]"
+    },
+    {
+      "name": "analyze_trends",
+      "line": 37,
+      "params": [
+        "results"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict"
+    },
+    {
+      "name": "analyze_by_window",
+      "line": 120,
+      "params": [
+        "results",
+        "window_size"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "list[dict]"
+    },
+    {
+      "name": "analyze_strategies",
+      "line": 146,
+      "params": [
+        "results"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict"
+    },
+    {
+      "name": "cmd_trends",
+      "line": 182,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "cmd_windows",
+      "line": 230,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "cmd_strategies",
+      "line": 274,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "main",
+      "line": 306,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": false,
+      "returns": "int"
+    },
+    {
+      "name": "main",
+      "line": 356,
+      "params": [],
+      "has_type_hints": false,
+      "has_docstring": false,
+      "returns": null
+    },
+    {
+      "name": "__init__",
+      "line": 57,
+      "params": [
+        "self",
+        "goal"
+      ],
+      "has_type_hints": false,
+      "has_docstring": false,
+      "returns": null
+    },
+    {
+      "name": "analyze_file",
+      "line": 62,
+      "params": [
+        "self",
+        "file_path"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "None"
+    },
+    {
+      "name": "_analyze_type_hints",
+      "line": 101,
+      "params": [
+        "self",
+        "tree",
+        "file_path",
+        "content"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "None"
+    },
+    {
+      "name": "_analyze_imports",
+      "line": 143,
+      "params": [
+        "self",
+        "tree",
+        "file_path",
+        "content"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "None"
+    },
+    {
+      "name": "_analyze_docstrings",
+      "line": 182,
+      "params": [
+        "self",
+        "tree",
+        "file_path",
+        "content"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "None"
+    },
+    {
+      "name": "_analyze_formatting",
+      "line": 197,
+      "params": [
+        "self",
+        "tree",
+        "file_path",
+        "content"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "None"
+    },
+    {
+      "name": "_has_docstring",
+      "line": 226,
+      "params": [
+        "self",
+        "node"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": "bool"
+    },
+    {
+      "name": "generate_suggestions",
+      "line": 233,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "List[dict]"
+    },
+    {
+      "name": "_issue_to_suggestion",
+      "line": 253,
+      "params": [
+        "self",
+        "issue"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "Optional[dict]"
+    },
+    {
+      "name": "__init__",
+      "line": 310,
+      "params": [
+        "self",
+        "goal",
+        "scope"
+      ],
+      "has_type_hints": false,
+      "has_docstring": false,
+      "returns": null
+    },
+    {
+      "name": "analyze",
+      "line": 315,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "AnalysisResult"
+    },
+    {
+      "name": "_find_files",
+      "line": 334,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "List[Path]"
+    },
+    {
+      "name": "main",
+      "line": 289,
+      "params": [],
+      "has_type_hints": false,
+      "has_docstring": false,
+      "returns": null
+    },
+    {
+      "name": "__init__",
+      "line": 55,
+      "params": [
+        "self",
+        "dry_run"
+      ],
+      "has_type_hints": false,
+      "has_docstring": false,
+      "returns": null
+    },
+    {
+      "name": "apply",
+      "line": 59,
+      "params": [
+        "self",
+        "transformation"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "tuple[bool, str]"
+    },
+    {
+      "name": "_validate_syntax",
+      "line": 110,
+      "params": [
+        "self",
+        "code"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "bool"
+    },
+    {
+      "name": "_apply_add_type_hint",
+      "line": 118,
+      "params": [
+        "self",
+        "code",
+        "t"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "str"
+    },
+    {
+      "name": "_add_type_annotations",
+      "line": 163,
+      "params": [
+        "self",
+        "func_sig",
+        "params",
+        "returns"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "str"
+    },
+    {
+      "name": "_apply_remove_unused_import",
+      "line": 193,
+      "params": [
+        "self",
+        "code",
+        "t"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "str"
+    },
+    {
+      "name": "_apply_fix_formatting",
+      "line": 215,
+      "params": [
+        "self",
+        "code",
+        "t"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "str"
+    },
+    {
+      "name": "_apply_rename_variable",
+      "line": 233,
+      "params": [
+        "self",
+        "code",
+        "t"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "str"
+    },
+    {
+      "name": "_apply_add_docstring",
+      "line": 243,
+      "params": [
+        "self",
+        "code",
+        "t"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "str"
+    },
+    {
+      "name": "main",
+      "line": 370,
+      "params": [],
+      "has_type_hints": false,
+      "has_docstring": false,
+      "returns": null
+    },
+    {
+      "name": "__init__",
+      "line": 42,
+      "params": [
+        "self",
+        "config"
+      ],
+      "has_type_hints": false,
+      "has_docstring": false,
+      "returns": null
+    },
+    {
+      "name": "run",
+      "line": 62,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict"
+    },
+    {
+      "name": "_analyze_code",
+      "line": 149,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "list"
+    },
+    {
+      "name": "_get_baseline",
+      "line": 158,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "Tuple[bool, float]"
+    },
+    {
+      "name": "_run_iteration",
+      "line": 187,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "str"
+    },
+    {
+      "name": "_suggestion_to_transformation",
+      "line": 282,
+      "params": [
+        "self",
+        "suggestion"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "Transformation"
+    },
+    {
+      "name": "_git_commit",
+      "line": 298,
+      "params": [
+        "self",
+        "message"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "Optional[str]"
+    },
+    {
+      "name": "_git_revert",
+      "line": 308,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "bool"
+    },
+    {
+      "name": "_run_guard",
+      "line": 316,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "bool"
+    },
+    {
+      "name": "_is_improved",
+      "line": 329,
+      "params": [
+        "self",
+        "new_val",
+        "old_val"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "bool"
+    },
+    {
+      "name": "_target_reached",
+      "line": 336,
+      "params": [
+        "self",
+        "metric"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "bool"
+    },
+    {
+      "name": "_log_result",
+      "line": 345,
+      "params": [
+        "self",
+        "iteration",
+        "commit",
+        "metric",
+        "status",
+        "description"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "_build_result",
+      "line": 356,
+      "params": [
+        "self",
+        "status"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict"
+    },
+    {
+      "name": "load_runtime",
+      "line": 20,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict[str, Any]"
+    },
+    {
+      "name": "save_runtime",
+      "line": 38,
+      "params": [
+        "runtime"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "None"
+    },
+    {
+      "name": "load_state",
+      "line": 45,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict[str, Any]"
+    },
+    {
+      "name": "is_process_running",
+      "line": 53,
+      "params": [
+        "pid"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "bool"
+    },
+    {
+      "name": "cmd_status",
+      "line": 74,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "cmd_start",
+      "line": 126,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "cmd_stop",
+      "line": 161,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "cmd_pause",
+      "line": 191,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "cmd_resume",
+      "line": 207,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "cmd_log",
+      "line": 222,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "main",
+      "line": 242,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": false,
+      "returns": "None"
+    },
+    {
+      "name": "run_git",
+      "line": 16,
+      "params": [
+        "args",
+        "cwd"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "tuple[int, str]"
+    },
+    {
+      "name": "is_git_repo",
+      "line": 31,
+      "params": [
+        "cwd"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "bool"
+    },
+    {
+      "name": "get_git_status",
+      "line": 37,
+      "params": [
+        "cwd"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict"
+    },
+    {
+      "name": "check_scope_safety",
+      "line": 98,
+      "params": [
+        "scope",
+        "cwd"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict"
+    },
+    {
+      "name": "commit_gate_check",
+      "line": 151,
+      "params": [
+        "scope",
+        "companion_repos",
+        "strict"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict"
+    },
+    {
+      "name": "main",
+      "line": 217,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": false,
+      "returns": "int"
+    },
+    {
+      "name": "load_state",
+      "line": 16,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict[str, Any]"
+    },
+    {
+      "name": "save_state",
+      "line": 24,
+      "params": [
+        "state"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "None"
+    },
+    {
+      "name": "decide_keep_discard",
+      "line": 30,
+      "params": [
+        "current_metric",
+        "baseline",
+        "direction",
+        "guard_passed"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict[str, Any]"
+    },
+    {
+      "name": "check_stuck_pattern",
+      "line": 67,
+      "params": [
+        "state"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict[str, Any]"
+    },
+    {
+      "name": "trigger_web_search",
+      "line": 100,
+      "params": [
+        "state",
+        "auto_trigger"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict[str, Any]"
+    },
+    {
+      "name": "update_stuck_counters",
+      "line": 142,
+      "params": [
+        "state",
+        "status"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict[str, Any]"
+    },
+    {
+      "name": "main",
+      "line": 154,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": false,
+      "returns": "None"
+    },
+    {
+      "name": "log",
+      "line": 27,
+      "params": [
+        "msg",
+        "level"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "run_command",
+      "line": 45,
+      "params": [
+        "cmd",
+        "timeout"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "tuple[int, str]"
+    },
+    {
+      "name": "extract_number",
+      "line": 62,
+      "params": [
+        "output"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "float | None"
+    },
+    {
+      "name": "init_run",
+      "line": 76,
+      "params": [
+        "config"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "bool"
+    },
+    {
+      "name": "get_baseline",
+      "line": 107,
+      "params": [
+        "verify_cmd"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "tuple[bool, float]"
+    },
+    {
+      "name": "run_iteration",
+      "line": 123,
+      "params": [
+        "iteration",
+        "config",
+        "baseline"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict[str, Any]"
+    },
+    {
+      "name": "exec_loop",
+      "line": 169,
+      "params": [
+        "config"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict[str, Any]"
+    },
+    {
+      "name": "exec_check",
+      "line": 257,
+      "params": [
+        "config"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict[str, Any]"
+    },
+    {
+      "name": "main",
+      "line": 289,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": false,
+      "returns": "None"
+    },
+    {
+      "name": "run_git",
+      "line": 13,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "tuple[int, str]"
+    },
+    {
+      "name": "check_git_repository",
+      "line": 27,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict"
+    },
+    {
+      "name": "check_git_config",
+      "line": 37,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict"
+    },
+    {
+      "name": "check_worktree_clean",
+      "line": 55,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict"
+    },
+    {
+      "name": "check_disk_space",
+      "line": 79,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict"
+    },
+    {
+      "name": "check_required_tools",
+      "line": 107,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict"
+    },
+    {
+      "name": "check_state_files",
+      "line": 130,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict"
+    },
+    {
+      "name": "run_all_checks",
+      "line": 153,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "list[dict]"
+    },
+    {
+      "name": "main",
+      "line": 166,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": false,
+      "returns": "None"
+    },
+    {
+      "name": "get_locale_from_env",
+      "line": 25,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "str"
+    },
+    {
+      "name": "load_translations",
+      "line": 37,
+      "params": [
+        "locale"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict"
+    },
+    {
+      "name": "set_locale",
+      "line": 63,
+      "params": [
+        "locale"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "bool"
+    },
+    {
+      "name": "get_current_locale",
+      "line": 76,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "str"
+    },
+    {
+      "name": "_",
+      "line": 81,
+      "params": [
+        "key"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "str"
+    },
+    {
+      "name": "get_supported_locales",
+      "line": 98,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "list[str]"
+    },
+    {
+      "name": "get_locale_name",
+      "line": 103,
+      "params": [
+        "locale"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "str"
+    },
+    {
+      "name": "cmd_switch",
+      "line": 112,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "cmd_test",
+      "line": 132,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "init_locale",
+      "line": 150,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "None"
+    },
+    {
+      "name": "main",
+      "line": 168,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": false,
+      "returns": "int"
+    },
+    {
+      "name": "init_results_file",
+      "line": 17,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "None"
+    },
+    {
+      "name": "init_state",
+      "line": 32,
+      "params": [
+        "config"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "None"
+    },
+    {
+      "name": "init_lessons_file",
+      "line": 57,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "None"
+    },
+    {
+      "name": "main",
+      "line": 66,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": false,
+      "returns": "None"
+    },
+    {
+      "name": "check_existing_state",
+      "line": 15,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict[str, Any]"
+    },
+    {
+      "name": "check_results_consistency",
+      "line": 54,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict[str, Any]"
+    },
+    {
+      "name": "decide_launch_action",
+      "line": 96,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict[str, Any]"
+    },
+    {
+      "name": "main",
+      "line": 150,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": false,
+      "returns": "None"
+    },
+    {
+      "name": "cmd_add",
+      "line": 143,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "cmd_list",
+      "line": 160,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "cmd_relevant",
+      "line": 183,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "cmd_summarize",
+      "line": 209,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "main",
+      "line": 235,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": false,
+      "returns": "int"
+    },
+    {
+      "name": "__init__",
+      "line": 17,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": false,
+      "has_docstring": false,
+      "returns": null
+    },
+    {
+      "name": "ensure_file_exists",
+      "line": 21,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "None"
+    },
+    {
+      "name": "add_lesson",
+      "line": 29,
+      "params": [
+        "self",
+        "lesson",
+        "lesson_type",
+        "context"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "bool"
+    },
+    {
+      "name": "list_lessons",
+      "line": 51,
+      "params": [
+        "self",
+        "lesson_type",
+        "limit"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "list[dict]"
+    },
+    {
+      "name": "get_relevant_lessons",
+      "line": 104,
+      "params": [
+        "self",
+        "context",
+        "limit"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "list[dict]"
+    },
+    {
+      "name": "summarize",
+      "line": 127,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict"
+    },
+    {
+      "name": "run_script",
+      "line": 18,
+      "params": [
+        "name",
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "tuple[int, str]"
+    },
+    {
+      "name": "cmd_init",
+      "line": 41,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "cmd_health",
+      "line": 63,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "cmd_launch_gate",
+      "line": 76,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "cmd_decide",
+      "line": 91,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "cmd_baseline",
+      "line": 106,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "cmd_git",
+      "line": 117,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "cmd_log",
+      "line": 128,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "cmd_report",
+      "line": 145,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "cmd_version",
+      "line": 152,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "cmd_lang",
+      "line": 170,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "cmd_search",
+      "line": 181,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "main",
+      "line": 208,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": false,
+      "returns": "None"
+    },
+    {
+      "name": "cmd_run",
+      "line": 172,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "cmd_status",
+      "line": 224,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "cmd_cleanup",
+      "line": 250,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "main",
+      "line": 286,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": false,
+      "returns": "int"
+    },
+    {
+      "name": "__init__",
+      "line": 20,
+      "params": [
+        "self",
+        "base_dir",
+        "max_workers"
+      ],
+      "has_type_hints": false,
+      "has_docstring": false,
+      "returns": null
+    },
+    {
+      "name": "run_git",
+      "line": 26,
+      "params": [
+        "self",
+        "args",
+        "cwd"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "tuple[int, str]"
+    },
+    {
+      "name": "create_worktree",
+      "line": 40,
+      "params": [
+        "self",
+        "name",
+        "hypothesis"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "Optional[str]"
+    },
+    {
+      "name": "apply_hypothesis",
+      "line": 65,
+      "params": [
+        "self",
+        "worktree"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "bool"
+    },
+    {
+      "name": "run_verification",
+      "line": 72,
+      "params": [
+        "self",
+        "worktree",
+        "verify_cmd"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict[str, Any]"
+    },
+    {
+      "name": "run_parallel",
+      "line": 115,
+      "params": [
+        "self",
+        "hypotheses",
+        "verify_cmd"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict[str, Any]"
+    },
+    {
+      "name": "select_best",
+      "line": 148,
+      "params": [
+        "self",
+        "results"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "Optional[dict[str, Any]]"
+    },
+    {
+      "name": "cleanup",
+      "line": 159,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "None"
+    },
+    {
+      "name": "analyze_with_persona",
+      "line": 66,
+      "params": [
+        "persona_key",
+        "context"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict[str, Any]"
+    },
+    {
+      "name": "generate_analysis",
+      "line": 82,
+      "params": [
+        "context",
+        "personas"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict[str, Any]"
+    },
+    {
+      "name": "generate_consensus",
+      "line": 100,
+      "params": [
+        "analyses"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict[str, Any]"
+    },
+    {
+      "name": "cmd_analyze",
+      "line": 115,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "cmd_list_personas",
+      "line": 184,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "main",
+      "line": 199,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": false,
+      "returns": "int"
+    },
+    {
+      "name": "load_state",
+      "line": 18,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict"
+    },
+    {
+      "name": "load_results",
+      "line": 29,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "list"
+    },
+    {
+      "name": "analyze_stuck_pattern",
+      "line": 43,
+      "params": [
+        "state",
+        "results"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict"
+    },
+    {
+      "name": "generate_recovery_suggestions",
+      "line": 107,
+      "params": [
+        "analysis"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "list"
+    },
+    {
+      "name": "should_trigger_web_search",
+      "line": 139,
+      "params": [
+        "auto_trigger"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "tuple[bool, dict]"
+    },
+    {
+      "name": "cmd_check",
+      "line": 163,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "cmd_trigger",
+      "line": 195,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "cmd_simulate",
+      "line": 248,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "main",
+      "line": 278,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": false,
+      "returns": "int"
+    },
+    {
+      "name": "run_command",
+      "line": 13,
+      "params": [
+        "cmd",
+        "timeout"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "tuple[int, str]"
+    },
+    {
+      "name": "cmd_stats",
+      "line": 28,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "cmd_clean",
+      "line": 104,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "cmd_export",
+      "line": 142,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "cmd_config",
+      "line": 215,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "main",
+      "line": 257,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": false,
+      "returns": "int"
+    },
+    {
+      "name": "get_project_root",
+      "line": 25,
+      "params": [],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "get_current_version",
+      "line": 31,
+      "params": [],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "bump_version",
+      "line": 42,
+      "params": [
+        "version",
+        "part"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "update_file_version",
+      "line": 55,
+      "params": [
+        "file_path",
+        "pattern",
+        "replacement",
+        "new_version"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "update_all_versions",
+      "line": 71,
+      "params": [
+        "old_version",
+        "new_version"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "update_changelog",
+      "line": 107,
+      "params": [
+        "new_version",
+        "changes"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "create_git_tag",
+      "line": 147,
+      "params": [
+        "version",
+        "message"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "main",
+      "line": 177,
+      "params": [],
+      "has_type_hints": false,
+      "has_docstring": false,
+      "returns": null
+    },
+    {
+      "name": "extract_search_query",
+      "line": 17,
+      "params": [
+        "context"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "str"
+    },
+    {
+      "name": "format_search_results",
+      "line": 45,
+      "params": [
+        "results",
+        "max_results"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "str"
+    },
+    {
+      "name": "generate_hypotheses_from_search",
+      "line": 63,
+      "params": [
+        "search_results",
+        "context"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "list[dict[str, Any]]"
+    },
+    {
+      "name": "cmd_search",
+      "line": 134,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "cmd_generate_hypotheses",
+      "line": 191,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "cmd_check_and_search",
+      "line": 232,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "int"
+    },
+    {
+      "name": "main",
+      "line": 307,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": false,
+      "returns": "int"
+    },
+    {
+      "name": "run_script",
+      "line": 19,
+      "params": [
+        "name",
+        "args",
+        "timeout"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "tuple[int, str]"
+    },
+    {
+      "name": "print_header",
+      "line": 32,
+      "params": [
+        "title"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "None"
+    },
+    {
+      "name": "print_step",
+      "line": 39,
+      "params": [
+        "step",
+        "status"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "None"
+    },
+    {
+      "name": "workflow_init",
+      "line": 52,
+      "params": [
+        "config"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "bool"
+    },
+    {
+      "name": "workflow_baseline",
+      "line": 99,
+      "params": [
+        "config"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "tuple[bool, float]"
+    },
+    {
+      "name": "workflow_iteration",
+      "line": 128,
+      "params": [
+        "iteration",
+        "config",
+        "baseline"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "tuple[str, float]"
+    },
+    {
+      "name": "protocol_fingerprint_check",
+      "line": 177,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict[str, bool]"
+    },
+    {
+      "name": "should_split_session",
+      "line": 194,
+      "params": [
+        "iteration",
+        "compaction_count"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "tuple[bool, str]"
+    },
+    {
+      "name": "workflow_loop",
+      "line": 214,
+      "params": [
+        "config",
+        "baseline"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict[str, Any]"
+    },
+    {
+      "name": "workflow_summary",
+      "line": 280,
+      "params": [
+        "results",
+        "config"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "None"
+    },
+    {
+      "name": "main",
+      "line": 300,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": false,
+      "returns": "None"
+    },
+    {
+      "name": "run_git",
+      "line": 9,
+      "params": [
+        "args"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "tuple[int, str]"
+    },
+    {
+      "name": "is_git_repo",
+      "line": 23,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "bool"
+    },
+    {
+      "name": "has_changes",
+      "line": 29,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "bool"
+    },
+    {
+      "name": "get_current_commit",
+      "line": 37,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "str"
+    },
+    {
+      "name": "stash_changes",
+      "line": 45,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "bool"
+    },
+    {
+      "name": "main",
+      "line": 51,
+      "params": [],
+      "has_type_hints": false,
+      "has_docstring": false,
+      "returns": null
+    },
+    {
+      "name": "generate_report",
+      "line": 13,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "None"
+    },
+    {
+      "name": "main",
+      "line": 97,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": false,
+      "returns": "None"
+    },
+    {
+      "name": "run_command",
+      "line": 10,
+      "params": [
+        "cmd"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "tuple[int, str]"
+    },
+    {
+      "name": "extract_number",
+      "line": 27,
+      "params": [
+        "output"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "float | None"
+    },
+    {
+      "name": "main",
+      "line": 48,
+      "params": [],
+      "has_type_hints": false,
+      "has_docstring": false,
+      "returns": null
+    },
+    {
+      "name": "log_result",
+      "line": 13,
+      "params": [
+        "iteration",
+        "commit",
+        "metric",
+        "delta",
+        "status",
+        "description"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "None"
+    },
+    {
+      "name": "main",
+      "line": 40,
+      "params": [],
+      "has_type_hints": false,
+      "has_docstring": false,
+      "returns": null
+    },
+    {
+      "name": "run_command",
+      "line": 21,
+      "params": [
+        "cmd",
+        "timeout"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "tuple[int, str]"
+    },
+    {
+      "name": "extract_number",
+      "line": 38,
+      "params": [
+        "output"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "float | None"
+    },
+    {
+      "name": "run_verification_with_noise_handling",
+      "line": 58,
+      "params": [
+        "verify_cmd",
+        "runs",
+        "timeout"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "tuple[float, list[float]]"
+    },
+    {
+      "name": "is_significant_improvement",
+      "line": 114,
+      "params": [
+        "current",
+        "baseline",
+        "direction",
+        "threshold"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "bool"
+    },
+    {
+      "name": "run_iteration",
+      "line": 145,
+      "params": [
+        "iteration",
+        "verify_cmd",
+        "guard_cmd",
+        "baseline_metric",
+        "direction",
+        "description",
+        "verify_runs",
+        "min_delta"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "bool"
+    },
+    {
+      "name": "main",
+      "line": 232,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": false,
+      "returns": "None"
+    },
+    {
+      "name": "load_state",
+      "line": 15,
+      "params": [],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "dict[str, Any]"
+    },
+    {
+      "name": "save_state",
+      "line": 34,
+      "params": [
+        "state"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "None"
+    },
+    {
+      "name": "log_lesson",
+      "line": 40,
+      "params": [
+        "lesson",
+        "lesson_type"
+      ],
+      "has_type_hints": true,
+      "has_docstring": true,
+      "returns": "None"
+    },
+    {
+      "name": "main",
+      "line": 49,
+      "params": [],
+      "has_type_hints": false,
+      "has_docstring": false,
+      "returns": null
+    },
+    {
+      "name": "test_decide_keep_discard_improved_and_guard_passed",
+      "line": 19,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "test_decide_keep_discard_improved_but_guard_failed",
+      "line": 31,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "test_decide_keep_discard_not_improved",
+      "line": 42,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "test_decide_keep_discard_higher_direction",
+      "line": 54,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "test_check_stuck_pattern_not_stuck",
+      "line": 66,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "test_check_stuck_pattern_refine",
+      "line": 77,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "test_check_stuck_pattern_pivot",
+      "line": 88,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "test_check_stuck_pattern_search",
+      "line": 99,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "test_update_stuck_counters_keep",
+      "line": 110,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "test_update_stuck_counters_discard",
+      "line": 120,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "setUp",
+      "line": 17,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "tearDown",
+      "line": 23,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "test_is_git_repo_false",
+      "line": 28,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "test_run_git_status",
+      "line": 32,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "test_get_current_commit_unknown",
+      "line": 38,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "setUp",
+      "line": 47,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "tearDown",
+      "line": 58,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "test_is_git_repo_true",
+      "line": 63,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "test_has_changes_false",
+      "line": 67,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "test_has_changes_true",
+      "line": 71,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "test_get_current_commit",
+      "line": 79,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "test_check_git_repository",
+      "line": 23,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "test_check_git_config",
+      "line": 35,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "test_check_worktree_clean",
+      "line": 47,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "test_check_disk_space",
+      "line": 59,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "test_check_required_tools",
+      "line": 74,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    },
+    {
+      "name": "test_run_all_checks",
+      "line": 86,
+      "params": [
+        "self"
+      ],
+      "has_type_hints": false,
+      "has_docstring": true,
+      "returns": null
+    }
+  ],
+  "suggestions": [
+    {
+      "type": "add_type_hint",
+      "file": "count_typed.py",
+      "function": "count_typed_functions",
+      "description": "Add type hints to count_typed_functions",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_analyze.py",
+      "function": "cmd_trends",
+      "description": "Add type hints to cmd_trends",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_analyze.py",
+      "function": "cmd_windows",
+      "description": "Add type hints to cmd_windows",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_analyze.py",
+      "function": "cmd_strategies",
+      "description": "Add type hints to cmd_strategies",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_analyzer.py",
+      "function": "main",
+      "description": "Add type hints to main",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_analyzer.py",
+      "function": "__init__",
+      "description": "Add type hints to __init__",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_analyzer.py",
+      "function": "_has_docstring",
+      "description": "Add type hints to _has_docstring",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_analyzer.py",
+      "function": "__init__",
+      "description": "Add type hints to __init__",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_applier.py",
+      "function": "main",
+      "description": "Add type hints to main",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_applier.py",
+      "function": "__init__",
+      "description": "Add type hints to __init__",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_autonomous.py",
+      "function": "main",
+      "description": "Add type hints to main",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_autonomous.py",
+      "function": "__init__",
+      "description": "Add type hints to __init__",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_autonomous.py",
+      "function": "_log_result",
+      "description": "Add type hints to _log_result",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_exec.py",
+      "function": "log",
+      "description": "Add type hints to log",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_i18n.py",
+      "function": "cmd_switch",
+      "description": "Add type hints to cmd_switch",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_i18n.py",
+      "function": "cmd_test",
+      "description": "Add type hints to cmd_test",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_lessons.py",
+      "function": "__init__",
+      "description": "Add type hints to __init__",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_parallel.py",
+      "function": "__init__",
+      "description": "Add type hints to __init__",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_stuck_recovery.py",
+      "function": "cmd_check",
+      "description": "Add type hints to cmd_check",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_stuck_recovery.py",
+      "function": "cmd_trigger",
+      "description": "Add type hints to cmd_trigger",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_stuck_recovery.py",
+      "function": "cmd_simulate",
+      "description": "Add type hints to cmd_simulate",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_utils.py",
+      "function": "cmd_stats",
+      "description": "Add type hints to cmd_stats",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_utils.py",
+      "function": "cmd_clean",
+      "description": "Add type hints to cmd_clean",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_utils.py",
+      "function": "cmd_export",
+      "description": "Add type hints to cmd_export",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_utils.py",
+      "function": "cmd_config",
+      "description": "Add type hints to cmd_config",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_version.py",
+      "function": "get_project_root",
+      "description": "Add type hints to get_project_root",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_version.py",
+      "function": "get_current_version",
+      "description": "Add type hints to get_current_version",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_version.py",
+      "function": "bump_version",
+      "description": "Add type hints to bump_version",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_version.py",
+      "function": "update_file_version",
+      "description": "Add type hints to update_file_version",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_version.py",
+      "function": "update_all_versions",
+      "description": "Add type hints to update_all_versions",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_version.py",
+      "function": "update_changelog",
+      "description": "Add type hints to update_changelog",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_version.py",
+      "function": "create_git_tag",
+      "description": "Add type hints to create_git_tag",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\autoresearch_version.py",
+      "function": "main",
+      "description": "Add type hints to main",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\check_git.py",
+      "function": "main",
+      "description": "Add type hints to main",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\get_baseline.py",
+      "function": "main",
+      "description": "Add type hints to main",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\log_result.py",
+      "function": "main",
+      "description": "Add type hints to main",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "scripts\\state_manager.py",
+      "function": "main",
+      "description": "Add type hints to main",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "tests\\test_decision.py",
+      "function": "test_decide_keep_discard_improved_and_guard_passed",
+      "description": "Add type hints to test_decide_keep_discard_improved_and_guard_passed",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "tests\\test_decision.py",
+      "function": "test_decide_keep_discard_improved_but_guard_failed",
+      "description": "Add type hints to test_decide_keep_discard_improved_but_guard_failed",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "tests\\test_decision.py",
+      "function": "test_decide_keep_discard_not_improved",
+      "description": "Add type hints to test_decide_keep_discard_not_improved",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "tests\\test_decision.py",
+      "function": "test_decide_keep_discard_higher_direction",
+      "description": "Add type hints to test_decide_keep_discard_higher_direction",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "tests\\test_decision.py",
+      "function": "test_check_stuck_pattern_not_stuck",
+      "description": "Add type hints to test_check_stuck_pattern_not_stuck",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "tests\\test_decision.py",
+      "function": "test_check_stuck_pattern_refine",
+      "description": "Add type hints to test_check_stuck_pattern_refine",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "tests\\test_decision.py",
+      "function": "test_check_stuck_pattern_pivot",
+      "description": "Add type hints to test_check_stuck_pattern_pivot",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "tests\\test_decision.py",
+      "function": "test_check_stuck_pattern_search",
+      "description": "Add type hints to test_check_stuck_pattern_search",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "tests\\test_decision.py",
+      "function": "test_update_stuck_counters_keep",
+      "description": "Add type hints to test_update_stuck_counters_keep",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "tests\\test_decision.py",
+      "function": "test_update_stuck_counters_discard",
+      "description": "Add type hints to test_update_stuck_counters_discard",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "tests\\test_git.py",
+      "function": "setUp",
+      "description": "Add type hints to setUp",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "tests\\test_git.py",
+      "function": "tearDown",
+      "description": "Add type hints to tearDown",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "tests\\test_git.py",
+      "function": "test_is_git_repo_false",
+      "description": "Add type hints to test_is_git_repo_false",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "tests\\test_git.py",
+      "function": "test_run_git_status",
+      "description": "Add type hints to test_run_git_status",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "tests\\test_git.py",
+      "function": "test_get_current_commit_unknown",
+      "description": "Add type hints to test_get_current_commit_unknown",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "tests\\test_git.py",
+      "function": "setUp",
+      "description": "Add type hints to setUp",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "tests\\test_git.py",
+      "function": "tearDown",
+      "description": "Add type hints to tearDown",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "tests\\test_git.py",
+      "function": "test_is_git_repo_true",
+      "description": "Add type hints to test_is_git_repo_true",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "tests\\test_git.py",
+      "function": "test_has_changes_false",
+      "description": "Add type hints to test_has_changes_false",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "tests\\test_git.py",
+      "function": "test_has_changes_true",
+      "description": "Add type hints to test_has_changes_true",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "tests\\test_git.py",
+      "function": "test_get_current_commit",
+      "description": "Add type hints to test_get_current_commit",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "tests\\test_health_check.py",
+      "function": "test_check_git_repository",
+      "description": "Add type hints to test_check_git_repository",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "tests\\test_health_check.py",
+      "function": "test_check_git_config",
+      "description": "Add type hints to test_check_git_config",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "tests\\test_health_check.py",
+      "function": "test_check_worktree_clean",
+      "description": "Add type hints to test_check_worktree_clean",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "tests\\test_health_check.py",
+      "function": "test_check_disk_space",
+      "description": "Add type hints to test_check_disk_space",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "tests\\test_health_check.py",
+      "function": "test_check_required_tools",
+      "description": "Add type hints to test_check_required_tools",
+      "confidence": 0.8
+    },
+    {
+      "type": "add_type_hint",
+      "file": "tests\\test_health_check.py",
+      "function": "test_run_all_checks",
+      "description": "Add type hints to test_run_all_checks",
+      "confidence": 0.8
+    }
+  ]
+}
