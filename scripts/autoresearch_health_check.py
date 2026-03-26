@@ -17,6 +17,8 @@ def run_git(args: list) -> tuple[int, str]:
             ['git'] + args,
             capture_output=True,
             text=True,
+            encoding='utf-8',
+            errors='ignore',
             timeout=30
         )
         return result.returncode, result.stdout + result.stderr
