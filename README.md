@@ -24,6 +24,7 @@
 - 📝 **完整日志** - TSV 格式记录每次迭代
 - 🚀 **CI/CD 就绪** - GitHub Actions 工作流支持
 - 🌐 **Kimi 原生** - 专为 Kimi Code CLI 优化
+- 💻 **跨平台** - 支持 Windows、macOS、Linux
 
 ## 📦 安装
 
@@ -33,17 +34,24 @@
 # 克隆到你的项目
 cd your-project
 mkdir -p .agents/skills
-git clone https://github.com/YOUR_USERNAME/kimi-autoresearch.git .agents/skills/kimi-autoresearch
+git clone https://github.com/mixyoung/kimi-autoresearch.git .agents/skills/kimi-autoresearch
 ```
 
-### 方法二：全局安装
+### 方法二：全局安装 (Linux/macOS)
 
 ```bash
 # 克隆到用户目录
-git clone https://github.com/YOUR_USERNAME/kimi-autoresearch.git ~/.agents/skills/kimi-autoresearch
+git clone https://github.com/mixyoung/kimi-autoresearch.git ~/.agents/skills/kimi-autoresearch
 ```
 
-### 方法三：技能包安装
+### 方法三：Windows 安装
+
+```powershell
+# 克隆到用户目录
+ git clone https://github.com/mixyoung/kimi-autoresearch.git "$env:USERPROFILE\.agents\skills\kimi-autoresearch"
+```
+
+### 方法四：技能包安装
 
 下载发布的 `.skill` 文件并解压到你的 skills 目录。
 
