@@ -1,0 +1,155 @@
+# GitHub Release Workflow
+# 自动打包并发布 .skill 文件
+
+name: Release
+
+on:
+  # 推送 tag 时触发 (v1.0.0, v1.2.3, etc.)
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-*'  # 支持 pre-release: v1.0.0-beta1
+
+  # 手动触发
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号 (例如: 1.0.0)'
+        required: true
+        default: ''
+      prerelease:
+        description: '是否为预发布版本'
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine version
+        id: version
+        run: |
+          if [ "${{ github.event.inputs.version }}" != "" ]; then
+            # 手动触发
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            # Tag 触发，去掉 v 前缀
+            VERSION=${GITHUB_REF#refs/tags/v}
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+
+      - name: Update version in files
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          
+          # 更新 package.sh 中的版本号
+          sed -i "s/VERSION=\"[0-9]*\.[0-9]*\.[0-9]*\"/VERSION=\"$VERSION\"/" package.sh
+          
+          # 更新 package.ps1 中的版本号
+          if [ -f package.ps1 ]; then
+            sed -i "s/\$VERSION = \"[0-9]*\.[0-9]*\.[0-9]*\"/\$VERSION = \"$VERSION\"/" package.ps1
+          fi
+          
+          # 更新 SKILL.md 中的版本徽章
+          sed -i "s/version-[0-9]*\.[0-9]*\.[0-9]*/version-$VERSION/" SKILL.md
+          sed -i "s/version-[0-9]*\.[0-9]*\.[0-9]*/version-$VERSION/" README.md
+          
+          echo "✓ Updated version to $VERSION"
+
+      - name: Create package directory
+        run: |
+          mkdir -p dist
+          PACKAGE_NAME="kimi-autoresearch"
+          VERSION="${{ steps.version.outputs.version }}"
+          TMP_DIR=$(mktemp -d)
+          
+          # 复制文件到临时目录
+          mkdir -p "$TMP_DIR/$PACKAGE_NAME"
+          cp -r scripts references examples .github "$TMP_DIR/$PACKAGE_NAME/"
+          cp README.md LICENSE CHANGELOG.md CONTRIBUTING.md SKILL.md "$TMP_DIR/$PACKAGE_NAME/"
+          
+          # 复制文档（如果存在）
+          cp -n GAP_ANALYSIS.md COMPLETION_REPORT.md "$TMP_DIR/$PACKAGE_NAME/" 2>/dev/null || true
+          
+          # 设置权限
+          chmod +x "$TMP_DIR/$PACKAGE_NAME/scripts/"*.py
+          
+          # 创建 .skill 文件 (zip 格式)
+          cd "$TMP_DIR"
+          zip -r "${PACKAGE_NAME}-${VERSION}.skill" "$PACKAGE_NAME" \
+            -x "*.pyc" -x "__pycache__/*" -x "*.git*" -x "*.log"
+          
+          # 复制到 dist
+          cp "${PACKAGE_NAME}-${VERSION}.skill" "$GITHUB_WORKSPACE/dist/"
+          
+          # 计算校验和
+          cd "$GITHUB_WORKSPACE/dist"
+          sha256sum "${PACKAGE_NAME}-${VERSION}.skill" > "${PACKAGE_NAME}-${VERSION}.sha256"
+          
+          echo "✓ Package created"
+          ls -lh
+
+      - name: Generate release notes
+        id: notes
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          
+          # 从 CHANGELOG.md 提取当前版本的更新内容
+          if [ -f CHANGELOG.md ]; then
+            NOTES=$(awk "/^## \[$VERSION\]/ {flag=1; next} /^## \[/ {flag=0} flag" CHANGELOG.md | head -100)
+          fi
+          
+          # 如果没有找到，使用默认模板
+          if [ -z "$NOTES" ]; then
+            NOTES="## kimi-autoresearch v$VERSION\n\n"
+            NOTES+="### 安装\n\n"
+            NOTES+='```bash\n'
+            NOTES+="# 解压到 skills 目录\n"
+            NOTES+="unzip kimi-autoresearch-${VERSION}.skill -d ~/.agents/skills/\n"
+            NOTES+='```\n\n'
+            NOTES+="### 校验和\n"
+            NOTES+="\`$(cat dist/kimi-autoresearch-${VERSION}.sha256)\`"
+          fi
+          
+          # 写入文件（处理多行输出）
+          echo "notes<<EOF" >> $GITHUB_OUTPUT
+          echo -e "$NOTES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: "kimi-autoresearch v${{ steps.version.outputs.version }}"
+          body: ${{ steps.notes.outputs.notes }}
+          prerelease: ${{ github.event.inputs.prerelease || contains(github.ref, '-') }}
+          files: |
+            dist/kimi-autoresearch-*.skill
+            dist/kimi-autoresearch-*.sha256
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kimi-autoresearch-${{ steps.version.outputs.version }}
+          path: dist/*
+
+      - name: Summary
+        run: |
+          echo "## 🎉 Release Created!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version**: ${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Files**:" >> $GITHUB_STEP_SUMMARY
+          ls -1 dist/ | sed 's/^/- /' >> $GITHUB_STEP_SUMMARY

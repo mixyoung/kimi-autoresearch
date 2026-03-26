@@ -16,7 +16,7 @@
 | 参考文档 | **14** | ~6,000 | Markdown 协议 |
 | 配置示例 | 3 | 100 | JSON 配置 |
 | CI/CD 配置 | 1 | 100 | GitHub Actions |
-| **总计** | **35** | **~9,300** | **完整方案** |
+| **总计** | **40+** | **~10,000** | **完整方案** |
 
 ### 脚本详细列表
 
@@ -34,15 +34,19 @@
 | autoresearch_launch_gate.py | 205 | 启动门控 | ✅ |
 | autoresearch_decision.py | 200 | 决策逻辑 + Web搜索 | ✅ |
 | autoresearch_web_search.py | 368 | **Web搜索触发** | ✅ |
+| autoresearch_web_search.py | 368 | Web搜索 | ✅ |
 | autoresearch_i18n.py | **350** | **国际化支持** | ✅ |
-| run_iteration.py | 147 | 迭代执行 | ✅ |
+| autoresearch_stuck_recovery.py | **280** | **卡住恢复** | ✅ |
+| autoresearch_analyze.py | **270** | **趋势分析** | ✅ |
+| autoresearch_commit_gate.py | **250** | **提交门控** | ✅ |
+| run_iteration.py | 220 | 迭代执行 | ✅ |
 | check_git.py | 121 | Git 操作 | ✅ |
 | autoresearch_init_run.py | 110 | 初始化 | ✅ |
 | generate_report.py | 102 | 报告生成 | ✅ |
 | state_manager.py | 100 | 状态管理 | ✅ |
 | get_baseline.py | 81 | 基线测量 | ✅ |
 | log_result.py | 63 | 结果记录 | ✅ |
-| **总计** | **~5,200** | | ✅ |
+| **总计** | **~6,200** | **23个脚本** | ✅ |
 
 ---
 
