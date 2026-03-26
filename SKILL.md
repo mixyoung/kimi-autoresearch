@@ -5,7 +5,7 @@ description: Autonomous iterative improvement engine for Kimi Code CLI. Runs a m
 
 # Kimi Autoresearch
 
-[![version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/mixyoung/kimi-autoresearch/releases)
+[![version](https://img.shields.io/badge/version-1.0.2-blue.svg)](https://github.com/mixyoung/kimi-autoresearch/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A self-directed iterative system for Kimi that continuously cycles through: **modify → verify → retain or discard → repeat**.
@@ -392,3 +392,47 @@ See `examples/` for configuration examples:
 - Long runs should use background mode
 - User must approve initial configuration
 - Ship mode requires manual confirmation for production deployments
+
+## Version Management
+
+Manage releases with the version tool:
+
+```bash
+# Show current version
+python scripts/autoresearch_version.py show
+
+# Bump version (patch/minor/major)
+python scripts/autoresearch_version.py bump patch    # 1.0.0 -> 1.0.1
+python scripts/autoresearch_version.py bump minor    # 1.0.0 -> 1.1.0
+python scripts/autoresearch_version.py bump major    # 1.0.0 -> 2.0.0
+
+# Set specific version
+python scripts/autoresearch_version.py set 1.2.3
+
+# Bump and create git tag
+python scripts/autoresearch_version.py bump patch --tag
+```
+
+### Automatic Release
+
+Push a tag to trigger GitHub Actions release:
+
+```bash
+# After bumping version
+git push origin main --tags
+```
+
+This will:
+- Update version in all files
+- Package `.skill` file
+- Create GitHub Release with attachments
+
+### Manual Package
+
+```bash
+# Windows
+.\package.ps1 -Version 1.1.0
+
+# Linux/macOS
+./package.sh
+```

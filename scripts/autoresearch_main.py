@@ -25,9 +25,13 @@ def run_script(name: str, args: list[str]) -> tuple[int, str]:
             cmd,
             capture_output=True,
             text=True,
+            encoding='utf-8',
+            errors='ignore',
             timeout=300
         )
-        return result.returncode, result.stdout + result.stderr
+        stdout = result.stdout or ""
+        stderr = result.stderr or ""
+        return result.returncode, stdout + stderr
     except subprocess.TimeoutExpired:
         return -1, "Script timed out"
     except Exception as e:
@@ -141,6 +145,24 @@ def cmd_log(args: argparse.Namespace) -> int:
 def cmd_report(args: argparse.Namespace) -> int:
     """Generate report."""
     code, output = run_script('generate_report.py', [])
+    print(output)
+    return code
+
+
+def cmd_version(args: argparse.Namespace) -> int:
+    """Handle version command."""
+    script_args = []
+    
+    if args.version_subcommand:
+        script_args.append(args.version_subcommand)
+        if args.version_subcommand in ['bump', 'set'] and getattr(args, 'value', None):
+            script_args.append(args.value)
+        if getattr(args, 'tag', False):
+            script_args.append('--tag')
+        if getattr(args, 'no_changelog', False):
+            script_args.append('--no-changelog')
+    
+    code, output = run_script('autoresearch_version.py', script_args)
     print(output)
     return code
 
@@ -273,6 +295,21 @@ Examples:
     # report command
     subparsers.add_parser('report', help='Generate report')
     
+    # version command
+    version_parser = subparsers.add_parser('version', help='Version management')
+    version_subparsers = version_parser.add_subparsers(dest='version_subcommand')
+    
+    version_show = version_subparsers.add_parser('show', help='Show current version')
+    
+    version_bump = version_subparsers.add_parser('bump', help='Bump version')
+    version_bump.add_argument('value', choices=['patch', 'minor', 'major'])
+    version_bump.add_argument('--tag', action='store_true', help='Create git tag')
+    version_bump.add_argument('--no-changelog', action='store_true', help='Skip changelog update')
+    
+    version_set = version_subparsers.add_parser('set', help='Set specific version')
+    version_set.add_argument('value', help='Version number (e.g., 1.2.3)')
+    version_set.add_argument('--tag', action='store_true', help='Create git tag')
+    
     # lang command
     lang_parser = subparsers.add_parser('lang', help='Language settings')
     lang_parser.add_argument('locale', nargs='?', help='Locale code (en/zh)')
@@ -306,7 +343,8 @@ Examples:
         'log': cmd_log,
         'report': cmd_report,
         'lang': cmd_lang,
-        'search': cmd_search
+        'search': cmd_search,
+        'version': cmd_version
     }
     
     # Initialize i18n

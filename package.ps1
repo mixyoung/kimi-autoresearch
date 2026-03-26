@@ -9,7 +9,7 @@
 #
 
 param(
-    [string]$Version = "1.0.0",
+    [string]$Version = "1.0.2",
     [switch]$Prerelease,
     [string]$OutputDir = "dist"
 )

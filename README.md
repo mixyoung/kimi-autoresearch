@@ -1,6 +1,6 @@
 # Kimi Autoresearch
 
-[![version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/mixyoung/kimi-autoresearch/releases)
+[![version](https://img.shields.io/badge/version-1.0.2-blue.svg)](https://github.com/mixyoung/kimi-autoresearch/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![GitHub stars](https://img.shields.io/github/stars/mixyoung/kimi-autoresearch.svg?style=social)](https://github.com/mixyoung/kimi-autoresearch/stargazers)
@@ -258,6 +258,52 @@ jobs:
 | 语言 | 8种 | 英文 | **中文/英文** |
 
 [详细对比 →](references/COMPARISON.md)
+
+## 🚀 发布
+
+### 自动发布 (GitHub Actions)
+
+推送 tag 自动触发 Release：
+
+```bash
+# 使用版本管理工具
+python scripts/autoresearch_version.py bump patch --tag
+git push origin main --tags
+
+# 或者手动创建 tag
+git tag -a v1.0.1 -m "Release v1.0.1"
+git push origin v1.0.1
+```
+
+GitHub Actions 会自动：
+- 更新所有文件中的版本号
+- 打包生成 `.skill` 文件
+- 创建 GitHub Release 并上传附件
+- 生成校验和
+
+### 手动打包
+
+**Windows:**
+```powershell
+# 默认版本
+.\package.ps1
+
+# 指定版本
+.\package.ps1 -Version 1.1.0
+```
+
+**Linux/macOS:**
+```bash
+./package.sh
+```
+
+输出文件：
+```
+dist/
+├── kimi-autoresearch-1.0.0.skill    # 主包
+├── kimi-autoresearch-latest.skill   # 最新版
+└── kimi-autoresearch-1.0.0.sha256   # 校验和
+```
 
 ## 📝 要求
 
