@@ -1,0 +1,9 @@
+{
+  "goal": "Eliminate mypy type errors",
+  "scope": "src/**/*.py",
+  "metric": "type error count",
+  "direction": "lower",
+  "verify": "mypy src/ 2>&1 | grep -c 'error:'",
+  "guard": "python -m pytest",
+  "iterations": 25
+}

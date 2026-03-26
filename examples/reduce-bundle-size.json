@@ -1,0 +1,9 @@
+{
+  "goal": "Reduce JavaScript bundle size",
+  "scope": "src/**/*.ts",
+  "metric": "bundle size (KB)",
+  "direction": "lower",
+  "verify": "npm run build && du -k dist/main.js | cut -f1",
+  "guard": "npm test",
+  "iterations": 20
+}

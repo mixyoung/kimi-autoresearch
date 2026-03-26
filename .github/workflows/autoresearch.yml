@@ -1,0 +1,115 @@
+# Autoresearch CI/CD Workflow
+# Add this to your repository's .github/workflows/
+
+name: Autoresearch Optimization
+
+on:
+  # Run on schedule (e.g., weekly)
+  schedule:
+    - cron: '0 2 * * 0'  # Every Sunday at 2 AM
+  
+  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      goal:
+        description: 'Optimization goal'
+        required: true
+        default: 'Improve test coverage'
+      iterations:
+        description: 'Number of iterations'
+        required: true
+        default: '20'
+
+jobs:
+  optimize:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for git operations
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Setup Node.js (if needed)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+        if: contains(github.event.inputs.goal, 'TypeScript') || contains(github.event.inputs.goal, 'JavaScript')
+      
+      - name: Install dependencies
+        run: |
+          # Add your dependency installation here
+          # npm ci
+          # pip install -r requirements.txt
+          echo "Install your project dependencies here"
+      
+      - name: Run autoresearch
+        run: |
+          # Option 1: Use config file
+          # python scripts/autoresearch_exec.py --config autoresearch-config.json
+          
+          # Option 2: Inline configuration
+          python scripts/autoresearch_exec.py \
+            --mode optimize \
+            --goal "${{ github.event.inputs.goal || 'Improve test coverage' }}" \
+            --verify "npm test -- --coverage | grep 'All files' | awk '{print $2}' | tr -d '%'" \
+            --direction higher \
+            --iterations ${{ github.event.inputs.iterations || 20 }} \
+            --output-json results.json
+        env:
+          CI: true
+      
+      - name: Check results
+        run: |
+          if [ -f results.json ]; then
+            improvement=$(jq '.summary.improvement_pct' results.json)
+            echo "Improvement: ${improvement}%"
+            
+            # Fail if no improvement and strict mode
+            # if (( $(echo "$improvement <= 0" | bc -l) )); then
+            #   echo "No improvement detected"
+            #   exit 1
+            # fi
+          fi
+      
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: autoresearch-results
+          path: |
+            autoresearch-results.tsv
+            autoresearch-report.md
+            autoresearch-state.json
+            results.json
+          retention-days: 30
+      
+      - name: Create PR with improvements
+        if: success()
+        run: |
+          # Check if there are changes
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            
+            BRANCH="autoresearch/$(date +%Y%m%d-%H%M%S)"
+            git checkout -b $BRANCH
+            
+            git add -A
+            git commit -m "autoresearch: ${{ github.event.inputs.goal }}"
+            
+            git push origin $BRANCH
+            
+            # Create PR using gh CLI
+            gh pr create \
+              --title "Autoresearch: ${{ github.event.inputs.goal }}" \
+              --body "This PR contains automated improvements from autoresearch." \
+              --label "autoresearch"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,68 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Autoresearch runtime files
+autoresearch-results.tsv
+autoresearch-state.json
+autoresearch-runtime.json
+autoresearch-lessons.md
+autoresearch-report.md
+autoresearch-*.json
+autoresearch-*.tsv
+
+# Backup files
+*.bak
+*.prev
+*.old
+*~
+
+# Worktrees (created during parallel experiments)
+.autoresearch-worktree-*/
+
+# Logs
+*.log
+
+# Test outputs
+test-output/
+coverage/
+
+# Local config (may contain sensitive info)
+.autoresearch-config.local.json
+.env
+.env.local
+
+# Git worktree metadata (if any)
+.git-worktrees/

@@ -1,0 +1,278 @@
+# Autoresearch Quick Reference
+
+## Quick Commands
+
+### Start a Run
+
+```bash
+# Basic
+$kimi-autoresearch
+Goal: Reduce type errors
+
+# With all options
+$kimi-autoresearch
+Goal: Increase test coverage to 90%
+Scope: src/**/*.ts
+Metric: coverage %
+Verify: npm test -- --coverage | grep "All files"
+Guard: npm run build
+Direction: higher
+Iterations: 20
+```
+
+### Mode Shortcuts
+
+```bash
+# Plan mode - interactive wizard
+$kimi-autoresearch:plan
+Goal: Make API faster
+
+# Debug mode - find bugs
+$kimi-autoresearch:debug
+Symptom: API returns 500
+Scope: src/api/**/*.ts
+
+# Fix mode - auto-fix errors
+$kimi-autoresearch:fix
+Target: Fix all failing tests
+
+# Security mode - audit
+$kimi-autoresearch:security
+Scope: src/api/**/*.ts
+Focus: SQL injection
+
+# Ship mode - release
+$kimi-autoresearch:ship
+Type: code-pr
+Target: main
+
+# Scenario mode - generate test scenarios
+$kimi-autoresearch:scenario
+Seed: User checkout flow
+```
+
+## Common Verify Commands
+
+### TypeScript
+
+```bash
+# Count type errors
+tsc --noEmit 2>&1 | grep -c "error TS"
+
+# Count `any` types
+grep -r "any" src/**/*.ts | wc -l
+```
+
+### JavaScript/Node.js
+
+```bash
+# Test coverage
+npm test -- --coverage | grep "All files" | awk '{print $2}'
+
+# Lint errors
+npm run lint 2>&1 | grep -c "error"
+
+# Bundle size
+npm run build && du -k dist/*.js | cut -f1
+```
+
+### Python
+
+```bash
+# Test coverage
+pytest --cov=src --cov-report=term | grep TOTAL | awk '{print $2}'
+
+# Type errors
+mypy src/ | grep -c "error"
+
+# Lint errors
+ruff check src/ | grep -c "E\|F"
+```
+
+### Go
+
+```bash
+# Build errors
+go build ./... 2>&1 | grep -c "error"
+
+# Test coverage
+go test -cover ./... | grep -o "coverage: [0-9.]*%"
+
+# Lint issues
+golangci-lint run | grep -c "^[^#]"
+```
+
+## Guard Commands
+
+```bash
+# Type check (don't modify)
+tsc --noEmit
+
+# Run tests
+npm test
+pytest
+
+# Build
+npm run build
+go build ./...
+
+# Lint
+npm run lint
+ruff check src/
+```
+
+## File Locations
+
+| File | Purpose |
+|------|---------|
+| `autoresearch-results.tsv` | Iteration results log |
+| `autoresearch-state.json` | Current run state |
+| `autoresearch-runtime.json` | Background runtime state |
+| `autoresearch-lessons.md` | Cross-run learnings |
+| `autoresearch-report.md` | Final summary report |
+
+## Decision Rules
+
+| Metric Change | Guard | Decision |
+|--------------|-------|----------|
+| Improved | Passed | ✓ Keep |
+| Improved | Failed | ↻ Rework (max 2x) |
+| Same | - | ✗ Discard |
+| Worse | - | ✗ Discard |
+
+## Stuck Recovery
+
+| Pattern | Action |
+|---------|--------|
+| 3+ discards | REFINE strategy |
+| 5+ discards | PIVOT approach |
+| 2 pivots + no improvement | Search web |
+
+## Exit Codes
+
+| Code | Meaning |
+|------|---------|
+| 0 | Success / Improved |
+| 1 | No improvement |
+| 2 | Hard blocker |
+| 3 | Config error |
+| 4 | Runtime error |
+
+## Git Workflow
+
+```bash
+# Each iteration:
+git add -A
+git commit -m "experiment: description"
+# Verify...
+git revert --no-edit HEAD  # if discard
+```
+
+## Helper Scripts
+
+```bash
+# Initialize run
+python scripts/autoresearch_init_run.py \
+  --goal "Reduce errors" \
+  --metric "error count" \
+  --verify "tsc --noEmit 2>&1 | grep -c error"
+
+# Health check
+python scripts/autoresearch_health_check.py
+
+# Background control
+python scripts/autoresearch_background.py status
+python scripts/autoresearch_background.py start
+python scripts/autoresearch_background.py stop
+
+# Lessons
+python scripts/autoresearch_lessons.py add "This worked well" --type positive
+python scripts/autoresearch_lessons.py list
+python scripts/autoresearch_lessons.py summarize
+
+# CI/CD exec
+python scripts/autoresearch_exec.py \
+  --mode optimize \
+  --goal "Reduce bundle" \
+  --verify "du -k dist/main.js | cut -f1" \
+  --direction lower \
+  --iterations 10
+```
+
+## Kimi-Specific Tips
+
+### Background Tasks
+
+```python
+# In Kimi, use background task for long runs
+$kimi-autoresearch
+Goal: Optimize all day
+Iterations: 1000
+Background: true
+```
+
+### Shell with Background
+
+```python
+# Or use Shell with run_in_background
+Shell(
+    command="python scripts/autoresearch_workflow.py --config config.json",
+    run_in_background=True,
+    description="Autoresearch optimization"
+)
+```
+
+### Task Management
+
+```python
+# Check background tasks
+TaskList()
+
+# Get task output
+TaskOutput(task_id="xxx")
+
+# Stop task if needed
+TaskStop(task_id="xxx")
+```
+
+## Troubleshooting
+
+### "Not a git repository"
+
+```bash
+git init
+git add .
+git commit -m "Initial commit"
+```
+
+### "Verify command failed"
+
+1. Test command manually: `your-verify-command`
+2. Ensure it outputs a number
+3. Check exit code: `echo $?`
+
+### "No improvement"
+
+- Try different approach
+- Expand scope
+- Check if metric is actually measurable
+- Review lessons: `cat autoresearch-lessons.md`
+
+### "Disk full"
+
+```bash
+# Clean up old results
+rm autoresearch-results.*.tsv
+rm autoresearch-state.*.json
+```
+
+## Best Practices
+
+1. **Start small**: 5-10 iterations to test
+2. **Verify manually**: Test your verify command first
+3. **Use guard**: Always have a safety check
+4. **Commit often**: Let autoresearch handle git
+5. **Review lessons**: Check what worked before
+6. **Set target**: Stop when goal reached
+7. **Monitor disk**: Long runs can generate files
+8. **Background for >50 iterations**: Don't block session

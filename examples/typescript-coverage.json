@@ -1,0 +1,10 @@
+{
+  "goal": "Increase TypeScript test coverage to 90%",
+  "scope": "src/**/*.ts",
+  "metric": "coverage percentage",
+  "direction": "higher",
+  "verify": "npm test -- --coverage | grep 'All files' | awk '{print $2}' | tr -d '%'",
+  "guard": "npm run build && npm run lint",
+  "iterations": 30,
+  "target": 90
+}
