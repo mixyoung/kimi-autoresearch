@@ -1,0 +1,12 @@
+{
+  "goal": "Increase Go test coverage to 80%",
+  "scope": "**/*.go",
+  "metric": "coverage percentage",
+  "direction": "higher",
+  "verify": "go test -cover ./... 2>&1 | grep -o 'coverage: [0-9.]*%' | head -1 | grep -o '[0-9.]*'",
+  "guard": "go build ./... && go vet ./...",
+  "iterations": 25,
+  "target": 80,
+  "verifyRuns": 1,
+  "minDelta": 1.0
+}

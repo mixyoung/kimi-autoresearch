@@ -1,0 +1,11 @@
+{
+  "goal": "Reduce Docker image size by 30%",
+  "scope": "Dockerfile*",
+  "metric": "image size (MB)",
+  "direction": "lower",
+  "verify": "docker build -t temp-image . 2>&1 && docker images temp-image --format '{{.Size}}' | sed 's/MB//'",
+  "guard": "docker run --rm temp-image echo 'Container runs successfully'",
+  "iterations": 10,
+  "verifyRuns": 1,
+  "minDelta": 10
+}

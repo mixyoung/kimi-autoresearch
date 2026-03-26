@@ -1,0 +1,11 @@
+{
+  "goal": "Reduce Java heap memory usage by 15%",
+  "scope": "src/**/*.java",
+  "metric": "heap usage (MB)",
+  "direction": "lower",
+  "verify": "mvn test -DargLine='-Xmx512m -XX:+PrintGCDetails' 2>&1 | grep -o 'Heap:[0-9]*M' | tail -1 | grep -o '[0-9]*'",
+  "guard": "mvn test && mvn compile",
+  "iterations": 20,
+  "verifyRuns": 3,
+  "minDelta": 5
+}

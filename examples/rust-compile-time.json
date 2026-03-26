@@ -1,0 +1,12 @@
+{
+  "goal": "Reduce Rust compile time by 20%",
+  "scope": "src/**/*.rs",
+  "metric": "compile time (seconds)",
+  "direction": "lower",
+  "verify": "cargo clean && time -p cargo build --release 2>&1 | grep real | awk '{print $2}'",
+  "guard": "cargo test && cargo clippy -- -D warnings",
+  "iterations": 15,
+  "target": 0,
+  "verifyRuns": 3,
+  "minDelta": 5.0
+}

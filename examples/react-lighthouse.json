@@ -1,0 +1,12 @@
+{
+  "goal": "Improve Lighthouse performance score to 90+",
+  "scope": "src/**/*.{ts,tsx,css}",
+  "metric": "Lighthouse performance score",
+  "direction": "higher",
+  "verify": "npm run build && npx lighthouse http://localhost:3000 --chrome-flags='--headless --no-sandbox' --output=json 2>&1 | grep -o '"score":[0-9.]*' | head -1 | cut -d: -f2",
+  "guard": "npm run build && npm run test:unit",
+  "iterations": 20,
+  "target": 90,
+  "verifyRuns": 3,
+  "minDelta": 2.0
+}
