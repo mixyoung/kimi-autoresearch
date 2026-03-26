@@ -6,12 +6,13 @@ Decides whether to start fresh, resume, or block.
 import argparse
 import json
 import os
+from typing import Any
 
 STATE_FILE = "autoresearch-state.json"
 RESULTS_FILE = "autoresearch-results.tsv"
 
 
-def check_existing_state() -> dict:
+def check_existing_state() -> dict[str, Any]:
     """Check for existing state to resume from."""
     if not os.path.exists(STATE_FILE):
         return {'can_resume': False, 'reason': 'No state file found'}
@@ -50,7 +51,7 @@ def check_existing_state() -> dict:
         return {'can_resume': False, 'reason': 'State file corrupted'}
 
 
-def check_results_consistency() -> dict:
+def check_results_consistency() -> dict[str, Any]:
     """Cross-check results file with state."""
     if not os.path.exists(RESULTS_FILE):
         return {'consistent': True, 'results_count': 0}
@@ -92,7 +93,7 @@ def check_results_consistency() -> dict:
         return {'consistent': False, 'error': str(e)}
 
 
-def decide_launch_action(args) -> dict:
+def decide_launch_action(args: argparse.Namespace) -> dict[str, Any]:
     """Decide whether to launch, resume, or block."""
     
     # Check for force flags
@@ -146,7 +147,7 @@ def decide_launch_action(args) -> dict:
     }
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description='Autoresearch launch gate')
     parser.add_argument('--force-fresh', action='store_true',
                        help='Force a fresh start')

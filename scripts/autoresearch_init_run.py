@@ -14,7 +14,7 @@ STATE_FILE = "autoresearch-state.json"
 LESSONS_FILE = "autoresearch-lessons.md"
 
 
-def init_results_file():
+def init_results_file() -> None:
     """Create results TSV with headers."""
     if os.path.exists(RESULTS_FILE):
         # Archive old results
@@ -29,7 +29,7 @@ def init_results_file():
     print(f"Created {RESULTS_FILE}")
 
 
-def init_state(config: dict):
+def init_state(config: dict) -> None:
     """Initialize state file with run configuration."""
     state = {
         'version': '1.0',
@@ -54,7 +54,7 @@ def init_state(config: dict):
     print(f"Created {STATE_FILE}")
 
 
-def init_lessons_file():
+def init_lessons_file() -> None:
     """Create lessons file if not exists."""
     if not os.path.exists(LESSONS_FILE):
         with open(LESSONS_FILE, 'w') as f:
@@ -63,7 +63,7 @@ def init_lessons_file():
         print(f"Created {LESSONS_FILE}")
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description='Initialize autoresearch run')
     parser.add_argument('--goal', type=str, required=True)
     parser.add_argument('--scope', type=str, default='')

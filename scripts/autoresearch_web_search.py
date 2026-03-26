@@ -8,13 +8,13 @@ import json
 import os
 import re
 import sys
-from typing import Optional
+from typing import Optional, Any
 
 # Simulated search results - in real implementation, this would call Kimi's SearchWeb
 # For now, we'll create a framework that can be easily integrated
 
 
-def extract_search_query(context: dict) -> str:
+def extract_search_query(context: dict[str, Any]) -> str:
     """Extract search query from stuck context."""
     goal = context.get('goal', '')
     strategy = context.get('strategy', '')
@@ -60,7 +60,7 @@ def format_search_results(results: list[dict], max_results: int = 5) -> str:
     return "\n".join(formatted)
 
 
-def generate_hypotheses_from_search(search_results: list[dict], context: dict) -> list[dict]:
+def generate_hypotheses_from_search(search_results: list[dict[str, Any]], context: dict[str, Any]) -> list[dict[str, Any]]:
     """Generate new hypotheses based on search results."""
     hypotheses = []
     goal = context.get('goal', '')
@@ -131,7 +131,7 @@ def generate_hypotheses_from_search(search_results: list[dict], context: dict) -
     return hypotheses
 
 
-def cmd_search(args):
+def cmd_search(args: argparse.Namespace) -> int:
     """Perform web search for stuck context."""
     context = {}
     
@@ -188,7 +188,7 @@ def cmd_search(args):
     return 0
 
 
-def cmd_generate_hypotheses(args):
+def cmd_generate_hypotheses(args: argparse.Namespace) -> int:
     """Generate hypotheses from search results."""
     # Load search results
     search_results = []
@@ -229,7 +229,7 @@ def cmd_generate_hypotheses(args):
     return 0
 
 
-def cmd_check_and_search(args):
+def cmd_check_and_search(args: argparse.Namespace) -> int:
     """Check if stuck and trigger search if needed."""
     # Load state
     state_file = args.state_file or 'autoresearch-state.json'
@@ -304,7 +304,7 @@ def cmd_check_and_search(args):
     return 0
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(
         description='Autoresearch Web Search Integration',
         formatter_class=argparse.RawDescriptionHelpFormatter,

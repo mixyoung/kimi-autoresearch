@@ -10,7 +10,7 @@ RESULTS_FILE = "autoresearch-results.tsv"
 REPORT_FILE = "autoresearch-report.md"
 
 
-def generate_report():
+def generate_report() -> None:
     """Generate a markdown report from results TSV."""
     
     if not os.path.exists(RESULTS_FILE):
@@ -94,7 +94,7 @@ Generated: {datetime.now().isoformat()}
     print(f"  - Discarded: {discard_count}")
 
 
-def main():
+def main() -> None:
     generate_report()
 
 

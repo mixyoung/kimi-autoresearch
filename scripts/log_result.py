@@ -11,7 +11,7 @@ RESULTS_FILE = "autoresearch-results.tsv"
 
 
 def log_result(iteration: int, commit: str, metric: str, delta: str, 
-               status: str, description: str):
+               status: str, description: str) -> None:
     """Append a result row to the TSV file."""
     
     # Create file with headers if it doesn't exist

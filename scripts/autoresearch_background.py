@@ -10,13 +10,14 @@ import subprocess
 import sys
 import time
 from datetime import datetime
+from typing import Any
 
 RUNTIME_FILE = "autoresearch-runtime.json"
 STATE_FILE = "autoresearch-state.json"
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-def load_runtime() -> dict:
+def load_runtime() -> dict[str, Any]:
     """Load runtime state."""
     if os.path.exists(RUNTIME_FILE):
         try:
@@ -34,14 +35,14 @@ def load_runtime() -> dict:
     }
 
 
-def save_runtime(runtime: dict):
+def save_runtime(runtime: dict[str, Any]) -> None:
     """Save runtime state."""
     runtime['last_update'] = datetime.now().isoformat()
     with open(RUNTIME_FILE, 'w') as f:
         json.dump(runtime, f, indent=2)
 
 
-def load_state() -> dict:
+def load_state() -> dict[str, Any]:
     """Load autoresearch state."""
     if os.path.exists(STATE_FILE):
         with open(STATE_FILE, 'r') as f:
@@ -70,7 +71,7 @@ def is_process_running(pid: int) -> bool:
         return False
 
 
-def cmd_status(args):
+def cmd_status(args: argparse.Namespace) -> int:
     """Check background runtime status."""
     runtime = load_runtime()
     state = load_state()
@@ -122,7 +123,7 @@ def cmd_status(args):
     return 0 if status != 'error' else 1
 
 
-def cmd_start(args):
+def cmd_start(args: argparse.Namespace) -> int:
     """Start background runtime."""
     runtime = load_runtime()
     
@@ -157,7 +158,7 @@ def cmd_start(args):
     return 0
 
 
-def cmd_stop(args):
+def cmd_stop(args: argparse.Namespace) -> int:
     """Stop background runtime."""
     runtime = load_runtime()
     
@@ -187,7 +188,7 @@ def cmd_stop(args):
     return 0
 
 
-def cmd_pause(args):
+def cmd_pause(args: argparse.Namespace) -> int:
     """Pause background runtime."""
     runtime = load_runtime()
     
@@ -203,7 +204,7 @@ def cmd_pause(args):
     return 0
 
 
-def cmd_resume(args):
+def cmd_resume(args: argparse.Namespace) -> int:
     """Resume background runtime."""
     runtime = load_runtime()
     
@@ -218,7 +219,7 @@ def cmd_resume(args):
     return 0
 
 
-def cmd_log(args):
+def cmd_log(args: argparse.Namespace) -> int:
     """Show recent runtime log."""
     runtime = load_runtime()
     errors = runtime.get('errors', [])
@@ -238,7 +239,7 @@ def cmd_log(args):
     return 0
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description='Autoresearch Background Runtime Controller'
     )

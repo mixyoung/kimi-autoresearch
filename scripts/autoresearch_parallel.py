@@ -11,7 +11,7 @@ import subprocess
 import sys
 import tempfile
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Any
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -62,14 +62,14 @@ class ParallelExperiment:
         
         return worktree_path
     
-    def apply_hypothesis(self, worktree: dict) -> bool:
+    def apply_hypothesis(self, worktree: dict[str, Any]) -> bool:
         """Apply hypothesis changes to worktree."""
         # This is a placeholder - in practice, you'd apply specific changes
         # based on the hypothesis type
         print(f"Applying hypothesis to {worktree['name']}: {worktree['hypothesis']['description']}")
         return True
     
-    def run_verification(self, worktree: dict, verify_cmd: str) -> dict:
+    def run_verification(self, worktree: dict[str, Any], verify_cmd: str) -> dict[str, Any]:
         """Run verification in a worktree."""
         try:
             result = subprocess.run(
@@ -112,7 +112,7 @@ class ParallelExperiment:
                 'worktree': worktree['name']
             }
     
-    def run_parallel(self, hypotheses: list[dict], verify_cmd: str) -> dict:
+    def run_parallel(self, hypotheses: list[dict[str, Any]], verify_cmd: str) -> dict[str, Any]:
         """Run hypotheses in parallel."""
         print(f"Running {len(hypotheses)} hypotheses in parallel...")
         
@@ -145,7 +145,7 @@ class ParallelExperiment:
             'worktrees': [w['path'] for w in self.worktrees]
         }
     
-    def select_best(self, results: list[dict]) -> Optional[dict]:
+    def select_best(self, results: list[dict[str, Any]]) -> Optional[dict[str, Any]]:
         """Select the best result."""
         valid_results = [r for r in results if r.get('success') and r.get('metric') is not None]
         
@@ -156,7 +156,7 @@ class ParallelExperiment:
         best = min(valid_results, key=lambda x: x['metric'])
         return best
     
-    def cleanup(self):
+    def cleanup(self) -> None:
         """Clean up worktrees."""
         print("\nCleaning up worktrees...")
         for worktree in self.worktrees:
@@ -169,7 +169,7 @@ class ParallelExperiment:
         print("Cleanup complete")
 
 
-def cmd_run(args):
+def cmd_run(args: argparse.Namespace) -> int:
     """Run parallel experiments."""
     # Load hypotheses
     if args.hypotheses_file:
@@ -221,7 +221,7 @@ def cmd_run(args):
         return 1
 
 
-def cmd_status(args):
+def cmd_status(args: argparse.Namespace) -> int:
     """Check worktree status."""
     try:
         result = subprocess.run(
@@ -247,7 +247,7 @@ def cmd_status(args):
         return 1
 
 
-def cmd_cleanup(args):
+def cmd_cleanup(args: argparse.Namespace) -> int:
     """Clean up all autoresearch worktrees."""
     try:
         result = subprocess.run(
@@ -283,7 +283,7 @@ def cmd_cleanup(args):
         return 1
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(
         description='Autoresearch Parallel Experiments',
         formatter_class=argparse.RawDescriptionHelpFormatter,

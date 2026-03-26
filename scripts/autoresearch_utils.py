@@ -25,7 +25,7 @@ def run_command(cmd: str, timeout: int = 60) -> tuple[int, str]:
         return -1, str(e)
 
 
-def cmd_stats(args):
+def cmd_stats(args) -> int:
     """Show autoresearch statistics."""
     results_file = "autoresearch-results.tsv"
     state_file = "autoresearch-state.json"
@@ -101,7 +101,7 @@ def cmd_stats(args):
     return 0
 
 
-def cmd_clean(args):
+def cmd_clean(args) -> int:
     """Clean up autoresearch files."""
     files = [
         'autoresearch-results.tsv',
@@ -139,7 +139,7 @@ def cmd_clean(args):
     return 0
 
 
-def cmd_export(args):
+def cmd_export(args) -> int:
     """Export results to different formats."""
     results_file = "autoresearch-results.tsv"
     
@@ -212,7 +212,7 @@ def cmd_export(args):
     return 0
 
 
-def cmd_config(args):
+def cmd_config(args) -> int:
     """Generate or validate configuration."""
     config_file = args.file or 'autoresearch-config.json'
     
@@ -254,7 +254,7 @@ def cmd_config(args):
     return 0
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(
         description='Autoresearch Utilities',
         formatter_class=argparse.RawDescriptionHelpFormatter

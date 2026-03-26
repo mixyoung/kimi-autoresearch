@@ -10,11 +10,12 @@ import subprocess
 import sys
 import time
 from datetime import datetime
+from typing import Any
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-def run_script(name: str, args: list, timeout: int = 300) -> tuple[int, str]:
+def run_script(name: str, args: list[str], timeout: int = 300) -> tuple[int, str]:
     """Run a helper script."""
     script_path = os.path.join(SCRIPT_DIR, name)
     cmd = ['python', script_path] + args
@@ -27,14 +28,14 @@ def run_script(name: str, args: list, timeout: int = 300) -> tuple[int, str]:
         return -1, str(e)
 
 
-def print_header(title: str):
+def print_header(title: str) -> None:
     """Print a section header."""
     print("\n" + "=" * 60)
     print(f"  {title}")
     print("=" * 60)
 
 
-def print_step(step: str, status: str = "..."):
+def print_step(step: str, status: str = "...") -> None:
     """Print a step with status."""
     symbols = {
         '...': '⏳',
@@ -47,7 +48,7 @@ def print_step(step: str, status: str = "..."):
     print(f"{symbol} {step}")
 
 
-def workflow_init(config: dict) -> bool:
+def workflow_init(config: dict[str, Any]) -> bool:
     """Initialize the workflow."""
     print_header("Phase 0: Initialization")
     
@@ -94,7 +95,7 @@ def workflow_init(config: dict) -> bool:
     return True
 
 
-def workflow_baseline(config: dict) -> tuple[bool, float]:
+def workflow_baseline(config: dict[str, Any]) -> tuple[bool, float]:
     """Get baseline measurement."""
     print_header("Phase 1: Baseline")
     
@@ -123,7 +124,7 @@ def workflow_baseline(config: dict) -> tuple[bool, float]:
     return False, 0
 
 
-def workflow_iteration(iteration: int, config: dict, 
+def workflow_iteration(iteration: int, config: dict[str, Any], 
                       baseline: float) -> tuple[str, float]:
     """Run a single iteration."""
     print(f"\n--- Iteration {iteration} ---")
@@ -169,7 +170,7 @@ def workflow_iteration(iteration: int, config: dict,
         return 'discard', baseline
 
 
-def workflow_loop(config: dict, baseline: float) -> dict:
+def workflow_loop(config: dict[str, Any], baseline: float) -> dict[str, Any]:
     """Main iteration loop."""
     print_header("Phase 2: Iteration Loop")
     
@@ -219,7 +220,7 @@ def workflow_loop(config: dict, baseline: float) -> dict:
     }
 
 
-def workflow_summary(results: dict, config: dict):
+def workflow_summary(results: dict[str, Any], config: dict[str, Any]) -> None:
     """Generate final summary."""
     print_header("Phase 3: Summary")
     
@@ -239,7 +240,7 @@ def workflow_summary(results: dict, config: dict):
     print_step("\nWorkflow complete", 'ok')
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description='Autoresearch Workflow Orchestrator',
         formatter_class=argparse.RawDescriptionHelpFormatter,

@@ -18,7 +18,7 @@ class LessonManager:
         self.lessons_file = LESSONS_FILE
         self.ensure_file_exists()
     
-    def ensure_file_exists(self):
+    def ensure_file_exists(self) -> None:
         """Create lessons file if not exists."""
         if not os.path.exists(self.lessons_file):
             with open(self.lessons_file, 'w') as f:
@@ -27,7 +27,7 @@ class LessonManager:
                 f.write("---\n\n")
     
     def add_lesson(self, lesson: str, lesson_type: str = 'positive',
-                   context: Optional[dict] = None):
+                   context: Optional[dict] = None) -> bool:
         """Add a new lesson."""
         timestamp = datetime.now().isoformat()
         
@@ -140,7 +140,7 @@ class LessonManager:
         }
 
 
-def cmd_add(args):
+def cmd_add(args: argparse.Namespace) -> int:
     """Add a lesson."""
     manager = LessonManager()
     
@@ -157,7 +157,7 @@ def cmd_add(args):
     return 0
 
 
-def cmd_list(args):
+def cmd_list(args: argparse.Namespace) -> int:
     """List lessons."""
     manager = LessonManager()
     lessons = manager.list_lessons(args.type, args.limit)
@@ -180,7 +180,7 @@ def cmd_list(args):
     return 0
 
 
-def cmd_relevant(args):
+def cmd_relevant(args: argparse.Namespace) -> int:
     """Get relevant lessons for context."""
     manager = LessonManager()
     
@@ -206,7 +206,7 @@ def cmd_relevant(args):
     return 0
 
 
-def cmd_summarize(args):
+def cmd_summarize(args: argparse.Namespace) -> int:
     """Summarize all lessons."""
     manager = LessonManager()
     summary = manager.summarize()
@@ -232,7 +232,7 @@ def cmd_summarize(args):
     return 0
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(
         description='Autoresearch Lessons Manager'
     )

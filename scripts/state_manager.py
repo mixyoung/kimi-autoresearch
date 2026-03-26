@@ -31,13 +31,13 @@ def load_state() -> dict[str, Any]:
     }
 
 
-def save_state(state: dict[str, Any]):
+def save_state(state: dict[str, Any]) -> None:
     """Save state to file."""
     with open(STATE_FILE, 'w') as f:
         json.dump(state, f, indent=2)
 
 
-def log_lesson(lesson: str, lesson_type: str = 'positive'):
+def log_lesson(lesson: str, lesson_type: str = 'positive') -> None:
     """Append a lesson to the lessons file."""
     timestamp = datetime.now().isoformat()
     entry = f"\n## {timestamp} ({lesson_type})\n\n{lesson}\n"

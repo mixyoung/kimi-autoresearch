@@ -34,7 +34,7 @@ def run_script(name: str, args: list[str]) -> tuple[int, str]:
         return -1, str(e)
 
 
-def cmd_init(args):
+def cmd_init(args: argparse.Namespace) -> int:
     """Initialize a new run."""
     script_args = [
         '--goal', args.goal,
@@ -56,7 +56,7 @@ def cmd_init(args):
     return code
 
 
-def cmd_health(args):
+def cmd_health(args: argparse.Namespace) -> int:
     """Run health check."""
     script_args = []
     if args.json:
@@ -69,7 +69,7 @@ def cmd_health(args):
     return code
 
 
-def cmd_launch_gate(args):
+def cmd_launch_gate(args: argparse.Namespace) -> int:
     """Check if we should resume or start fresh."""
     script_args = []
     if args.force_fresh:
@@ -84,7 +84,7 @@ def cmd_launch_gate(args):
     return code
 
 
-def cmd_decide(args):
+def cmd_decide(args: argparse.Namespace) -> int:
     """Make a keep/discard decision."""
     script_args = [
         '--action', 'decide',
@@ -99,7 +99,7 @@ def cmd_decide(args):
     return code
 
 
-def cmd_baseline(args):
+def cmd_baseline(args: argparse.Namespace) -> int:
     """Get baseline measurement."""
     script_args = ['--verify', args.verify]
     if args.parse_number:
@@ -110,7 +110,7 @@ def cmd_baseline(args):
     return code
 
 
-def cmd_git(args):
+def cmd_git(args: argparse.Namespace) -> int:
     """Git operations."""
     script_args = ['--action', args.git_action]
     if args.message:
@@ -121,7 +121,7 @@ def cmd_git(args):
     return code
 
 
-def cmd_log(args):
+def cmd_log(args: argparse.Namespace) -> int:
     """Log a result."""
     script_args = [
         '--iteration', str(args.iteration),
@@ -138,14 +138,14 @@ def cmd_log(args):
     return code
 
 
-def cmd_report(args):
+def cmd_report(args: argparse.Namespace) -> int:
     """Generate report."""
     code, output = run_script('generate_report.py', [])
     print(output)
     return code
 
 
-def cmd_lang(args):
+def cmd_lang(args: argparse.Namespace) -> int:
     """Handle language command."""
     if args.locale:
         if set_locale(args.locale):
@@ -156,7 +156,7 @@ def cmd_lang(args):
         return 0
 
 
-def cmd_search(args):
+def cmd_search(args: argparse.Namespace) -> int:
     """Web search when stuck."""
     script_args = []
     
@@ -183,7 +183,7 @@ def cmd_search(args):
     return code
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description='Kimi Autoresearch - Main orchestrator',
         formatter_class=argparse.RawDescriptionHelpFormatter,

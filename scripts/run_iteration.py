@@ -49,7 +49,7 @@ def extract_number(output: str) -> float | None:
 
 
 def run_iteration(iteration: int, verify_cmd: str, guard_cmd: str | None,
-                  baseline_metric: float, direction: str, description: str):
+                  baseline_metric: float, direction: str, description: str) -> bool:
     """Run a single iteration and return result."""
     
     # Commit the change
@@ -119,7 +119,7 @@ def run_iteration(iteration: int, verify_cmd: str, guard_cmd: str | None,
     return status == 'keep'
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description='Run one autoresearch iteration')
     parser.add_argument('--iteration', type=int, required=True)
     parser.add_argument('--verify', type=str, required=True)

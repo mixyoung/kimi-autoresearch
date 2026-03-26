@@ -7,12 +7,13 @@ import argparse
 import json
 import os
 import subprocess
+from typing import Any
 
 STATE_FILE = "autoresearch-state.json"
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-def load_state() -> dict:
+def load_state() -> dict[str, Any]:
     """Load current state."""
     if os.path.exists(STATE_FILE):
         with open(STATE_FILE, 'r') as f:
@@ -20,14 +21,14 @@ def load_state() -> dict:
     return {}
 
 
-def save_state(state: dict):
+def save_state(state: dict[str, Any]) -> None:
     """Save state."""
     with open(STATE_FILE, 'w') as f:
         json.dump(state, f, indent=2)
 
 
 def decide_keep_discard(current_metric: float, baseline: float, 
-                        direction: str, guard_passed: bool) -> dict:
+                        direction: str, guard_passed: bool) -> dict[str, Any]:
     """
     Decide whether to keep or discard a change.
     
@@ -63,7 +64,7 @@ def decide_keep_discard(current_metric: float, baseline: float,
         }
 
 
-def check_stuck_pattern(state: dict) -> dict:
+def check_stuck_pattern(state: dict[str, Any]) -> dict[str, Any]:
     """
     Check if we're stuck and need to change strategy.
     
@@ -96,7 +97,7 @@ def check_stuck_pattern(state: dict) -> dict:
     }
 
 
-def trigger_web_search(state: dict, auto_trigger: bool = False) -> dict:
+def trigger_web_search(state: dict[str, Any], auto_trigger: bool = False) -> dict[str, Any]:
     """
     Trigger web search when stuck.
     
@@ -138,7 +139,7 @@ def trigger_web_search(state: dict, auto_trigger: bool = False) -> dict:
     return result
 
 
-def update_stuck_counters(state: dict, status: str) -> dict:
+def update_stuck_counters(state: dict[str, Any], status: str) -> dict[str, Any]:
     """Update consecutive discard counter based on result."""
     if status == 'keep':
         state['consecutive_discards'] = 0
@@ -150,7 +151,7 @@ def update_stuck_counters(state: dict, status: str) -> dict:
     return state
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description='Autoresearch decision helper')
     parser.add_argument('--action', type=str, required=True,
                        choices=['decide', 'check-stuck', 'update-counters', 'trigger-search'])

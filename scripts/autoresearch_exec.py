@@ -9,6 +9,7 @@ import subprocess
 import sys
 import time
 from datetime import datetime
+from typing import Any
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 RESULTS_FILE = "autoresearch-results.tsv"
@@ -72,7 +73,7 @@ def extract_number(output: str) -> float | None:
     return None
 
 
-def init_run(config: dict) -> bool:
+def init_run(config: dict[str, Any]) -> bool:
     """Initialize the run."""
     log("Initializing autoresearch run")
     
@@ -119,7 +120,7 @@ def get_baseline(verify_cmd: str) -> tuple[bool, float]:
     return True, metric
 
 
-def run_iteration(iteration: int, config: dict, baseline: float) -> dict:
+def run_iteration(iteration: int, config: dict[str, Any], baseline: float) -> dict[str, Any]:
     """Run a single iteration."""
     import random
     
@@ -165,7 +166,7 @@ def run_iteration(iteration: int, config: dict, baseline: float) -> dict:
         }
 
 
-def exec_loop(config: dict) -> dict:
+def exec_loop(config: dict[str, Any]) -> dict[str, Any]:
     """Main execution loop."""
     log("Starting autoresearch exec", 'success')
     
@@ -253,7 +254,7 @@ def exec_loop(config: dict) -> dict:
     return summary
 
 
-def exec_check(config: dict) -> dict:
+def exec_check(config: dict[str, Any]) -> dict[str, Any]:
     """Check mode - verify metric meets threshold."""
     log("Running check mode")
     
@@ -285,7 +286,7 @@ def exec_check(config: dict) -> dict:
     return result
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description='Autoresearch Exec - CI/CD Mode',
         formatter_class=argparse.RawDescriptionHelpFormatter,

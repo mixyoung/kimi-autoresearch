@@ -6,6 +6,7 @@ import argparse
 import json
 import os
 from datetime import datetime
+from typing import Any
 
 
 PERSONAS = {
@@ -62,7 +63,7 @@ PERSONAS = {
 }
 
 
-def analyze_with_persona(persona_key: str, context: dict) -> dict:
+def analyze_with_persona(persona_key: str, context: dict[str, Any]) -> dict[str, Any]:
     """Generate analysis for a persona."""
     persona = PERSONAS[persona_key]
     
@@ -78,7 +79,7 @@ def analyze_with_persona(persona_key: str, context: dict) -> dict:
     }
 
 
-def generate_analysis(context: dict, personas: list[str]) -> dict:
+def generate_analysis(context: dict[str, Any], personas: list[str]) -> dict[str, Any]:
     """Generate multi-persona analysis."""
     results = {}
     
@@ -96,7 +97,7 @@ def generate_analysis(context: dict, personas: list[str]) -> dict:
     }
 
 
-def generate_consensus(analyses: dict) -> dict:
+def generate_consensus(analyses: dict[str, Any]) -> dict[str, Any]:
     """Find agreements and disagreements."""
     # Simplified consensus generation
     return {
@@ -111,7 +112,7 @@ def generate_consensus(analyses: dict) -> dict:
     }
 
 
-def cmd_analyze(args):
+def cmd_analyze(args: argparse.Namespace) -> int:
     """Run predict analysis."""
     context = {
         'file': args.file,
@@ -180,7 +181,7 @@ def cmd_analyze(args):
     return 0
 
 
-def cmd_list_personas(args):
+def cmd_list_personas(args: argparse.Namespace) -> int:
     """List available personas."""
     print("Available Personas:")
     print("=" * 50)
@@ -195,7 +196,7 @@ def cmd_list_personas(args):
     return 0
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(
         description='Predict Mode - Multi-Persona Analysis',
         formatter_class=argparse.RawDescriptionHelpFormatter,

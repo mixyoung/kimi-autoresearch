@@ -95,7 +95,7 @@ def _(key: str, **kwargs) -> str:
     return text
 
 
-def get_supported_locales() -> list:
+def get_supported_locales() -> list[str]:
     """Get list of supported locales."""
     return SUPPORTED_LOCALES
 
@@ -109,7 +109,7 @@ def get_locale_name(locale: str) -> str:
     return names.get(locale, locale)
 
 
-def cmd_switch(args):
+def cmd_switch(args) -> int:
     """Switch language command."""
     if args.locale:
         if set_locale(args.locale):
@@ -129,7 +129,7 @@ def cmd_switch(args):
         return 0
 
 
-def cmd_test(args):
+def cmd_test(args) -> int:
     """Test translations."""
     test_keys = ['welcome', 'starting', 'goal', 'success', 'error']
     
@@ -147,7 +147,7 @@ def cmd_test(args):
     return 0
 
 
-def init_locale():
+def init_locale() -> None:
     """Initialize locale from config or env."""
     # Try to load saved preference
     config_file = os.path.expanduser('~/.autoresearch/locale')
@@ -165,7 +165,7 @@ def init_locale():
     set_locale(get_locale_from_env())
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(
         description='Kimi Autoresearch i18n',
         formatter_class=argparse.RawDescriptionHelpFormatter

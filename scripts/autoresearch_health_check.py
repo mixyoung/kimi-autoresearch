@@ -10,7 +10,7 @@ import subprocess
 import sys
 
 
-def run_git(args: list) -> tuple[int, str]:
+def run_git(args: list[str]) -> tuple[int, str]:
     """Run git command."""
     try:
         result = subprocess.run(
@@ -163,7 +163,7 @@ def run_all_checks() -> list[dict]:
     return checks
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description='Autoresearch health check')
     parser.add_argument('--format', type=str, default='text',
                        choices=['text', 'json'])
