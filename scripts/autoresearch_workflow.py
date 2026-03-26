@@ -127,47 +127,50 @@ def workflow_baseline(config: dict[str, Any]) -> tuple[bool, float]:
 
 def workflow_iteration(iteration: int, config: dict[str, Any], 
                       baseline: float) -> tuple[str, float]:
-    """Run a single iteration."""
+    """Run a single iteration using autonomous engine."""
     print(f"\n--- Iteration {iteration} ---")
     
-    # In a real implementation, this would:
-    # 1. Generate/apply a change
-    # 2. Commit the change
-    # 3. Run verification
-    # 4. Make decision
-    # 5. Revert if needed
-    # 6. Log result
+    # Import autonomous engine
+    from autoresearch_autonomous import AutonomousEngine
     
-    # For now, this is a simplified version
-    print_step("Making change", 'skip')
-    print_step("Committing", 'skip')
-    print_step("Verifying")
+    # Create mini config for single iteration
+    iter_config = {
+        'goal': config['goal'],
+        'scope': config.get('scope', '.'),
+        'verify': config.get('verify', ''),
+        'guard': config.get('guard', ''),
+        'direction': config.get('direction', 'lower'),
+        'iterations': 1,
+        'target': config.get('target')
+    }
     
-    # Simulate verification
-    code, output = run_script('get_baseline.py', [
-        '--verify', config['verify'],
-        '--parse-number'
-    ])
+    # Run one iteration using autonomous engine
+    engine = AutonomousEngine(iter_config)
     
-    if code != 0:
-        print_step("Verification failed", 'error')
-        return 'discard', baseline
+    # Get suggestions if not already cached
+    if not hasattr(workflow_iteration, '_suggestions'):
+        print_step("Analyzing code...")
+        workflow_iteration._suggestions = engine._analyze_code()
+        print_step(f"Found {len(workflow_iteration._suggestions)} suggestions", 'ok')
     
-    metric = baseline  # Placeholder
-    print_step(f"Metric: {metric}", 'ok')
+    engine.suggestions = workflow_iteration._suggestions
+    engine.baseline = baseline
+    engine.current_metric = baseline
     
-    # Make decision
-    direction = config.get('direction', 'lower')
-    improved = (metric < baseline) if direction == 'lower' else (metric > baseline)
+    # Run single iteration
+    result = engine._run_iteration()
     
-    if improved:
+    # Update cache
+    workflow_iteration._suggestions = engine.suggestions
+    
+    if result == 'keep':
         print_step("Change improved metric", 'ok')
-        # Log keep
-        return 'keep', metric
+        return 'keep', engine.current_metric
+    elif result == 'target_reached':
+        print_step("Target reached!", 'ok')
+        return 'keep', engine.current_metric
     else:
         print_step("Change did not improve", 'warn')
-        # Revert
-        run_script('check_git.py', ['--action', 'revert'])
         return 'discard', baseline
 
 
@@ -326,6 +329,8 @@ Examples:
     parser.add_argument('--target', type=float)
     parser.add_argument('--config', type=str,
                        help='Config file (JSON)')
+    parser.add_argument('--autonomous', action='store_true',
+                       help='Use fully autonomous mode (no human intervention)')
     
     args = parser.parse_args()
     
@@ -341,6 +346,26 @@ Examples:
         if getattr(args, key) is not None:
             config[key] = getattr(args, key)
     
+    # Autonomous mode: use fully automated engine
+    if args.autonomous:
+        print("=" * 60)
+        print("  Autoresearch Workflow (AUTONOMOUS MODE)")
+        print("=" * 60)
+        
+        from autoresearch_autonomous import AutonomousEngine
+        engine = AutonomousEngine(config)
+        result = engine.run()
+        
+        print("\n" + "=" * 60)
+        if result['status'] in ['completed', 'target_reached']:
+            print("  ✓ Autonomous Run Complete")
+        else:
+            print("  ⚠ Autonomous Run Stopped")
+        print("=" * 60)
+        
+        sys.exit(0 if result['status'] in ['completed', 'target_reached'] else 1)
+    
+    # Original semi-automatic mode
     print("=" * 60)
     print("  Autoresearch Workflow")
     print("=" * 60)
