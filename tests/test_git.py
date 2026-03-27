@@ -58,7 +58,25 @@ class TestGitOperationsInRepo(unittest.TestCase):
     def tearDown(self):
         """Clean up."""
         os.chdir(self.orig_dir)
-        shutil.rmtree(self.temp_dir)
+        # Handle Windows permission issues with .git directory
+        import stat
+        import time
+        
+        def on_rm_error(func, path, exc_info):
+            # Try to change permissions and retry
+            os.chmod(path, stat.S_IWRITE)
+            try:
+                func(path)
+            except:
+                pass
+        
+        # Retry a few times for Windows file locks
+        for _ in range(3):
+            try:
+                shutil.rmtree(self.temp_dir, onerror=on_rm_error)
+                break
+            except PermissionError:
+                time.sleep(0.1)
     
     def test_is_git_repo_true(self):
         """Test is_git_repo returns True for git directory."""
