@@ -60,7 +60,7 @@ def generate_daemon_prompt(config: dict) -> str:
     max_retries = loop_control.get('max_retries_per_step', 3)
     max_ralph = loop_control.get('max_ralph_iterations', 0)
     
-    agent_config = config.get('agent_config', {})
+    agent_config = config.get('agent_config') or {}
     agent_hint = ""
     if agent_config.get('agent'):
         agent_hint = f"\nAgent profile: Use '{agent_config['agent']}' agent mode for specialized behavior."
@@ -276,10 +276,10 @@ def cmd_status(args: argparse.Namespace) -> int:
     print("  Daemon Status")
     print("=" * 60)
     print()
-    print(f"Status: {state['status']}")
-    print(f"Current iteration: {state['current_iteration']}/{state['max_iterations']}")
+    print(f"Status: {state.get('status', 'unknown')}")
+    print(f"Current iteration: {state.get('current_iteration', 0)}/{state.get('max_iterations', 0)}")
     
-    if state['start_time']:
+    if state.get('start_time'):
         print(f"Started: {state['start_time']}")
     
     if state.get('task_id'):
