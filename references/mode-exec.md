@@ -31,7 +31,16 @@ All configuration provided upfront via JSON or command-line flags:
   "verify": "npm run build && du -k dist/main.js | cut -f1",
   "guard": "npm test",
   "iterations": 20,
-  "timeout_minutes": 30
+  "timeout_minutes": 30,
+  "loop_control": {
+    "max_steps_per_turn": 50,
+    "max_retries_per_step": 3,
+    "max_ralph_iterations": 0
+  },
+  "agent_config": {
+    "agent": "default",
+    "agent_file": null
+  }
 }
 ```
 
@@ -43,7 +52,10 @@ python -m autoresearch_exec \
   --goal "Reduce bundle size" \
   --verify "npm run build && du -k dist/main.js | cut -f1" \
   --direction lower \
-  --iterations 20
+  --iterations 20 \
+  --max-steps-per-turn 50 \
+  --max-retries-per-step 3 \
+  --max-ralph-iterations 100
 ```
 
 ## Exit Codes
@@ -180,6 +192,35 @@ repos:
         language: python
         pass_filenames: false
 ```
+
+## Ralph Loop Support
+
+Exec mode supports Ralph loop protocol for continuous iteration:
+
+```bash
+python -m autoresearch_exec \
+  --mode optimize \
+  --goal "Reduce type errors" \
+  --verify "tsc --noEmit 2>&1 | grep -c error" \
+  --direction lower \
+  --max-ralph-iterations 100 \
+  --max-steps-per-turn 30 \
+  --agent okabe
+```
+
+**Ralph Loop Parameters:**
+- `--max-steps-per-turn`: Maximum steps per iteration turn (default: 50)
+- `--max-retries-per-step`: Maximum retries per step (default: 3)
+- `--max-ralph-iterations`: Ralph loop iterations (0=off, -1=infinite)
+- `--agent`: Built-in agent (`default`, `okabe`)
+- `--agent-file`: Path to custom agent file
+
+**Stop Signal:**
+The loop stops when:
+- Target metric is reached
+- Max iterations reached
+- `<choice>STOP</choice>` signal is detected
+- 5+ consecutive discards with 2+ pivots
 
 ## Modes
 

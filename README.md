@@ -29,6 +29,8 @@
 - ♾️ **无限运行** - 突破24小时限制，自动接力运行
 - 🛡️ **会话弹性** - 长时间运行自动重新锚定协议
 - 📈 **实时监控** - HTML仪表板、进度报告、趋势分析
+- 🔄 **Ralph 循环** - 支持 Kimi 官方 Ralph 循环协议 (`<choice>STOP</choice>`)
+- 🤖 **子 Agent 支持** - 可配置内置或自定义 Agent 配置文件
 
 ## 📦 安装
 
@@ -144,18 +146,19 @@ scripts/
 ├── autoresearch_workflow.py      # 完整工作流
 ├── autoresearch_init_run.py      # 初始化运行
 ├── autoresearch_decision.py      # 决策逻辑
+├── autoresearch_ralph.py         # Ralph 循环控制 ⭐NEW
 ├── autoresearch_health_check.py  # 健康检查
 ├── autoresearch_launch_gate.py   # 启动门控
 ├── autoresearch_background.py    # 后台控制
-├── autoresearch_daemon.py        # 无人值守 Daemon ⭐NEW
-├── autoresearch_infinite.py      # 无限运行模式 ⭐NEW
-├── autoresearch_resilience.py    # 会话弹性协议 ⭐NEW
-├── autoresearch_monitor.py       # 实时监控仪表板 ⭐NEW
+├── autoresearch_daemon.py        # 无人值守 Daemon
+├── autoresearch_infinite.py      # 无限运行模式
+├── autoresearch_resilience.py    # 会话弹性协议
+├── autoresearch_monitor.py       # 实时监控仪表板
 ├── autoresearch_exec.py          # CI/CD 模式
 ├── autoresearch_parallel.py      # 并行实验
 ├── autoresearch_web_search.py    # Web 搜索
 ├── autoresearch_version.py       # 版本管理
-└── ... (共 23+ 个 Python 脚本)
+└── ... (共 24+ 个 Python 脚本)
 ```
 
 ## 📚 文档
@@ -206,20 +209,73 @@ Agent(
 #    - 每5次迭代报告进度
 ```
 
+### Ralph 循环控制
+
+支持 Kimi 官方的 [Ralph 循环协议](https://moonshotai.github.io/kimi-cli/zh/reference/kimi-command.html)：`--max-ralph-iterations`
+
+**在 Kimi 中使用：**
+```
+$kimi-autoresearch
+Goal: Reduce type errors
+MaxRalphIterations: 50
+MaxStepsPerTurn: 30
+MaxRetriesPerStep: 5
+```
+
+**使用 CLI 工具管理配置：**
+```bash
+# 查看当前 Ralph 循环状态
+python scripts/autoresearch_ralph.py status
+
+# 设置循环控制参数
+python scripts/autoresearch_ralph.py set-loop \
+  --max-steps 30 \
+  --max-retries 5 \
+  --max-ralph 100
+
+# 检查是否应该停止
+python scripts/autoresearch_ralph.py check-stop --current-metric 42
+
+# 发出停止信号
+python scripts/autoresearch_ralph.py stop --reason "Target reached"
+```
+
+### 子 Agent 配置
+
+支持 `--agent` 和 `--agent-file` 参数（与 Kimi CLI 兼容）：
+
+**在 Kimi 中使用：**
+```
+$kimi-autoresearch
+Goal: Security audit
+Agent: okabe
+```
+
+**使用 CLI 工具预配置：**
+```bash
+# 使用内置 agent（default 或 okabe）
+python scripts/autoresearch_ralph.py set-agent --agent okabe
+
+# 使用自定义 agent 文件
+python scripts/autoresearch_ralph.py set-agent --agent-file ./security-agent.toml
+```
+
 ### Daemon 控制
 
 ```bash
-# 查看状态
-python scripts/autoresearch_daemon.py status
+# 1. 配置并生成 prompt
+python scripts/autoresearch_daemon.py start \
+  --goal "Refactor codebase" \
+  --max-ralph-iterations 100 \
+  --max-steps-per-turn 30 \
+  --agent okabe
 
-# 暂停（当前迭代完成后停止）
-python scripts/autoresearch_daemon.py pause
-
-# 恢复
-python scripts/autoresearch_daemon.py resume
-
-# 停止
-python scripts/autoresearch_daemon.py stop
+# 2. 在 Kimi 中启动 Background Agent
+Agent(
+    description="Autoresearch daemon",
+    prompt=read(".autoresearch-daemon-prompt.txt"),
+    run_in_background=True
+)
 ```
 
 ### 能力验证
@@ -366,7 +422,7 @@ jobs:
 | 特性 | codex-autoresearch | autoresearch (Claude) | **kimi-autoresearch** |
 |------|-------------------|----------------------|----------------------|
 | 模式数量 | 7 | 9 | **10** ✅ |
-| Python脚本 | 20+ | 0 (内置) | **23** ✅ |
+| Python脚本 | 20+ | 0 (内置) | **24** ✅ |
 | 并行实验 | ✅ | ❌ | **✅** |
 | Web 搜索 | ⚠️ | ❌ | **✅ (自动触发)** |
 | CI/CD | ✅ | ⚠️ | **✅ (2套)** |
@@ -375,7 +431,9 @@ jobs:
 | 指标分析 | ⚠️ | ⚠️ | **✅** |
 | 提交门控 | ✅ | ❌ | **✅** |
 | 单元测试 | ✅ | ❌ | **✅** |
-| 配置示例 | ✅ | ⚠️ | **8个** ✅ |
+| Ralph 循环 | ❌ | ❌ | **✅** ✅ |
+| 子 Agent 支持 | ❌ | ❌ | **✅** ✅ |
+| 配置示例 | ✅ | ⚠️ | **9个** ✅ |
 | 语言 | 8种 | 英文 | **中文/英文** |
 
 [详细对比 →](references/COMPARISON.md)

@@ -6,5 +6,16 @@
   "verify": "npm test -- --coverage | grep 'All files' | awk '{print $2}' | tr -d '%'",
   "guard": "npm run build && npm run lint",
   "iterations": 30,
-  "target": 90
+  "target": 90,
+  "_comment_loop_control": "Optional Ralph Loop control parameters",
+  "loop_control": {
+    "max_steps_per_turn": 50,
+    "max_retries_per_step": 3,
+    "max_ralph_iterations": 0
+  },
+  "_comment_agent": "Optional agent configuration (agent and agent_file are mutually exclusive)",
+  "agent_config": {
+    "agent": "default",
+    "agent_file": null
+  }
 }

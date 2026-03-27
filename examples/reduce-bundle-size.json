@@ -5,5 +5,11 @@
   "direction": "lower",
   "verify": "npm run build && du -k dist/main.js | cut -f1",
   "guard": "npm test",
-  "iterations": 20
+  "iterations": 20,
+  "_comment": "Optional: Enable Ralph Loop mode with loop_control parameters",
+  "loop_control": {
+    "max_steps_per_turn": 50,
+    "max_retries_per_step": 3,
+    "max_ralph_iterations": 0
+  }
 }

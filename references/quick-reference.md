@@ -126,10 +126,12 @@ ruff check src/
 | File | Purpose |
 |------|---------|
 | `autoresearch-results.tsv` | Iteration results log |
-| `autoresearch-state.json` | Current run state |
+| `autoresearch-state.json` | Current run state (includes loop_control, agent_config) |
 | `autoresearch-runtime.json` | Background runtime state |
 | `autoresearch-lessons.md` | Cross-run learnings |
 | `autoresearch-report.md` | Final summary report |
+| `.autoresearch-daemon-prompt.txt` | Daemon prompt file |
+| `.autoresearch-infinite-prompt.txt` | Infinite mode prompt file |
 
 ## Decision Rules
 
@@ -157,6 +159,21 @@ ruff check src/
 | 2 | Hard blocker |
 | 3 | Config error |
 | 4 | Runtime error |
+
+## Ralph Loop Stop Signal
+
+To stop a Ralph loop gracefully, output exactly:
+
+```
+<choice>STOP</choice>
+```
+
+This is the standard Ralph loop termination signal recognized by Kimi.
+
+Stop conditions:
+- Target metric reached
+- Max iterations reached (`Iterations` or `MaxRalphIterations`)
+- 5+ consecutive discards with 2+ pivots (truly stuck)
 
 ## Git Workflow
 
@@ -204,7 +221,30 @@ python scripts/autoresearch_lessons.py add "This worked well" --type positive
 python scripts/autoresearch_lessons.py list
 ```
 
-### 无人值守 Daemon ⭐NEW
+### Ralph Loop Control ⭐NEW
+
+```bash
+# Check Ralph loop status
+python scripts/autoresearch_ralph.py status
+
+# Set loop control parameters
+python scripts/autoresearch_ralph.py set-loop \
+  --max-steps 30 \
+  --max-retries 5 \
+  --max-ralph 100
+
+# Set agent configuration
+python scripts/autoresearch_ralph.py set-agent --agent okabe
+python scripts/autoresearch_ralph.py set-agent --agent-file ./custom-agent.toml
+
+# Check stop conditions
+python scripts/autoresearch_ralph.py check-stop --current-metric 42
+
+# Emit stop signal
+python scripts/autoresearch_ralph.py stop --reason "Target reached"
+```
+
+### 无人值守 Daemon
 
 ```bash
 # Start daemon configuration
@@ -212,7 +252,10 @@ python scripts/autoresearch_daemon.py start \
   --goal "Add type hints" \
   --scope "src/" \
   --verify "mypy src/ | grep -c error" \
-  --iterations 100
+  --iterations 100 \
+  --max-steps-per-turn 30 \
+  --max-ralph-iterations 100 \
+  --agent okabe
 
 # Check daemon status
 python scripts/autoresearch_daemon.py status

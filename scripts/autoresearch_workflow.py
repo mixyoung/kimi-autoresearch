@@ -213,13 +213,20 @@ def should_split_session(iteration: int, compaction_count: int = 0) -> tuple[boo
 
 
 def workflow_loop(config: dict[str, Any], baseline: float) -> dict[str, Any]:
-    """Main iteration loop."""
-    print_header("Phase 2: Iteration Loop")
+    """Main iteration loop following Ralph loop protocol."""
+    print_header("Phase 2: Iteration Loop (Ralph Loop Protocol)")
     
     max_iterations = config.get('iterations', 10)
     target = config.get('target')
     direction = config.get('direction', 'lower')
     compaction_count = 0  # Track context compactions
+    
+    loop_control = config.get('loop_control', {})
+    max_ralph = loop_control.get('max_ralph_iterations', 0)
+    
+    if max_ralph != 0:
+        print(f"Ralph loop mode: max_ralph_iterations={max_ralph}")
+        print("Loop will continue until <choice>STOP</choice> or iteration limit")
     
     results = []
     current_baseline = baseline
@@ -228,7 +235,10 @@ def workflow_loop(config: dict[str, Any], baseline: float) -> dict[str, Any]:
     
     start_time = time.time()
     
-    for i in range(1, max_iterations + 1):
+    # Determine actual iteration limit
+    iteration_limit = max_ralph if max_ralph > 0 else max_iterations
+    
+    for i in range(1, iteration_limit + 1):
         # Session resilience: Check if we should split
         should_split, split_reason = should_split_session(i, compaction_count)
         if should_split:
@@ -241,10 +251,15 @@ def workflow_loop(config: dict[str, Any], baseline: float) -> dict[str, Any]:
             checks = protocol_fingerprint_check()
             if not all(checks.values()):
                 print(f"\n[RE-ANCHOR] Reloading protocol files...")
-                # In real implementation, would reload from disk
                 print("Protocol re-anchored successfully")
         
         status, new_baseline = workflow_iteration(i, config, current_baseline)
+        
+        # Check for stop signal (Ralph loop protocol)
+        if status == 'stop':
+            print("\n<choice>STOP</choice> detected. Stopping loop.")
+            break
+        
         results.append({'iteration': i, 'status': status, 'metric': new_baseline})
         
         if status == 'keep':
@@ -257,14 +272,25 @@ def workflow_loop(config: dict[str, Any], baseline: float) -> dict[str, Any]:
         if target:
             if direction == 'lower' and current_baseline <= target:
                 print(f"\n✓ Target reached: {current_baseline} <= {target}")
+                print("<choice>STOP</choice>")
                 break
             elif direction == 'higher' and current_baseline >= target:
                 print(f"\n✓ Target reached: {current_baseline} >= {target}")
+                print("<choice>STOP</choice>")
                 break
         
         # Check stuck pattern
         if discard_count >= 3:
             print(f"\n⚠ Stuck detected ({discard_count} discards), adjusting strategy...")
+            
+        # Check for excessive stuck state
+        code, output = run_script('state_manager.py', ['--action', 'load'])
+        try:
+            state = json.loads(output) if code == 0 else {}
+        except:
+            state = {}
+        if discard_count >= 5 and state.get('pivot_count', 0) >= 2:
+            print("\n⚠ Truly stuck (5+ discards, 2+ pivots). Consider web search.")
     
     duration = time.time() - start_time
     
@@ -305,10 +331,10 @@ def main() -> None:
         epilog="""
 Examples:
   # Run complete workflow
-  %(prog)s --goal "Reduce type errors" --verify "tsc --noEmit 2>&1 | grep -c error" --direction lower
+  python scripts/autoresearch_workflow.py --goal "Reduce type errors" --verify "tsc --noEmit 2>&1 | grep -c error" --direction lower
 
   # With all options
-  %(prog)s \\
+  python scripts/autoresearch_workflow.py \\
     --goal "Increase test coverage" \\
     --scope "src/**/*.ts" \\
     --metric "coverage %" \\
@@ -316,6 +342,12 @@ Examples:
     --direction higher \\
     --guard "npm run build" \\
     --iterations 20
+
+  # Ralph loop mode
+  python scripts/autoresearch_workflow.py \\
+    --goal "Reduce type errors" \\
+    --verify "tsc --noEmit 2>&1 | grep -c error" \\
+    --max-ralph-iterations 50
         """
     )
     
@@ -331,6 +363,14 @@ Examples:
     parser.add_argument('--config', type=str,
                        help='Config file (JSON)')
     
+    # Loop control options (Kimi Ralph loop compatible)
+    parser.add_argument('--max-steps-per-turn', type=int, default=50,
+                       help='Max steps per turn (default: 50)')
+    parser.add_argument('--max-retries-per-step', type=int, default=3,
+                       help='Max retries per step (default: 3)')
+    parser.add_argument('--max-ralph-iterations', type=int, default=0,
+                       help='Max Ralph iterations: 0=off, -1=infinite (default: 0)')
+    
     args = parser.parse_args()
     
     # Load config if provided
@@ -344,6 +384,13 @@ Examples:
                 'guard', 'iterations', 'target']:
         if getattr(args, key) is not None:
             config[key] = getattr(args, key)
+    
+    # Set loop control configuration
+    config['loop_control'] = {
+        'max_steps_per_turn': args.max_steps_per_turn,
+        'max_retries_per_step': args.max_retries_per_step,
+        'max_ralph_iterations': args.max_ralph_iterations
+    }
     
     print("=" * 60)
     print("  Autoresearch Workflow")

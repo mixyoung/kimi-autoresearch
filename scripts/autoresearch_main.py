@@ -205,6 +205,37 @@ def cmd_search(args: argparse.Namespace) -> int:
     return code
 
 
+def cmd_ralph(args: argparse.Namespace) -> int:
+    """Ralph loop control."""
+    script_args = [args.ralph_command]
+    
+    if args.ralph_command == 'set-loop':
+        if args.max_steps:
+            script_args.extend(['--max-steps', str(args.max_steps)])
+        if args.max_retries:
+            script_args.extend(['--max-retries', str(args.max_retries)])
+        if args.max_ralph:
+            script_args.extend(['--max-ralph', str(args.max_ralph)])
+    
+    elif args.ralph_command == 'set-agent':
+        if args.agent:
+            script_args.extend(['--agent', args.agent])
+        if args.agent_file:
+            script_args.extend(['--agent-file', args.agent_file])
+    
+    elif args.ralph_command == 'check-stop':
+        if args.current_metric:
+            script_args.extend(['--current-metric', str(args.current_metric)])
+    
+    elif args.ralph_command == 'stop':
+        if args.reason:
+            script_args.extend(['--reason', args.reason])
+    
+    code, output = run_script('autoresearch_ralph.py', script_args)
+    print(output)
+    return code
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description='Kimi Autoresearch - Main orchestrator',
@@ -327,6 +358,33 @@ Examples:
     search_query.add_argument('--error', type=str, help='Error message')
     search_query.add_argument('--strategy', type=str, help='Current strategy')
     
+    # ralph command - Ralph loop control
+    ralph_parser = subparsers.add_parser('ralph', help='Ralph loop control')
+    ralph_subparsers = ralph_parser.add_subparsers(dest='ralph_command')
+    
+    # ralph set-loop
+    ralph_set_loop = ralph_subparsers.add_parser('set-loop', help='Set loop control')
+    ralph_set_loop.add_argument('--max-steps', type=int, help='Max steps per turn')
+    ralph_set_loop.add_argument('--max-retries', type=int, help='Max retries per step')
+    ralph_set_loop.add_argument('--max-ralph', type=int, help='Max Ralph iterations')
+    
+    # ralph set-agent
+    ralph_set_agent = ralph_subparsers.add_parser('set-agent', help='Set agent config')
+    ralph_agent_group = ralph_set_agent.add_mutually_exclusive_group()
+    ralph_agent_group.add_argument('--agent', type=str, choices=['default', 'okabe'])
+    ralph_agent_group.add_argument('--agent-file', type=str, help='Custom agent file')
+    
+    # ralph check-stop
+    ralph_check = ralph_subparsers.add_parser('check-stop', help='Check stop conditions')
+    ralph_check.add_argument('--current-metric', type=float, help='Current metric')
+    
+    # ralph stop
+    ralph_stop = ralph_subparsers.add_parser('stop', help='Emit stop signal')
+    ralph_stop.add_argument('--reason', type=str, help='Stop reason')
+    
+    # ralph status
+    ralph_subparsers.add_parser('status', help='Show Ralph loop status')
+    
     args = parser.parse_args()
     
     if not args.command:
@@ -344,7 +402,8 @@ Examples:
         'report': cmd_report,
         'lang': cmd_lang,
         'search': cmd_search,
-        'version': cmd_version
+        'version': cmd_version,
+        'ralph': cmd_ralph
     }
     
     # Initialize i18n

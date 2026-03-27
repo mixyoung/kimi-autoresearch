@@ -26,6 +26,13 @@ Extract or confirm:
 5. **Verify**: Command to measure metric
 6. **Guard**: Optional safety check (must pass for keep)
 7. **Iterations**: Max iterations (optional, unbounded if not specified)
+8. **Loop Control** (Ralph Loop): Optional loop control parameters
+   - `MaxStepsPerTurn`: Max steps per iteration turn (default: 50)
+   - `MaxRetriesPerStep`: Max retries per step (default: 3)
+   - `MaxRalphIterations`: Ralph loop iterations (0=off, -1=infinite)
+9. **Agent Config**: Optional agent configuration
+   - `Agent`: Built-in agent (`default`, `okabe`)
+   - `AgentFile`: Path to custom agent file
 
 **Confirmation required**: Show config summary and get user approval.
 
@@ -95,7 +102,33 @@ python scripts/autoresearch_decision.py \
   - Extract lesson: what failed
 - **REWORK**: Metric improved but guard failed (max 2 attempts)
 
-### Step 8: Log Result
+### Step 8: Check Stop Signal (Ralph Loop Protocol)
+
+Check if the loop should stop:
+
+```bash
+python scripts/autoresearch_ralph.py check-stop --current-metric <metric>
+```
+
+Or:
+
+```bash
+python scripts/state_manager.py --action check-stop --current-metric <metric>
+```
+
+**Stop conditions**:
+- Target metric reached
+- Max iterations reached (`Iterations` or `MaxRalphIterations`)
+- 5+ consecutive discards with 2+ pivots (truly stuck)
+
+If any stop condition is met, output:
+```
+<choice>STOP</choice>
+```
+
+This is the standard Ralph loop termination signal recognized by Kimi.
+
+### Step 9: Log Result
 ```bash
 python scripts/log_result.py \
   --iteration <num> \
@@ -106,7 +139,7 @@ python scripts/log_result.py \
   --description "<what was tried>"
 ```
 
-### Step 9: Check Stuck Pattern
+### Step 10: Check Stuck Pattern
 ```bash
 python scripts/autoresearch_decision.py --action check-stuck
 ```
@@ -117,7 +150,7 @@ python scripts/autoresearch_decision.py --action check-stuck
 | 5+ consecutive discards | **PIVOT** - try fundamentally different approach |
 | 2+ pivots without improvement | **WEB SEARCH** - search for external solutions |
 
-### Step 10: Check Relay (for long runs)
+### Step 11: Check Relay (for long runs)
 
 For runs longer than 23 hours, implement automatic relay:
 
@@ -143,8 +176,8 @@ For runs longer than 23 hours, implement automatic relay:
 
 Use `autoresearch_infinite.py` for automatic relay management.
 
-### Step 11: Repeat
-Continue until: target reached, iteration cap, manual stop, hard blocker, or relay triggered.
+### Step 12: Repeat
+Continue until: target reached, iteration cap, manual stop, hard blocker, relay triggered, or `<choice>STOP</choice>` signal.
 
 ## Phase 5: Summary
 
@@ -215,6 +248,32 @@ python scripts/autoresearch_resilience.py check
 
 See [session-resilience-protocol.md](session-resilience-protocol.md) for details.
 
+## Ralph Loop Mode
+
+Ralph loop is Kimi's official protocol for continuous iteration:
+
+```
+$kimi-autoresearch
+Goal: Reduce type errors
+MaxRalphIterations: 100
+MaxStepsPerTurn: 50
+MaxRetriesPerStep: 3
+Agent: okabe
+```
+
+**Configuration via CLI:**
+```bash
+python scripts/autoresearch_ralph.py set-loop \
+  --max-steps 50 \
+  --max-retries 3 \
+  --max-ralph 100
+
+python scripts/autoresearch_ralph.py set-agent --agent okabe
+```
+
+**Stop Signal:**
+Output `<choice>STOP</choice>` to stop the Ralph loop gracefully.
+
 ## Infinite Mode
 
 Break the 24-hour barrier with automatic relay:
@@ -227,6 +286,7 @@ python scripts/autoresearch_infinite.py start --goal "..."
 - Session 1: 23 hours → relay
 - Session 2: 23 hours → relay
 - Session 3+: continues indefinitely
+- Automatically sets `max_ralph_iterations` to `-1` (infinite)
 
 See [autoresearch_infinite.py](../scripts/autoresearch_infinite.py) for implementation.
 

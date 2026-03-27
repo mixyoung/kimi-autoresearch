@@ -56,10 +56,16 @@ class InfiniteRunner:
         生成接力提示
         
         这个提示让新的 Background Agent 接力继续运行
+        遵循Kimi官方Ralph循环协议，支持 <choice>STOP</choice> 停止信号
         """
+        loop_control = config.get('loop_control', {})
+        max_steps = loop_control.get('max_steps_per_turn', 50)
+        max_retries = loop_control.get('max_retries_per_step', 3)
+        max_ralph = loop_control.get('max_ralph_iterations', -1)  # Infinite mode defaults to -1
+        
         return f"""[RELAY SESSION #{self.state['relay_count'] + 1}]
 
-You are continuing an infinite autoresearch run.
+You are continuing an infinite autoresearch run using Ralph loop protocol.
 
 ## Previous Session Summary
 
@@ -71,6 +77,17 @@ You are continuing an infinite autoresearch run.
 
 {config.get('goal', 'Improve the codebase')}
 
+## Loop Control Configuration
+
+- Max steps per turn: {max_steps}
+- Max retries per step: {max_retries}
+- Max Ralph iterations: {max_ralph} (infinite mode)
+
+## Ralph Loop Protocol
+
+This follows Kimi's official Ralph loop: the same prompt is fed repeatedly to the Agent,
+allowing it to iterate around a task continuously until `<choice>STOP</choice>` is output.
+
 ## Current State
 
 1. Read {INFINITE_STATE_FILE} for full history
@@ -81,27 +98,46 @@ You are continuing an infinite autoresearch run.
 
 Continue the autoresearch loop for up to 23 hours:
 
-1. **Check Time**
+1. **Check Stop Conditions First**
+   ```bash
+   python scripts/state_manager.py --action check-stop --current-metric <current_metric>
+   ```
+   If output contains `<choice>STOP</choice>`, stop immediately.
+
+2. **Check Time**
    - Track your running time
    - At 22 hours, prepare for relay
 
-2. **Continue Iterations**
+3. **Continue Iterations**
    - Follow standard iteration protocol
    - One change → commit → verify → decide → log
+   - Respect loop control limits (max {max_steps} steps, {max_retries} retries)
    - Update {INFINITE_STATE_FILE} after each iteration
 
-3. **Prepare for Relay**
+4. **Prepare for Relay**
    - At 22 hours: 
      - Save current state
      - Generate summary
      - Update {INFINITE_STATE_FILE}
      - Print "[RELAY_NEEDED]"
 
-4. **Handle Relay**
+5. **Handle Relay**
    - If you see "[RELAY_NEEDED]" from previous session:
      - Continue seamlessly
      - Increment relay_count
      - Update total_iterations
+
+## Ralph Loop Stop Signal
+
+To stop the Ralph loop gracefully, output exactly:
+```
+<choice>STOP</choice>
+```
+
+Stop when:
+- Target metric reached
+- Explicit stop command in state file
+- Unrecoverable error after {max_retries} retries
 
 ## Critical Rules
 
@@ -109,6 +145,8 @@ Continue the autoresearch loop for up to 23 hours:
 - At 22 hours, MUST prepare relay
 - Keep state files updated
 - Log every iteration
+- Respect loop control limits
+- Output `<choice>STOP</choice>` when stopping
 
 ## Start Now
 
@@ -137,6 +175,14 @@ Continue from iteration {self.state['total_iterations'] + 1}
         
         Returns: 启动提示，需要在 Kimi 中执行
         """
+        # Set default loop control for infinite mode
+        if 'loop_control' not in config:
+            config['loop_control'] = {
+                'max_steps_per_turn': 50,
+                'max_retries_per_step': 3,
+                'max_ralph_iterations': -1  # -1 means infinite in Ralph loop
+            }
+        
         # 初始化状态
         self.state['status'] = 'running'
         self.state['config'] = config
@@ -273,6 +319,12 @@ def main():
     start_parser.add_argument('--verify', type=str, default='')
     start_parser.add_argument('--direction', type=str, default='lower')
     start_parser.add_argument('--target', type=float)
+    
+    # Loop control options (Kimi Ralph loop compatible)
+    start_parser.add_argument('--max-steps-per-turn', type=int, default=50,
+                            help='Max steps per turn (default: 50)')
+    start_parser.add_argument('--max-retries-per-step', type=int, default=3,
+                            help='Max retries per step (default: 3)')
     
     # status
     subparsers.add_parser('status', help='Show status')
