@@ -6,6 +6,7 @@ Supports Kimi's official Ralph loop protocol with:
 - <choice>STOP</choice> signal handling
 - Loop control configuration
 - Sub-agent management
+- Unified prompt generation
 
 Reference: https://moonshotai.github.io/kimi-cli/zh/reference/kimi-command.html
 """
@@ -113,7 +114,7 @@ def emit_stop_signal(reason: str = "") -> None:
     print("<choice>STOP</choice>")
 
 
-def check_stop_conditions(current_metric: float = None) -> tuple[bool, str]:
+def check_should_stop(current_metric: float = None) -> tuple[bool, str]:
     """
     Check if Ralph loop should stop.
     
@@ -155,16 +156,167 @@ def check_stop_conditions(current_metric: float = None) -> tuple[bool, str]:
     return False, ""
 
 
+def generate_ralph_prompt(config: dict[str, Any], state: dict[str, Any] = None) -> str:
+    """
+    Generate a unified Ralph Loop prompt.
+    
+    This can be used by Workflow, Daemon, and Infinite modes.
+    """
+    if state is None:
+        state = load_state()
+    
+    loop_control = state.get('loop_control', {})
+    max_steps = loop_control.get('max_steps_per_turn', 50)
+    max_retries = loop_control.get('max_retries_per_step', 3)
+    max_ralph = loop_control.get('max_ralph_iterations', 0)
+    
+    agent_config = state.get('agent_config', {})
+    agent_info = ""
+    if agent_config.get('agent'):
+        agent_info = f"\nAgent: {agent_config['agent']}"
+    elif agent_config.get('agent_file'):
+        agent_info = f"\nAgent File: {agent_config['agent_file']}"
+    
+    cfg = state.get('config', {})
+    baseline = state.get('baseline', 'N/A')
+    current = state.get('best', baseline)
+    
+    iterations_info = ""
+    if max_ralph > 0:
+        iterations_info = f"Max Ralph Iterations: {max_ralph}"
+    elif cfg.get('iterations'):
+        iterations_info = f"Iterations: {cfg['iterations']}"
+    
+    return f"""# Autoresearch Ralph Loop
+
+## Goal
+{cfg.get('goal', 'Improve the codebase')}
+
+## Scope
+{cfg.get('scope', 'Current directory')}
+
+## Configuration
+- Baseline: {baseline}
+- Current Best: {current}
+- Direction: {cfg.get('direction', 'lower')}
+- Verify: `{cfg.get('verify', 'N/A')}`
+- Guard: `{cfg.get('guard', 'None')}`
+- Max Steps: {max_steps}
+- Max Retries: {max_retries}
+{iterations_info}{agent_info}
+
+## Ralph Loop Protocol
+
+You are in Ralph Loop mode. Iterate continuously until `<choice>STOP</choice>`.
+
+### Single Iteration Steps
+
+1. **READ CONTEXT**
+   ```bash
+   python scripts/state_manager.py --action load
+   cat autoresearch-results.tsv
+   git log --oneline -5
+   ```
+
+2. **ANALYZE & HYPOTHESIZE**
+   - Review history: what worked, what failed
+   - Form ONE concrete hypothesis
+   - Choose minimal, focused change
+
+3. **EXECUTE CHANGE**
+   - Make ONE atomic change
+   - Use WriteFile or StrReplaceFile
+   - Keep changes minimal
+
+4. **GIT COMMIT**
+   ```bash
+   python scripts/check_git.py --action commit --message "experiment: <description>"
+   ```
+
+5. **VERIFY**
+   ```bash
+   {cfg.get('verify', 'echo "No verify command"')}
+   ```
+   Extract metric. Limit to {max_steps} steps.
+
+6. **GUARD** (if configured)
+   ```bash
+   {cfg.get('guard', 'echo "No guard"')}
+   ```
+
+7. **DECIDE**
+   ```bash
+   python scripts/autoresearch_decision.py --action decide \\
+       --current <metric> --baseline <baseline> \\
+       --direction {cfg.get('direction', 'lower')} --guard-passed <true|false>
+   ```
+   - KEEP: Update baseline, continue
+   - DISCARD: `python scripts/check_git.py --action revert`
+   - REWORK: Fix and retry (max 2x)
+
+8. **LOG**
+   ```bash
+   python scripts/log_result.py \\
+       --iteration <n> --commit <hash> --metric <value> \\
+       --status <keep|discard|rework> --description "<what>"
+   ```
+
+9. **CHECK STOP CONDITIONS**
+   ```bash
+   python scripts/autoresearch_ralph.py check-stop --current-metric <metric>
+   ```
+   
+   Stop if:
+   - Target reached
+   - Max iterations
+   - Truly stuck (5+ discards, 2+ pivots)
+   - Output contains `<choice>STOP</choice>`
+
+10. **DECIDE: CONTINUE OR STOP**
+    - Continue: Go to next iteration (Ralph Loop repeats)
+    - Stop: Output `<choice>STOP</choice>`
+
+## Rules
+
+- ONE change per iteration
+- Commit BEFORE verify
+- Revert failed changes immediately
+- Never batch changes
+- Keep changes reversible
+- Log every action
+- Use `<choice>STOP</choice>` to stop gracefully
+
+## Current State
+
+- Iteration: {state.get('iteration', 0)}
+- Baseline: {baseline}
+- Best: {current}
+- Consecutive Discards: {state.get('consecutive_discards', 0)}
+- Pivots: {state.get('pivot_count', 0)}
+
+## Start
+
+Begin next iteration following the Single Iteration Steps.
+"""
+
+
 def print_ralph_status() -> None:
     """Print current Ralph loop status."""
     state = load_state()
     loop_control = get_loop_control()
     agent_config = get_agent_config()
+    cfg = state.get('config', {})
     
     print("=" * 60)
     print("  Ralph Loop Status")
     print("=" * 60)
     print()
+    
+    if cfg.get('goal'):
+        print(f"Goal: {cfg['goal']}")
+        print(f"Scope: {cfg.get('scope', 'Current directory')}")
+        print()
+    
     print("Loop Control:")
     print(f"  Max steps per turn: {loop_control['max_steps_per_turn']}")
     print(f"  Max retries per step: {loop_control['max_retries_per_step']}")
@@ -184,7 +336,7 @@ def print_ralph_status() -> None:
     print(f"Best: {state.get('best', 'N/A')}")
     
     # Check if we should stop
-    should_stop, reason = check_stop_conditions(state.get('best'))
+    should_stop, reason = check_should_stop(state.get('best'))
     if should_stop:
         print()
         print(f"[STOP CONDITION] {reason}")
@@ -211,6 +363,9 @@ Examples:
   
   # Emit stop signal
   %(prog)s stop --reason "Target reached"
+  
+  # Generate Ralph Loop prompt
+  %(prog)s prompt > ralph-prompt.txt
   
   # Show status
   %(prog)s status
@@ -240,6 +395,9 @@ Examples:
     stop_parser = subparsers.add_parser('stop', help='Emit stop signal')
     stop_parser.add_argument('--reason', type=str, help='Reason for stopping')
     
+    # prompt command
+    subparsers.add_parser('prompt', help='Generate Ralph Loop prompt')
+    
     # status command
     subparsers.add_parser('status', help='Show Ralph loop status')
     
@@ -264,7 +422,7 @@ Examples:
             sys.exit(1)
     
     elif args.command == 'check-stop':
-        should_stop, reason = check_stop_conditions(args.current_metric)
+        should_stop, reason = check_should_stop(args.current_metric)
         result = {'should_stop': should_stop, 'reason': reason}
         print(json.dumps(result, indent=2))
         if should_stop:
@@ -272,6 +430,9 @@ Examples:
     
     elif args.command == 'stop':
         emit_stop_signal(args.reason)
+    
+    elif args.command == 'prompt':
+        print(generate_ralph_prompt({}))
     
     elif args.command == 'status':
         print_ralph_status()

@@ -12,10 +12,15 @@ A self-directed iterative system for Kimi that continuously cycles through: **mo
 
 Inspired by Karpathy's autoresearch principles, adapted for Kimi Code CLI.
 
-## Core Loop
+## Core Loop (Ralph Loop Edition)
+
+Kimi Autoresearch uses **Kimi's Ralph Loop** mechanism for iteration control.
 
 ```
-LOOP (forever or N iterations):
+RALPH LOOP (handled by Kimi):
+  The same prompt is repeated, allowing continuous iteration until <choice>STOP</choice>
+  
+SINGLE ITERATION PROTOCOL (performed by you):
   1. Review current state + git history + results log
   2. Pick ONE hypothesis based on what worked, what failed, what's untried
   3. Make ONE atomic change
@@ -23,8 +28,11 @@ LOOP (forever or N iterations):
   5. Run mechanical verification (tests, metrics, counts)
   6. If improved → keep. If worse → git revert. If crashed → fix or skip.
   7. Log the result
-  8. Repeat until stop condition, manual stop, or iteration cap
+  8. Check stop conditions → Output <choice>STOP</choice> if met
+  9. Ralph Loop repeats automatically
 ```
+
+**Key Concept**: Kimi's Ralph Loop handles the iteration control. You focus on the single iteration protocol.
 
 ## Usage
 
@@ -45,6 +53,14 @@ Metric: coverage percentage
 Verify: npm test -- --coverage | grep "All files"
 Guard: npm run build
 Iterations: 20
+
+# With Ralph Loop Control
+$kimi-autoresearch
+Goal: Reduce type errors
+MaxRalphIterations: 50
+MaxStepsPerTurn: 30
+MaxRetriesPerStep: 5
+Agent: okabe
 ```
 
 ## Parameters
@@ -59,9 +75,9 @@ Iterations: 20
 | `Guard` | Safety check (must pass) | `npm run build` |
 | `Iterations` | Max iterations (optional) | `20` |
 
-## Loop Control (Ralph Loop)
+## Ralph Loop Configuration
 
-Kimi Autoresearch supports Kimi's official **Ralph loop** protocol for continuous iteration:
+Kimi Autoresearch is built on Kimi's **Ralph Loop** mechanism:
 
 | Option | Description | Default |
 |--------|-------------|---------|
@@ -69,61 +85,60 @@ Kimi Autoresearch supports Kimi's official **Ralph loop** protocol for continuou
 | `MaxRetriesPerStep` | Maximum retries per step if failed | `3` |
 | `MaxRalphIterations` | Ralph loop iterations (`0`=off, `-1`=infinite) | `0` |
 
-### Ralph Loop Mode
+### How It Works
 
-When `MaxRalphIterations` is set to a non-zero value, autoresearch enters Ralph loop mode:
+1. **Setup Phase**: Run workflow script to initialize and get Ralph Loop prompt
+   ```bash
+   python scripts/autoresearch_workflow.py \
+       --goal "Reduce type errors" \
+       --verify "tsc --noEmit 2>&1 | grep -c error"
+   ```
 
-```
-$kimi-autoresearch
-Goal: Reduce type errors
-MaxRalphIterations: 50
-MaxStepsPerTurn: 30
-MaxRetriesPerStep: 5
-Agent: okabe
-```
-
-The loop continues until:
-1. Target metric is reached
-2. Max iterations reached
-3. Agent outputs `<choice>STOP</choice>`
+2. **Ralph Loop Phase**: Copy the generated prompt into Kimi
+   - Kimi handles the iteration loop automatically
+   - You follow the Single Iteration Protocol each time
+   - Ralph Loop repeats until `<choice>STOP</choice>`
 
 ### Stop Signal
 
-To stop a Ralph loop gracefully, output exactly:
+Output exactly to stop:
 
 ```
 <choice>STOP</choice>
 ```
 
-This is the standard Ralph loop termination signal recognized by Kimi.
+Stop when:
+1. Target metric reached
+2. Max iterations reached (`Iterations` or `MaxRalphIterations`)
+3. Truly stuck (5+ discards, 2+ pivots)
 
-### Managing Ralph Loop via CLI Tools
+### CLI Tools for Setup
 
-You can also use helper scripts to manage Ralph loop settings:
+Helper scripts prepare the Ralph Loop environment:
 
 ```bash
-# Check current Ralph loop status
+# Initialize and generate Ralph Loop prompt
+python scripts/autoresearch_workflow.py \
+    --goal "Reduce type errors" \
+    --verify "tsc --noEmit 2>&1 | grep -c error" \
+    --max-ralph-iterations 50 \
+    --max-steps-per-turn 30 \
+    --agent okabe
+
+# Check Ralph loop configuration
 python scripts/autoresearch_ralph.py status
 
-# Set loop control parameters
-python scripts/autoresearch_ralph.py set-loop --max-steps 30 --max-retries 5 --max-ralph 100
+# Pre-configure loop parameters
+python scripts/autoresearch_ralph.py set-loop --max-steps 30 --max-retries 5
 
-# Set agent configuration
+# Pre-configure agent
 python scripts/autoresearch_ralph.py set-agent --agent okabe
 
-# Check if should stop
+# Check if should stop (used within Ralph Loop)
 python scripts/autoresearch_ralph.py check-stop --current-metric 42
 
-# Emit stop signal manually
-python scripts/autoresearch_ralph.py stop --reason "Target reached"
-```
-
-Or use the main CLI:
-
-```bash
-python scripts/autoresearch_main.py ralph status
-python scripts/autoresearch_main.py ralph set-loop --max-ralph 100
-python scripts/autoresearch_main.py ralph set-agent --agent okabe
+# Generate prompt anytime
+python scripts/autoresearch_ralph.py prompt
 ```
 
 ## Sub-Agent Configuration
@@ -266,32 +281,29 @@ Exit codes:
 - Establish baseline measurement
 - User confirms configuration
 
-### Phase 3: Iteration Loop (Kimi-Driven)
+### Phase 3: Ralph Loop (Single Iteration Protocol)
 
-**IMPORTANT**: Each iteration MUST be executed by Kimi, not automated scripts.
+**Ralph Loop handles iteration control automatically.**
 
-For each iteration, Kimi MUST:
+You only need to follow the Single Iteration Protocol each time the prompt repeats:
 
 1. **Read Context**
-   - Read all files in the defined scope
-   - Read `autoresearch-results.tsv` to understand history
-   - Read git log (`git log --oneline -10`) to see what worked/failed
+   - Read `autoresearch-state.json` for current state
+   - Read `autoresearch-results.tsv` for history
+   - Read git log (`git log --oneline -5`) to see recent changes
    - Read `autoresearch-lessons.md` for prior learnings
 
 2. **Analyze & Hypothesize**
-   - Understand the codebase structure
-   - Identify specific improvement opportunities
+   - Understand what worked/failed in previous iterations
    - Form **ONE concrete hypothesis** about what to change
    - Document why this change might improve the metric
-   - Consider: What worked before? What failed? What's untried?
 
-3. **Execute Change (Manual)**
-   - Make **ONE atomic change** to the code using Kimi's editing tools
-   - Ensure the change is minimal and focused
+3. **Execute Change**
+   - Make **ONE atomic change** using Kimi's editing tools
+   - Keep changes minimal and focused
    - Do NOT batch multiple changes
-   - The change should be easily revertable
 
-4. **Commit**
+4. **Git Commit**
    ```bash
    python scripts/check_git.py --action commit --message "experiment: <description>"
    ```
@@ -299,7 +311,6 @@ For each iteration, Kimi MUST:
 5. **Verify**
    - Run the verify command
    - Extract the metric from output
-   - Record the new metric value
 
 6. **Decide**
    ```bash
@@ -326,24 +337,43 @@ For each iteration, Kimi MUST:
      --description "<what was tried>"
    ```
 
-8. **Check Stuck Pattern**
+7. **Log Result**
    ```bash
-   python scripts/autoresearch_decision.py --action check-stuck
+   python scripts/log_result.py \
+     --iteration <num> \
+     --commit <hash> \
+     --metric <value> \
+     --status <keep|discard|crash> \
+     --description "<what was tried>"
+   ```
+
+8. **Update State**
+   ```bash
+   python scripts/state_manager.py --action update-status --status <keep|discard|pivot>
+   ```
+
+9. **Check Stop Conditions**
+   ```bash
+   python scripts/autoresearch_ralph.py check-stop --current-metric <metric>
    ```
    
-   If stuck:
-   - 3+ discards: **REFINE** - adjust within current strategy
-   - 5+ discards: **PIVOT** - try fundamentally different approach
-   - 2+ pivots: **Web Search** - search for external solutions
+   If should stop, output: `<choice>STOP</choice>`
+   
+   Otherwise, check stuck patterns:
+   - 3+ discards: **REFINE** strategy
+   - 5+ discards: **PIVOT** approach
+   - 5+ discards + 2+ pivots: **Web Search**
 
-9. **Repeat**
-   - Continue to next iteration
-   - Stop if: target reached, iteration cap, manual stop, or hard blocker
+10. **Ralph Loop Continues**
+    - The prompt repeats automatically
+    - You perform the next Single Iteration Protocol
+    - Loop continues until `<choice>STOP</choice>`
 
-### Phase 4: Summary
+### Phase 4: Summary (After Ralph Loop Stops)
 - Print baseline → best summary
 - Extract lessons learned
 - Generate report with `scripts/generate_report.py`
+- Review `autoresearch-results.tsv` for complete history
 
 ## Results Logging
 
@@ -417,52 +447,55 @@ The search results are used to generate new hypotheses for the next iterations.
 
 ## Running in Background
 
-### True Autonomous Mode (New)
+All modes use Ralph Loop internally. The workflow script generates a prompt that can be used in:
 
-Kimi Background Agent can run autoresearch fully autonomously:
+### 1. Interactive Kimi Session
+```
+$kimi-autoresearch
+Goal: Reduce type errors
+MaxRalphIterations: 50
+```
 
+### 2. Workflow Script (Generates Ralph Loop Prompt)
 ```bash
-# 1. Start daemon configuration
+python scripts/autoresearch_workflow.py \
+  --goal "Reduce type errors" \
+  --verify "tsc --noEmit 2>&1 | grep -c error" \
+  --max-ralph-iterations 50
+
+# Copy the generated prompt into Kimi
+```
+
+### 3. Daemon Mode (Background Agent with Ralph Loop)
+```bash
+# 1. Generate daemon prompt
 python scripts/autoresearch_daemon.py start \
   --goal "Add type hints" \
   --scope "src/" \
   --verify "mypy src/ | grep -c error" \
   --direction lower \
-  --iterations 100
+  --max-ralph-iterations 100
 
-# This generates a prompt file and instructions
-
-# 2. Launch the Background Agent
+# 2. Launch Background Agent (uses Ralph Loop internally)
 Agent(
     description="Autoresearch daemon",
     prompt=read(".autoresearch-daemon-prompt.txt"),
     run_in_background=True
 )
-
-# 3. Agent runs autonomously:
-#    - Reads state and history
-#    - Makes decisions
-#    - Modifies code
-#    - Commits changes
-#    - Verifies results
-#    - Logs progress
-#    - Repeats until done
 ```
 
-### Daemon Control
-
+### 4. Infinite Mode (Ralph Loop with Auto-Relay)
 ```bash
-# Check status
-python scripts/autoresearch_daemon.py status
+# Ralph Loop continues across multiple Background Agent sessions
+python scripts/autoresearch_infinite.py start \
+  --goal "Refactor codebase" \
+  --max-ralph-iterations -1
 
-# Pause (agent will check state and stop at next iteration)
-python scripts/autoresearch_daemon.py pause
-
-# Resume
-python scripts/autoresearch_daemon.py resume
-
-# Stop
-python scripts/autoresearch_daemon.py stop
+Agent(
+    description="Infinite autoresearch",
+    prompt=read(".autoresearch-infinite-prompt.txt"),
+    run_in_background=True
+)
 ```
 
 ### Background Task Capabilities
@@ -643,32 +676,37 @@ These scripts perform mechanical tasks only. They do NOT analyze code or generat
 | `state_manager.py` | Read/write state.json |
 | `generate_report.py` | Generate summary report |
 
-**Note**: Scripts like `autoresearch_main.py`, `autoresearch_workflow.py` are entry points that set up the environment, but the actual iteration loop is driven by Kimi following the protocol above.
+**Note**: 
+- `autoresearch_workflow.py` - Prepares environment and generates Ralph Loop prompt
+- `autoresearch_main.py` - Unified CLI for helper tools
+- The actual iteration loop is handled by Kimi's Ralph Loop mechanism
 
 ### Ralph Loop Commands
 
 ```bash
-# Set loop control parameters
-python scripts/autoresearch_ralph.py set-loop --max-steps 30 --max-retries 5 --max-ralph 100
+# Generate Ralph Loop prompt (main entry point)
+python scripts/autoresearch_workflow.py \
+    --goal "Reduce type errors" \
+    --verify "tsc --noEmit 2>&1 | grep -c error" \
+    --max-ralph-iterations 50
 
-# Set agent configuration
+# Check Ralph loop configuration
+python scripts/autoresearch_ralph.py status
+
+# Pre-configure loop parameters
+python scripts/autoresearch_ralph.py set-loop --max-steps 30 --max-retries 5
+
+# Pre-configure agent
 python scripts/autoresearch_ralph.py set-agent --agent okabe
 
-# Check if should stop
+# Check if should stop (used within Ralph Loop)
 python scripts/autoresearch_ralph.py check-stop --current-metric 42
 
-# Emit stop signal
+# Generate prompt anytime
+python scripts/autoresearch_ralph.py prompt
+
+# Emit stop signal manually (if needed)
 python scripts/autoresearch_ralph.py stop --reason "Target reached"
-
-# Show Ralph loop status
-python scripts/autoresearch_ralph.py status
-```
-
-Or via the main CLI:
-
-```bash
-python scripts/autoresearch_main.py ralph set-loop --max-ralph 100
-python scripts/autoresearch_main.py ralph status
 ```
 
 ## References

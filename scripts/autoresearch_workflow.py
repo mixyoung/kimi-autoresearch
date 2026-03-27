@@ -1,15 +1,24 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Unified workflow orchestrator for autoresearch.
-Coordinates all components for a complete run.
+Autoresearch Workflow - Ralph Loop Edition
+
+This script prepares the environment and generates Ralph Loop configuration.
+The actual iteration loop is handled by Kimi's Ralph Loop mechanism.
+
+Usage:
+    # Generate Ralph Loop prompt for Kimi
+    python scripts/autoresearch_workflow.py \
+        --goal "Reduce type errors" \
+        --verify "tsc --noEmit 2>&1 | grep -c error"
+    
+    # Then in Kimi, the prompt will guide through Ralph Loop iterations
 """
 import argparse
 import json
 import os
 import subprocess
 import sys
-import time
 from datetime import datetime
 from typing import Any
 
@@ -36,42 +45,18 @@ def print_header(title: str) -> None:
     print("=" * 60)
 
 
-def print_step(step: str, status: str = "...") -> None:
-    """Print a step with status."""
-    symbols = {
-        '...': '⏳',
-        'ok': '✓',
-        'error': '✗',
-        'warn': '⚠',
-        'skip': '⊘'
-    }
-    symbol = symbols.get(status, '⏳')
-    print(f"{symbol} {step}")
-
-
 def workflow_init(config: dict[str, Any]) -> bool:
     """Initialize the workflow."""
     print_header("Phase 0: Initialization")
     
-    print_step("Checking health")
+    print("Checking health...")
     code, output = run_script('autoresearch_health_check.py', [])
     if code != 0:
-        print_step("Health check failed", 'error')
-        print(output)
+        print(f"✗ Health check failed:\n{output}")
         return False
-    print_step("Health check passed", 'ok')
+    print("✓ Health check passed")
     
-    print_step("Checking launch gate")
-    code, output = run_script('autoresearch_launch_gate.py', ['--check-only'])
-    if code == 2:
-        print_step("Existing run found, will resume", 'warn')
-    elif code == 1:
-        print_step("Cannot proceed with existing state", 'error')
-        return False
-    else:
-        print_step("Ready for fresh start", 'ok')
-    
-    print_step("Initializing run")
+    print("\nInitializing run state...")
     args = [
         '--goal', config['goal'],
         '--metric', config['metric'],
@@ -88,288 +73,282 @@ def workflow_init(config: dict[str, Any]) -> bool:
     
     code, output = run_script('autoresearch_init_run.py', args)
     if code != 0:
-        print_step("Initialization failed", 'error')
-        print(output)
+        print(f"✗ Initialization failed:\n{output}")
         return False
-    print_step("Run initialized", 'ok')
+    print("✓ Run initialized")
+    
+    # Set loop control if provided
+    loop_control = config.get('loop_control', {})
+    if loop_control:
+        print("\nSetting Ralph Loop control parameters...")
+        lc_args = []
+        if loop_control.get('max_steps_per_turn'):
+            lc_args.extend(['--max-steps', str(loop_control['max_steps_per_turn'])])
+        if loop_control.get('max_retries_per_step'):
+            lc_args.extend(['--max-retries', str(loop_control['max_retries_per_step'])])
+        if loop_control.get('max_ralph_iterations'):
+            lc_args.extend(['--max-ralph', str(loop_control['max_ralph_iterations'])])
+        if lc_args:
+            code, _ = run_script('autoresearch_ralph.py', ['set-loop'] + lc_args)
+            if code == 0:
+                print("✓ Loop control configured")
+    
+    # Set agent config if provided
+    agent_config = config.get('agent_config', {})
+    if agent_config:
+        print("\nSetting agent configuration...")
+        if agent_config.get('agent'):
+            code, _ = run_script('autoresearch_ralph.py', 
+                               ['set-agent', '--agent', agent_config['agent']])
+            if code == 0:
+                print(f"✓ Agent set to: {agent_config['agent']}")
+        elif agent_config.get('agent_file'):
+            code, _ = run_script('autoresearch_ralph.py',
+                               ['set-agent', '--agent-file', agent_config['agent_file']])
+            if code == 0:
+                print(f"✓ Agent file set to: {agent_config['agent_file']}")
     
     return True
 
 
 def workflow_baseline(config: dict[str, Any]) -> tuple[bool, float]:
     """Get baseline measurement."""
-    print_header("Phase 1: Baseline")
+    print_header("Phase 1: Baseline Measurement")
     
-    print_step("Measuring baseline")
+    print(f"Running verify command: {config['verify']}")
     code, output = run_script('get_baseline.py', [
         '--verify', config['verify'],
         '--parse-number'
     ])
     
     if code != 0:
-        print_step("Baseline measurement failed", 'error')
-        print(output)
-        return False, 0
+        print(f"✗ Baseline measurement failed:\n{output}")
+        return False, 0.0
     
     # Try to extract metric from output
+    baseline = 0.0
     for line in output.split('\n'):
         if 'Extracted metric:' in line:
             try:
-                metric = float(line.split(':')[1].strip())
-                print_step(f"Baseline: {metric}", 'ok')
-                return True, metric
+                baseline = float(line.split(':')[1].strip())
+                break
             except:
                 pass
     
-    print_step("Could not parse baseline metric", 'error')
-    return False, 0
+    print(f"✓ Baseline metric: {baseline}")
+    
+    # Save baseline to state
+    run_script('state_manager.py', [
+        '--action', 'save',
+        '--key', 'baseline',
+        '--value', str(baseline)
+    ])
+    
+    return True, baseline
 
 
-def workflow_iteration(iteration: int, config: dict[str, Any], 
-                      baseline: float) -> tuple[str, float]:
+def generate_ralph_prompt(config: dict[str, Any], baseline: float) -> str:
     """
-    Guide Kimi through a single iteration.
+    Generate Ralph Loop prompt for Kimi.
     
-    NOTE: This function only prints guidance. Kimi must manually:
-    1. Read the code and context
-    2. Decide what to change
-    3. Execute the change using Kimi's editing tools
-    4. Use helper scripts for commit/verify/log
+    This prompt instructs Kimi to use Ralph Loop mechanism for iteration.
+    Kimi will handle the loop control, we just provide the protocol for each iteration.
     """
-    print(f"\n{'='*60}")
-    print(f"  Iteration {iteration}")
-    print(f"{'='*60}")
-    print()
-    print("Kimi: Please follow the iteration protocol from SKILL.md")
-    print()
-    print("1. Read Context:")
-    print(f"   - Scope: {config.get('scope', 'current directory')}")
-    print("   - Read autoresearch-results.tsv for history")
-    print("   - Read git log to see what worked/failed")
-    print()
-    print("2. Analyze & Hypothesize:")
-    print("   - Understand the codebase")
-    print("   - Identify ONE specific improvement")
-    print("   - Form a concrete hypothesis")
-    print()
-    print("3. Execute Change:")
-    print("   - Make ONE atomic change using Kimi's tools")
-    print("   - Keep changes minimal and focused")
-    print()
-    print("4. Commit:")
-    print('   python scripts/check_git.py --action commit --message "experiment: <description>"')
-    print()
-    print("5. Verify:")
-    verify_cmd = config.get('verify', 'Not configured')
-    print(f"   Run: {verify_cmd}")
-    print()
-    print("6. Decide & Log:")
-    print("   python scripts/autoresearch_decision.py --action decide ...")
-    print("   python scripts/log_result.py ...")
-    print()
-    print("Return 'keep' if improved, 'discard' if not.")
-    print()
-    
-    # In semi-auto mode, we return a placeholder
-    # In real usage, Kimi would manually execute and report result
-    return 'manual', baseline
-
-
-def protocol_fingerprint_check() -> dict[str, bool]:
-    """
-    Verify critical protocol rules are still remembered.
-    
-    Called every 10 iterations or after context compaction.
-    Returns check results for each critical rule.
-    """
-    checks = {
-        "core_loop": True,  # modify → verify → keep/discard → repeat
-        "one_change_rule": True,  # One atomic change per iteration
-        "verify_first": True,  # Mechanical verification before changes
-        "git_commit_before_verify": True,  # Commit before verify
-        "auto_rollback": True,  # Auto revert on failure
-    }
-    return checks
-
-
-def should_split_session(iteration: int, compaction_count: int = 0) -> tuple[bool, str]:
-    """
-    Check if session should be split to prevent context drift.
-    
-    Args:
-        iteration: Current iteration number
-        compaction_count: Number of times context was compacted
-        
-    Returns:
-        (should_split, reason)
-    """
-    if iteration >= 40:
-        return True, "Iteration limit reached (40)"
-    
-    if compaction_count >= 2:
-        return True, f"Context compacted {compaction_count} times"
-    
-    return False, ""
-
-
-def workflow_loop(config: dict[str, Any], baseline: float) -> dict[str, Any]:
-    """Main iteration loop following Ralph loop protocol."""
-    print_header("Phase 2: Iteration Loop (Ralph Loop Protocol)")
-    
-    max_iterations = config.get('iterations', 10)
-    target = config.get('target')
-    direction = config.get('direction', 'lower')
-    compaction_count = 0  # Track context compactions
-    
     loop_control = config.get('loop_control', {})
+    max_steps = loop_control.get('max_steps_per_turn', 50)
+    max_retries = loop_control.get('max_retries_per_step', 3)
     max_ralph = loop_control.get('max_ralph_iterations', 0)
     
-    if max_ralph != 0:
-        print(f"Ralph loop mode: max_ralph_iterations={max_ralph}")
-        print("Loop will continue until <choice>STOP</choice> or iteration limit")
+    agent_config = config.get('agent_config', {})
+    agent_info = ""
+    if agent_config.get('agent'):
+        agent_info = f"\nAgent: {agent_config['agent']}"
+    elif agent_config.get('agent_file'):
+        agent_info = f"\nAgent File: {agent_config['agent_file']}"
     
-    results = []
-    current_baseline = baseline
-    keep_count = 0
-    discard_count = 0
+    iterations_info = ""
+    if max_ralph > 0:
+        iterations_info = f"Max Ralph Iterations: {max_ralph}"
+    elif config.get('iterations'):
+        iterations_info = f"Iterations: {config['iterations']}"
     
-    start_time = time.time()
-    
-    # Determine actual iteration limit
-    iteration_limit = max_ralph if max_ralph > 0 else max_iterations
-    
-    for i in range(1, iteration_limit + 1):
-        # Session resilience: Check if we should split
-        should_split, split_reason = should_split_session(i, compaction_count)
-        if should_split:
-            print(f"\n[SESSION-SPLIT] {split_reason}")
-            print("Checkpoint saved. Re-invoke to resume.")
-            break
-        
-        # Session resilience: Protocol fingerprint check every 10 iterations
-        if i % 10 == 0:
-            checks = protocol_fingerprint_check()
-            if not all(checks.values()):
-                print(f"\n[RE-ANCHOR] Reloading protocol files...")
-                print("Protocol re-anchored successfully")
-        
-        status, new_baseline = workflow_iteration(i, config, current_baseline)
-        
-        # Check for stop signal (Ralph loop protocol)
-        if status == 'stop':
-            print("\n<choice>STOP</choice> detected. Stopping loop.")
-            break
-        
-        results.append({'iteration': i, 'status': status, 'metric': new_baseline})
-        
-        if status == 'keep':
-            keep_count += 1
-            current_baseline = new_baseline
-        else:
-            discard_count += 1
-        
-        # Check if target reached
-        if target:
-            if direction == 'lower' and current_baseline <= target:
-                print(f"\n✓ Target reached: {current_baseline} <= {target}")
-                print("<choice>STOP</choice>")
-                break
-            elif direction == 'higher' and current_baseline >= target:
-                print(f"\n✓ Target reached: {current_baseline} >= {target}")
-                print("<choice>STOP</choice>")
-                break
-        
-        # Check stuck pattern
-        if discard_count >= 3:
-            print(f"\n⚠ Stuck detected ({discard_count} discards), adjusting strategy...")
-            
-        # Check for excessive stuck state
-        code, output = run_script('state_manager.py', ['--action', 'load'])
-        try:
-            state = json.loads(output) if code == 0 else {}
-        except:
-            state = {}
-        if discard_count >= 5 and state.get('pivot_count', 0) >= 2:
-            print("\n⚠ Truly stuck (5+ discards, 2+ pivots). Consider web search.")
-    
-    duration = time.time() - start_time
-    
-    return {
-        'iterations': len(results),
-        'kept': keep_count,
-        'discarded': discard_count,
-        'final_metric': current_baseline,
-        'improvement': current_baseline - baseline,
-        'duration_seconds': int(duration)
-    }
+    return f"""# Autoresearch Ralph Loop Session
 
+## Goal
+{config['goal']}
 
-def workflow_summary(results: dict[str, Any], config: dict[str, Any]) -> None:
-    """Generate final summary."""
-    print_header("Phase 3: Summary")
-    
-    print(f"\nGoal: {config['goal']}")
-    print(f"Iterations: {results['iterations']}")
-    print(f"Kept: {results['kept']}")
-    print(f"Discarded: {results['discarded']}")
-    print(f"Final metric: {results['final_metric']}")
-    print(f"Improvement: {results['improvement']:+.2f}")
-    print(f"Duration: {results['duration_seconds']}s")
-    
-    print_step("\nGenerating report")
-    code, output = run_script('generate_report.py', [])
-    if code == 0:
-        print_step("Report generated: autoresearch-report.md", 'ok')
-    
-    print_step("\nWorkflow complete", 'ok')
+## Scope
+{config.get('scope', 'Current directory')}
+
+## Configuration
+- Baseline Metric: {baseline}
+- Direction: {config.get('direction', 'lower')} (higher/lower is better)
+- Verify Command: `{config['verify']}`
+- Guard Command: `{config.get('guard', 'None')}`
+- Max Steps Per Turn: {max_steps}
+- Max Retries Per Step: {max_retries}
+{iterations_info}{agent_info}
+
+## Ralph Loop Protocol
+
+You are now in Ralph Loop mode. The same prompt will be repeated, allowing you to iterate continuously until you output `<choice>STOP</choice>` or reach the iteration limit.
+
+### Single Iteration Protocol
+
+For each iteration, follow these steps:
+
+1. **READ CONTEXT**
+   ```bash
+   python scripts/state_manager.py --action load
+   cat autoresearch-results.tsv
+   git log --oneline -5
+   ```
+   Understand current state and history.
+
+2. **ANALYZE & HYPOTHESIZE**
+   - Review what worked/failed in previous iterations
+   - Form ONE concrete hypothesis about what to change
+   - Choose the most promising improvement
+
+3. **EXECUTE CHANGE**
+   - Make ONE atomic change using Kimi's editing tools
+   - Keep changes minimal and focused
+   - Do NOT batch multiple changes
+
+4. **GIT COMMIT**
+   ```bash
+   python scripts/check_git.py --action commit --message "experiment: <brief description>"
+   ```
+   If commit fails, retry up to {max_retries} times.
+
+5. **VERIFY**
+   ```bash
+   {config['verify']}
+   ```
+   Extract the metric from output. Limit to {max_steps} steps.
+
+6. **GUARD CHECK** (if configured)
+   ```bash
+   {config.get('guard', 'echo "No guard configured"')}
+   ```
+   Must pass (exit 0) for change to be kept.
+
+7. **DECIDE**
+   ```bash
+   python scripts/autoresearch_decision.py --action decide \\
+       --current <new_metric> --baseline <baseline> \\
+       --direction {config.get('direction', 'lower')} --guard-passed <true|false>
+   ```
+   - **KEEP**: Metric improved + guard passed → Update baseline for next iteration
+   - **DISCARD**: Metric not improved → `python scripts/check_git.py --action revert`
+   - **REWORK**: Metric improved but guard failed → Fix and retry (max 2x)
+
+8. **LOG RESULT**
+   ```bash
+   python scripts/log_result.py \\
+       --iteration <n> --commit <hash> --metric <value> \\
+       --status <keep|discard|rework> --description "<what was tried>"
+   ```
+
+9. **CHECK STUCK PATTERN**
+   ```bash
+   python scripts/autoresearch_ralph.py check-stop --current-metric <metric>
+   ```
+   
+   If output contains `<choice>STOP</condition>`, stop immediately.
+   
+   Otherwise, check:
+   - 3+ consecutive discards → REFINE strategy
+   - 5+ consecutive discards → PIVOT approach  
+   - 5+ discards + 2+ pivots → Consider web search
+
+10. **DECIDE: CONTINUE OR STOP**
+    - If target reached: Output `<choice>STOP</choice>`
+    - If truly stuck: Output `<choice>STOP</choice>`
+    - Otherwise: Continue to next iteration
+
+## Stop Conditions
+
+Output `<choice>STOP</choice>` when any of these occur:
+1. Target metric reached (if configured)
+2. Max iterations reached
+3. Truly stuck (5+ discards, 2+ pivots, no improvement)
+4. Unrecoverable error after {max_retries} retries
+
+## Important Rules
+
+- ONE change per iteration
+- Always commit BEFORE verify
+- Revert failed changes immediately
+- Never batch multiple changes
+- Keep changes minimal and reversible
+- Log every action
+- Output `<choice>STOP</choice>` to stop gracefully
+
+## Current State
+
+Baseline: {baseline}
+Current Best: {baseline}
+Consecutive Discards: 0
+Pivot Count: 0
+
+## Start Now
+
+Begin Iteration 1. Follow the Single Iteration Protocol.
+This is a Ralph Loop - the prompt will repeat until you output `<choice>STOP</choice>`.
+"""
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description='Autoresearch Workflow Orchestrator',
+        description='Autoresearch Workflow - Ralph Loop Edition',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Run complete workflow
-  python scripts/autoresearch_workflow.py --goal "Reduce type errors" --verify "tsc --noEmit 2>&1 | grep -c error" --direction lower
-
-  # With all options
-  python scripts/autoresearch_workflow.py \\
-    --goal "Increase test coverage" \\
-    --scope "src/**/*.ts" \\
-    --metric "coverage %" \\
-    --verify "npm test -- --coverage | grep 'All files'" \\
-    --direction higher \\
-    --guard "npm run build" \\
-    --iterations 20
-
-  # Ralph loop mode
+  # Generate Ralph Loop prompt
   python scripts/autoresearch_workflow.py \\
     --goal "Reduce type errors" \\
     --verify "tsc --noEmit 2>&1 | grep -c error" \\
-    --max-ralph-iterations 50
+    --direction lower
+
+  # With Ralph Loop parameters
+  python scripts/autoresearch_workflow.py \\
+    --goal "Increase coverage" \\
+    --verify "npm test -- --coverage | grep 'All files'" \\
+    --direction higher \\
+    --max-ralph-iterations 50 \\
+    --max-steps-per-turn 30 \\
+    --agent okabe
+
+After running this script, copy the generated prompt into Kimi to start the Ralph Loop.
         """
     )
     
-    parser.add_argument('--goal', type=str, required=True)
-    parser.add_argument('--scope', type=str, default='')
-    parser.add_argument('--metric', type=str, default='metric')
-    parser.add_argument('--verify', type=str, required=True)
+    parser.add_argument('--goal', type=str, required=True, help='Goal description')
+    parser.add_argument('--scope', type=str, default='', help='Files to modify')
+    parser.add_argument('--metric', type=str, default='metric', help='Metric name')
+    parser.add_argument('--verify', type=str, required=True, help='Verify command')
     parser.add_argument('--direction', type=str, default='lower',
-                       choices=['higher', 'lower'])
-    parser.add_argument('--guard', type=str, default='')
-    parser.add_argument('--iterations', type=int, default=10)
-    parser.add_argument('--target', type=float)
-    parser.add_argument('--config', type=str,
-                       help='Config file (JSON)')
+                       choices=['higher', 'lower'], help='Improvement direction')
+    parser.add_argument('--guard', type=str, default='', help='Guard command')
+    parser.add_argument('--iterations', type=int, default=10, help='Max iterations')
+    parser.add_argument('--target', type=float, help='Target metric value')
+    parser.add_argument('--config', type=str, help='Config file (JSON)')
     
-    # Loop control options (Kimi Ralph loop compatible)
+    # Ralph Loop control options
     parser.add_argument('--max-steps-per-turn', type=int, default=50,
                        help='Max steps per turn (default: 50)')
     parser.add_argument('--max-retries-per-step', type=int, default=3,
                        help='Max retries per step (default: 3)')
     parser.add_argument('--max-ralph-iterations', type=int, default=0,
                        help='Max Ralph iterations: 0=off, -1=infinite (default: 0)')
+    
+    # Agent configuration
+    agent_group = parser.add_mutually_exclusive_group()
+    agent_group.add_argument('--agent', type=str, choices=['default', 'okabe'],
+                            help='Built-in agent profile')
+    agent_group.add_argument('--agent-file', type=str,
+                            help='Custom agent file path')
     
     args = parser.parse_args()
     
@@ -392,24 +371,47 @@ Examples:
         'max_ralph_iterations': args.max_ralph_iterations
     }
     
-    print("=" * 60)
-    print("  Autoresearch Workflow")
-    print("=" * 60)
+    # Set agent configuration
+    if args.agent:
+        config['agent_config'] = {'agent': args.agent, 'agent_file': None}
+    elif args.agent_file:
+        config['agent_config'] = {'agent': None, 'agent_file': args.agent_file}
+    else:
+        config['agent_config'] = {}
     
-    # Run workflow
+    # Run initialization
     if not workflow_init(config):
         sys.exit(1)
     
+    # Get baseline
     success, baseline = workflow_baseline(config)
     if not success:
         sys.exit(1)
     
-    results = workflow_loop(config, baseline)
-    workflow_summary(results, config)
+    # Generate Ralph Loop prompt
+    print_header("Phase 2: Ralph Loop Configuration")
+    print("\n✓ Environment prepared")
+    print(f"✓ Baseline measured: {baseline}")
+    print("\n" + "=" * 60)
+    print("  GENERATED RALPH LOOP PROMPT")
+    print("=" * 60)
+    print("\nCopy the following prompt into Kimi to start the Ralph Loop:\n")
+    
+    prompt = generate_ralph_prompt(config, baseline)
+    print(prompt)
     
     print("\n" + "=" * 60)
-    print("  ✓ Workflow Complete")
+    print("  END OF PROMPT")
     print("=" * 60)
+    print("\nInstructions:")
+    print("1. Copy the prompt above")
+    print("2. Paste it into Kimi")
+    print("3. Kimi will execute the Ralph Loop")
+    print("4. The loop continues until <choice>STOP</choice> or max iterations")
+    print("\nTo check status anytime:")
+    print("  python scripts/autoresearch_ralph.py status")
+    print("\nTo generate report after completion:")
+    print("  python scripts/generate_report.py")
 
 
 if __name__ == '__main__':
