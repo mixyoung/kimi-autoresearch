@@ -43,7 +43,7 @@ Iterations: 20
 
 运行 20 次后自动停止。
 
-### 完整配置
+### 完整配置（带目标值）
 
 ```
 $kimi-autoresearch
@@ -52,8 +52,8 @@ Scope: src/**/*.ts
 Verify: npm test -- --coverage | grep "All files"
 Guard: npm run build
 Direction: higher
-Iterations: 30
 Target: 90
+# 达到 90% 自动停止，或无限运行直到达成
 ```
 
 ### 类型安全
@@ -150,7 +150,7 @@ Agent(
 $kimi-autoresearch
 Goal: 重构整个代码库
 Verify: npm test 2>&1 | grep -c failing
-MaxRalphIterations: 100
+# 不设置 Iterations = 无限运行，可运行 24 小时
 """,
     run_in_background=True
 )

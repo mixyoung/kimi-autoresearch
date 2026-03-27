@@ -42,15 +42,34 @@ Scope: src/**/*.ts
 Metric: coverage percentage
 Verify: npm test -- --coverage | grep "All files"
 Guard: npm run build
-Iterations: 20
+# Iterations: 20  # 可选，不设置则无限运行
+```
 
-# With Ralph Loop Control
+### Unlimited Iteration (Default - Recommended)
+```
 $kimi-autoresearch
 Goal: Reduce type errors
-MaxRalphIterations: 50
+Verify: tsc --noEmit 2>&1 | grep -c error
+# 不设置 Iterations = 无限运行直到完成
+```
+
+### With Iteration Limit (Optional)
+```
+$kimi-autoresearch
+Goal: Quick check
+Verify: npm test 2>&1 | grep -c failing
+Iterations: 20
+# 只运行 20 次，然后自动停止
+```
+
+### With Ralph Loop Control (Optional)
+```
+$kimi-autoresearch
+Goal: Reduce type errors
+Verify: tsc --noEmit 2>&1 | grep -c error
 MaxStepsPerTurn: 30
 MaxRetriesPerStep: 5
-Agent: okabe
+# MaxRalphIterations 默认为 0 = 无限
 ```
 
 ## Parameters
