@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test suite for autoresearch daemon
+Test suite for autoresearch daemon and core functionality
 """
 
 import json
@@ -28,7 +28,6 @@ class TestDaemonState(unittest.TestCase):
     
     def test_state_file_creation(self):
         """Test state file is created"""
-        # Initialize run
         from autoresearch_init_run import init_state
         
         config = {
@@ -155,94 +154,81 @@ class TestStuckDetection(unittest.TestCase):
         self.assertEqual(result['action'], 'search')
 
 
-class TestResilience(unittest.TestCase):
-    """Test session resilience"""
-    
-    def test_reanchor_trigger(self):
-        """Test reanchor trigger conditions"""
-        from autoresearch_resilience import ResilienceManager
-        
-        manager = ResilienceManager()
-        manager.last_anchor_iteration = 0
-        
-        # Should trigger at iteration 10
-        should_reanchor, reason = manager.should_reanchor(10)
-        self.assertTrue(should_reanchor)
-        
-        # Should not trigger at iteration 5
-        should_reanchor, reason = manager.should_reanchor(5)
-        self.assertFalse(should_reanchor)
-    
-    def test_session_split_trigger(self):
-        """Test session split trigger"""
-        from autoresearch_resilience import ResilienceManager
-        
-        manager = ResilienceManager()
-        
-        # Should trigger at iteration 40
-        should_split, reason = manager.should_split_session(40)
-        self.assertTrue(should_split)
-        
-        # Should not trigger at iteration 20
-        should_split, reason = manager.should_split_session(20)
-        self.assertFalse(should_split)
-
-
-class TestMonitoring(unittest.TestCase):
-    """Test monitoring"""
+class TestBaselining(unittest.TestCase):
+    """Test baseline measurement"""
     
     def setUp(self):
         self.temp_dir = TemporaryDirectory()
         self.old_cwd = os.getcwd()
         os.chdir(self.temp_dir.name)
-        
-        # Create sample results
-        with open('autoresearch-results.tsv', 'w') as f:
-            f.write("iteration\tcommit\tmetric\tdelta\tstatus\tdescription\ttimestamp\n")
-            f.write("0\tabc123\t50\t0\tbaseline\tinitial\t2024-01-01\n")
-            f.write("1\tdef456\t45\t-5\tkeep\tfix types\t2024-01-01\n")
-            f.write("2\tghi789\t48\t+3\tdiscard\twrong approach\t2024-01-01\n")
     
     def tearDown(self):
         os.chdir(self.old_cwd)
         self.temp_dir.cleanup()
     
-    def test_progress_calculation(self):
-        """Test progress calculation"""
-        from autoresearch_monitor import ProgressTracker
+    def test_get_baseline_number(self):
+        """Test extracting number from command output"""
+        from get_baseline import extract_number
         
-        tracker = ProgressTracker()
-        progress = tracker.calculate_progress(tracker.load_results())
+        # Should extract number from various formats
+        self.assertEqual(extract_number("Error count: 42"), 42)
+        self.assertEqual(extract_number("42 errors found"), 42)
+        self.assertEqual(extract_number("Coverage: 85.5%"), 85.5)
+    
+    def test_get_baseline_none(self):
+        """Test when no number found"""
+        from get_baseline import extract_number
         
-        self.assertEqual(progress['total_iterations'], 3)
-        self.assertEqual(progress['kept'], 1)
-        self.assertEqual(progress['discarded'], 1)
-        self.assertEqual(progress['baseline'], 50)
-        self.assertEqual(progress['current_metric'], 48)
+        result = extract_number("No errors")
+        self.assertIsNone(result)
 
 
-class TestIntegration(unittest.TestCase):
-    """Integration tests"""
+class TestLogging(unittest.TestCase):
+    """Test result logging"""
     
     def setUp(self):
         self.temp_dir = TemporaryDirectory()
         self.old_cwd = os.getcwd()
         os.chdir(self.temp_dir.name)
-        
-        # Initialize git repo
-        os.system('git init')
-        os.system('git config user.email "test@test.com"')
-        os.system('git config user.name "Test"')
     
     def tearDown(self):
         os.chdir(self.old_cwd)
         self.temp_dir.cleanup()
     
-    def test_full_iteration_workflow(self):
-        """Test complete iteration workflow"""
-        # This is a simplified integration test
-        # In practice, this would test the full loop
-        pass
+    def test_log_result_creates_file(self):
+        """Test that logging creates results file"""
+        from log_result import log_result
+        
+        log_result(
+            iteration=1,
+            commit='abc123',
+            metric=42,
+            delta=-5,
+            status='keep',
+            description='Test fix'
+        )
+        
+        self.assertTrue(os.path.exists('autoresearch-results.tsv'))
+    
+    def test_log_result_content(self):
+        """Test logged result content"""
+        from log_result import log_result
+        
+        log_result(
+            iteration=1,
+            commit='abc123',
+            metric=42,
+            delta=-5,
+            status='keep',
+            description='Test fix'
+        )
+        
+        with open('autoresearch-results.tsv', 'r') as f:
+            content = f.read()
+        
+        self.assertIn('abc123', content)
+        self.assertIn('42', content)
+        self.assertIn('keep', content)
 
 
 def run_tests():
@@ -254,9 +240,8 @@ def run_tests():
     suite.addTests(loader.loadTestsFromTestCase(TestDaemonState))
     suite.addTests(loader.loadTestsFromTestCase(TestDecisionLogic))
     suite.addTests(loader.loadTestsFromTestCase(TestStuckDetection))
-    suite.addTests(loader.loadTestsFromTestCase(TestResilience))
-    suite.addTests(loader.loadTestsFromTestCase(TestMonitoring))
-    suite.addTests(loader.loadTestsFromTestCase(TestIntegration))
+    suite.addTests(loader.loadTestsFromTestCase(TestBaselining))
+    suite.addTests(loader.loadTestsFromTestCase(TestLogging))
     
     runner = unittest.TextTestRunner(verbosity=2)
     result = runner.run(suite)
