@@ -58,7 +58,7 @@ Target: 90
 | `scope` | 修改范围 | `"."` (当前目录) |
 | `direction` | 优化方向 | `"lower"` |
 | `guard` | 保护命令 | `null` |
-| `iterations` | 最大迭代数 | `10` |
+| `iterations` | 最大迭代数 | 无限（不设置则一直运行） |
 | `target` | 目标值 | `null` |
 | `metric` | 指标名称 | `"metric"` |
 

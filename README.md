@@ -22,12 +22,26 @@ Verify: tsc --noEmit 2>&1 | grep -c error
 
 ## 使用示例
 
-### 基础用法
+### 基础用法（无限迭代）
 
 ```
 $kimi-autoresearch
 Goal: 减少类型错误
+Verify: tsc --noEmit 2>&1 | grep -c error
 ```
+
+**默认无限迭代**，直到目标达成或你手动停止。
+
+### 限制迭代次数
+
+```
+$kimi-autoresearch
+Goal: 快速优化
+Verify: npm test 2>&1 | grep -c failing
+Iterations: 20
+```
+
+运行 20 次后自动停止。
 
 ### 完整配置
 
@@ -72,9 +86,31 @@ Target: 90
 | `Scope` | ❌ | 当前目录 | 要修改的文件 |
 | `Direction` | ❌ | lower | higher/lower 表示更好 |
 | `Guard` | ❌ | 无 | 安全检查命令 |
-| `Iterations` | ❌ | 10 | 最大迭代次数 |
+| `Iterations` | ❌ | 无限 | 最大迭代次数（不设则无限运行） |
 | `Target` | ❌ | 无 | 达到此值时停止 |
 | `MaxRalphIterations` | ❌ | 0 | Ralph 循环限制（0=无限制） |
+
+## 无限迭代（默认）
+
+kimi-autoresearch **默认无限迭代**，真正体现"自动化研究"的精神：
+
+```
+$kimi-autoresearch
+Goal: 优化代码
+Verify: npm test 2>&1 | grep -c failing
+```
+
+然后你可以：
+- **去睡觉** - 让它整夜运行
+- **去开会** - 让它在后台优化
+- **去做其他事** - 定期查看进度
+
+它会一直运行直到：
+1. 目标达成（如有设置 Target）
+2. 你手动停止（Ctrl+C）
+3. 遇到无法恢复的错误
+
+这才是真正的自主优化！
 
 ## 迭代流程
 

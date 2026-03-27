@@ -63,7 +63,7 @@ Agent: okabe
 | `Direction` | `higher` or `lower` | `higher` |
 | `Verify` | Command to measure metric | `npm test -- --coverage` |
 | `Guard` | Safety check (must pass) | `npm run build` |
-| `Iterations` | Max iterations (optional) | `20` |
+| `Iterations` | Max iterations (optional, default: unlimited) | `20` or omit |
 
 ## Ralph Loop Protocol
 
@@ -86,7 +86,7 @@ Kimi Autoresearch uses **Kimi's native Ralph Loop**. The prompt repeats automati
 | `Scope` | ❌ | Current dir | Files to modify |
 | `Direction` | ❌ | lower | higher/lower is better |
 | `Guard` | ❌ | None | Safety check command |
-| `Iterations` | ❌ | 10 | Max iterations |
+| `Iterations` | ❌ | 无限 | Max iterations (unset = unlimited) |
 | `Target` | ❌ | None | Target metric value |
 | `MaxStepsPerTurn` | ❌ | 50 | Max steps per iteration |
 | `MaxRetriesPerStep` | ❌ | 3 | Max retries per step |
