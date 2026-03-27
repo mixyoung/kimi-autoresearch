@@ -1,39 +1,39 @@
 # Kimi Autoresearch
 
-Autonomous iterative improvement for your codebase. Like [codex-autoresearch](https://github.com/leolilinxiao/codex-autoresearch) but for **Kimi Code CLI**.
+面向 **Kimi Code CLI** 的自主迭代优化工具。类似 [codex-autoresearch](https://github.com/leolilinxiao/codex-autoresearch)，但专为 Kimi 打造。
 
-## Quick Start
+## 快速开始
 
 ```
 $kimi-autoresearch
-Goal: Reduce type errors
+Goal: 减少类型错误
 Verify: tsc --noEmit 2>&1 | grep -c error
 ```
 
-That's it. Kimi's Ralph Loop takes over and iterates automatically.
+就这么简单。Kimi 的 Ralph Loop 会自动接管并迭代。
 
-## How It Works
+## 工作原理
 
-1. **You provide goal** → `$kimi-autoresearch`
-2. **Kimi measures baseline** → Runs verify command
-3. **Kimi enters Ralph Loop** → Prompt repeats automatically
-4. **Each iteration** → Modify → Verify → Keep/Discard → Log
-5. **Loop continues** → Until target reached or `<choice>STOP</choice>`
+1. **你提供目标** → `$kimi-autoresearch`
+2. **Kimi 测量基线** → 运行验证命令
+3. **Kimi 进入 Ralph Loop** → 提示词自动重复
+4. **每次迭代** → 修改 → 验证 → 保留/丢弃 → 记录
+5. **循环继续** → 直到目标达成或输出 `<choice>STOP</choice>`
 
-## Usage Examples
+## 使用示例
 
-### Basic
-
-```
-$kimi-autoresearch
-Goal: Reduce type errors
-```
-
-### With Configuration
+### 基础用法
 
 ```
 $kimi-autoresearch
-Goal: Increase test coverage to 90%
+Goal: 减少类型错误
+```
+
+### 完整配置
+
+```
+$kimi-autoresearch
+Goal: 提升测试覆盖率到 90%
 Scope: src/**/*.ts
 Verify: npm test -- --coverage | grep "All files"
 Guard: npm run build
@@ -42,77 +42,77 @@ Iterations: 30
 Target: 90
 ```
 
-### Type Safety
+### 类型安全
 
 ```
 $kimi-autoresearch
-Goal: Eliminate all `any` types
+Goal: 消除所有 `any` 类型
 Scope: src/**/*.ts
 Verify: grep -r "any" src/**/*.ts | wc -l
 Direction: lower
 ```
 
-### Test Coverage
+### 测试覆盖率
 
 ```
 $kimi-autoresearch
-Goal: Increase coverage to 90%
+Goal: 提升覆盖率到 90%
 Verify: npm test -- --coverage | grep "All files"
 Guard: npm test
 Direction: higher
 Target: 90
 ```
 
-## Parameters
+## 参数说明
 
-| Parameter | Required | Default | Description |
-|-----------|----------|---------|-------------|
-| `Goal` | ✅ | - | What to achieve |
-| `Verify` | ✅ | - | Command to measure metric (must output number) |
-| `Scope` | ❌ | Current dir | Files to modify |
-| `Direction` | ❌ | lower | higher/lower is better |
-| `Guard` | ❌ | None | Safety check command |
-| `Iterations` | ❌ | 10 | Max iterations |
-| `Target` | ❌ | None | Stop when metric reaches this |
-| `MaxRalphIterations` | ❌ | 0 | Ralph loop limit (0=unlimited) |
+| 参数 | 必需 | 默认值 | 说明 |
+|-----------|------|---------|-------------|
+| `Goal` | ✅ | - | 要达成的目标 |
+| `Verify` | ✅ | - | 测量指标的命令（必须输出数字） |
+| `Scope` | ❌ | 当前目录 | 要修改的文件 |
+| `Direction` | ❌ | lower | higher/lower 表示更好 |
+| `Guard` | ❌ | 无 | 安全检查命令 |
+| `Iterations` | ❌ | 10 | 最大迭代次数 |
+| `Target` | ❌ | 无 | 达到此值时停止 |
+| `MaxRalphIterations` | ❌ | 0 | Ralph 循环限制（0=无限制） |
 
-## The Loop
+## 迭代流程
 
-Each iteration follows this protocol:
+每次迭代遵循以下协议：
 
-1. **Read Context** - Check state, history, git log
-2. **Hypothesize** - Form ONE concrete improvement idea
-3. **Change** - Make ONE atomic code change
-4. **Commit** - `git commit -m "experiment: ..."`
-5. **Verify** - Run verify command
-6. **Decide** - Keep (improved) / Discard (revert) / Rework
-7. **Log** - Record result to TSV
-8. **Repeat** - Ralph Loop continues automatically
+1. **读取上下文** - 检查状态、历史、git 日志
+2. **形成假设** - 提出一个具体的改进想法
+3. **执行修改** - 进行一次原子代码修改
+4. **提交** - `git commit -m "experiment: ..."`
+5. **验证** - 运行验证命令
+6. **决策** - 保留（有改善）/ 丢弃（回退）/ 重做
+7. **记录** - 记录结果到 TSV
+8. **重复** - Ralph Loop 自动继续
 
-## Stop Conditions
+## 停止条件
 
-Kimi outputs `<choice>STOP</choice>` when:
-- Target metric reached
-- Max iterations reached
-- Truly stuck (5+ discards, 2+ pivots)
+Kimi 在以下情况输出 `<choice>STOP</choice>`：
+- 目标指标达成
+- 达到最大迭代次数
+- 真正卡住（5+ 次丢弃，2+ 次转向）
 
-## Files
+## 文件说明
 
-- `autoresearch-results.tsv` - Iteration log
-- `autoresearch-state.json` - Current state
-- `autoresearch-lessons.md` - Learnings across runs
-- `autoresearch-report.md` - Final summary
+- `autoresearch-results.tsv` - 迭代日志
+- `autoresearch-state.json` - 当前状态
+- `autoresearch-lessons.md` - 跨运行学习记录
+- `autoresearch-report.md` - 最终摘要
 
-## Background Mode
+## 后台模式
 
-For long-running tasks:
+长时间运行的任务：
 
 ```python
 Agent(
     description="Autoresearch",
     prompt="""
 $kimi-autoresearch
-Goal: Refactor entire codebase
+Goal: 重构整个代码库
 Verify: npm test 2>&1 | grep -c failing
 MaxRalphIterations: 100
 """,
@@ -120,22 +120,22 @@ MaxRalphIterations: 100
 )
 ```
 
-## Comparison with codex-autoresearch
+## 与 codex-autoresearch 对比
 
-| Feature | codex-autoresearch | kimi-autoresearch |
+| 功能 | codex-autoresearch | kimi-autoresearch |
 |---------|-------------------|-------------------|
-| Trigger | `$codex-autoresearch` | `$kimi-autoresearch` ✅ |
-| Loop Control | Native | Kimi Ralph Loop ✅ |
-| State Management | File-based | File-based ✅ |
-| Git Integration | Native | Native ✅ |
-| Background Mode | Agent | Agent ✅ |
+| 触发方式 | `$codex-autoresearch` | `$kimi-autoresearch` ✅ |
+| 循环控制 | 原生 | Kimi Ralph Loop ✅ |
+| 状态管理 | 文件 | 文件 ✅ |
+| Git 集成 | 原生 | 原生 ✅ |
+| 后台模式 | Agent | Agent ✅ |
 
-## Requirements
+## 要求
 
 - Kimi Code CLI
-- Git repository
-- Verify command that outputs a number
+- Git 仓库
+- 输出数字的验证命令
 
-## License
+## 许可证
 
 MIT
