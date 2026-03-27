@@ -5,16 +5,48 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 并且该项目遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [2.0.0] - 2026-03-27
+
+### 重大变更 (Breaking Changes)
+- **完全重构为纯 Kimi 模式** - 移除外部 Python 脚本依赖
+- **使用方式**: `python scripts/...` → `$kimi-autoresearch`
+- **循环控制**: 手动 for 循环 → Kimi Ralph Loop 自动处理
+
+### 新增
+- Kimi Ralph Loop 原生支持
+- `<choice>STOP</choice>` 停止信号
+- Ralph Loop 配置参数 (`MaxStepsPerTurn`, `MaxRetriesPerStep`, `MaxRalphIterations`)
+- Agent 配置支持 (`Agent`, `AgentFile`)
+- `autoresearch_ralph.py` - Ralph Loop 控制工具
+- `VERSION_2_MIGRATION.md` - 迁移指南
+
+### 变更
+- **SKILL.md**: 简化为纯 Kimi 交互模式
+- **README.md**: 极简使用说明，对齐 codex-autoresearch
+- **workflow.py**: 从循环控制器变为 Prompt 生成器
+- **state_manager.py**: 简化，版本 2.0
+- 所有参考文档更新为 v2.0 格式
+
+### 移除
+- 复杂的 Python 循环控制逻辑 (~200 行)
+- 手动迭代计数
+- Session split 检查 (由 Ralph Loop 处理)
+- 用户手动执行 Python 脚本的需求
+
+### 与 codex-autoresearch 对齐
+- 触发方式: `$kimi-autoresearch` (was: `python scripts/...`)
+- 用户体验: 一键开始 (was: 两步操作)
+- 架构: Kimi 原生循环 (was: Python 管理循环)
+
 ## [1.1.0] - 2026-03-26
 
 ### Added
-- 
+- Ralph Loop 初步支持
+- Agent 配置
 
 ### Changed
-- 
+- 文档优化
 
-### Fixed
--
 ## [1.0.2] - 2026-03-26
 
 ### Added

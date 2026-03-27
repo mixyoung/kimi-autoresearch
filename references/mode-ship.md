@@ -2,6 +2,15 @@
 
 Ship mode is a universal shipping workflow for code, content, marketing, sales, research, or design assets.
 
+## Quick Start
+
+```
+$kimi-autoresearch:ship
+Type: code-pr
+Target: main
+Dry-run: true
+```
+
 ## Overview
 
 Ship mode runs through 8 phases to safely deliver work:

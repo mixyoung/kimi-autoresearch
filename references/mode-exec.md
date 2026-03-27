@@ -35,27 +35,23 @@ All configuration provided upfront via JSON or command-line flags:
   "loop_control": {
     "max_steps_per_turn": 50,
     "max_retries_per_step": 3,
-    "max_ralph_iterations": 0
+    "max_ralph_iterations": 20
   },
   "agent_config": {
-    "agent": "default",
-    "agent_file": null
+    "agent": "default"
   }
 }
 ```
 
-Or command-line:
+Or use directly in Kimi:
 
-```bash
-python -m autoresearch_exec \
-  --mode loop \
-  --goal "Reduce bundle size" \
-  --verify "npm run build && du -k dist/main.js | cut -f1" \
-  --direction lower \
-  --iterations 20 \
-  --max-steps-per-turn 50 \
-  --max-retries-per-step 3 \
-  --max-ralph-iterations 100
+```
+$kimi-autoresearch:exec
+Goal: Reduce bundle size
+Verify: npm run build && du -k dist/main.js | cut -f1
+Direction: lower
+Iterations: 20
+MaxRalphIterations: 20
 ```
 
 ## Exit Codes

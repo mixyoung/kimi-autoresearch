@@ -2,6 +2,15 @@
 
 Scenario mode is an autonomous scenario exploration engine that generates comprehensive test scenarios, edge cases, and use cases from a seed scenario.
 
+## Quick Start
+
+```
+$kimi-autoresearch:scenario
+Seed: User checkout flow
+Depth: deep
+Iterations: 25
+```
+
 ## Overview
 
 Takes a seed scenario and iteratively generates situations across **12 dimensions**:

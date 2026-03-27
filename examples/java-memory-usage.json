@@ -6,6 +6,12 @@
   "verify": "mvn test -DargLine='-Xmx512m -XX:+PrintGCDetails' 2>&1 | grep -o 'Heap:[0-9]*M' | tail -1 | grep -o '[0-9]*'",
   "guard": "mvn test && mvn compile",
   "iterations": 20,
-  "verifyRuns": 3,
-  "minDelta": 5
+  "loop_control": {
+    "max_steps_per_turn": 50,
+    "max_retries_per_step": 3,
+    "max_ralph_iterations": 20
+  },
+  "agent_config": {
+    "agent": "default"
+  }
 }

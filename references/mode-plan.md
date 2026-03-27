@@ -2,6 +2,13 @@
 
 Plan mode is an interactive wizard that converts a vague goal into a validated, ready-to-execute autoresearch configuration.
 
+## Quick Start
+
+```
+$kimi-autoresearch:plan
+Goal: Make API faster
+```
+
 ## Purpose
 
 The hardest part of autoresearch isn't the loop—it's defining:

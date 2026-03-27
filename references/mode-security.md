@@ -2,6 +2,18 @@
 
 Security mode performs read-only security audits using multiple frameworks.
 
+## Quick Start
+
+```
+$kimi-autoresearch:security
+Scope: src/api/**/*.ts
+Focus: SQL injection, XSS
+```
+
+## Overview
+
+Security mode performs read-only security audits using multiple frameworks.
+
 ## Frameworks
 
 ### STRIDE Threat Modeling

@@ -6,6 +6,12 @@
   "verify": "docker build -t temp-image . 2>&1 && docker images temp-image --format '{{.Size}}' | sed 's/MB//'",
   "guard": "docker run --rm temp-image echo 'Container runs successfully'",
   "iterations": 10,
-  "verifyRuns": 1,
-  "minDelta": 10
+  "loop_control": {
+    "max_steps_per_turn": 30,
+    "max_retries_per_step": 2,
+    "max_ralph_iterations": 10
+  },
+  "agent_config": {
+    "agent": "default"
+  }
 }

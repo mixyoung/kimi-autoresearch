@@ -2,6 +2,18 @@
 
 Fix mode iteratively repairs errors until count reaches zero.
 
+## Quick Start
+
+```
+$kimi-autoresearch:fix
+Target: Fix all failing tests
+Verify: pytest --tb=no -q
+```
+
+## Overview
+
+Fix mode iteratively repairs errors until count reaches zero.
+
 ## Auto-Detection
 
 Fix mode auto-detects what's broken:

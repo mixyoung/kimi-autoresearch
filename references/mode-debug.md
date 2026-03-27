@@ -2,6 +2,18 @@
 
 Debug mode uses the scientific method for evidence-driven bug hunting.
 
+## Quick Start
+
+```
+$kimi-autoresearch:debug
+Symptom: API returns 500 intermittently
+Scope: src/api/**/*.ts
+```
+
+## Overview
+
+Debug mode uses the scientific method for evidence-driven bug hunting.
+
 ## Process
 
 ### Phase 1: Symptom Gathering
