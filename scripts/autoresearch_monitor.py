@@ -73,7 +73,8 @@ class ProgressTracker:
                 'success_rate': 0,
                 'current_metric': 0,
                 'baseline': 0,
-                'improvement': 0
+                'improvement': 0,
+                'improvement_pct': 0
             }
         
         total = len(results)
