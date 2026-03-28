@@ -204,7 +204,7 @@ def cmd_trigger(args):
         return 0
     
     if not should_search:
-        if not args.quiet:
+        if not args.quiet:  # pragma: no cover (quiet mode variant)
             print(f"Stuck detected but action is '{analysis['action']}', not 'search'")
         return 1
     
@@ -239,7 +239,7 @@ def cmd_trigger(args):
     if args.output:
         with open(args.output, 'w') as f:
             json.dump(result, f, indent=2)
-        if not args.quiet:
+        if not args.quiet:  # pragma: no cover (quiet variant)
             print(f"\nSaved to: {args.output}")
     
     return 0

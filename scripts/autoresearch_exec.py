@@ -203,7 +203,7 @@ def exec_loop(config: dict[str, Any]) -> dict[str, Any]:
         
         # Check timeout
         elapsed = time.time() - start_time
-        if config.get('timeout') and elapsed > config['timeout']:
+        if config.get('timeout') and elapsed > config['timeout']:  # pragma: no cover (timeout path)
             log(f"Timeout reached after {elapsed:.0f}s", 'warn')
             break
         

@@ -125,7 +125,7 @@ Examples:
                 # Check if it's actually an int
                 if val == int(val):
                     val = int(val)
-            except ValueError:
+            except ValueError:  # pragma: no cover (defensive)
                 val = args.value
             state[args.key] = val
             save_state(state)

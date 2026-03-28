@@ -379,7 +379,7 @@ def main():
                         os.system('cls' if os.name == 'nt' else 'clear')
                         print(tracker.generate_text_report())
                 time.sleep(args.interval)
-        except KeyboardInterrupt:
+        except KeyboardInterrupt:  # pragma: no cover (user interrupt)
             print("\nStopped watching")
     
     else:

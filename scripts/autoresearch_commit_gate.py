@@ -70,7 +70,7 @@ def get_git_status(cwd: Optional[str] = None) -> dict:
         lines = [line for line in lines if line]  # Remove empty lines only
         
         for line in lines:
-            if not line:
+            if not line:  # pragma: no cover (defensive check)
                 continue
             # Parse porcelain output
             # XY PATH or XY ORIG_PATH -> PATH

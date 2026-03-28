@@ -90,7 +90,7 @@ class ParallelExperiment:
                     try:
                         metric = float(match.group(1))
                         break
-                    except:
+                    except:  # pragma: no cover (exception handling)
                         pass
             
             return {

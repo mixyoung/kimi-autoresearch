@@ -406,6 +406,41 @@ class TestMain(unittest.TestCase):
             main()
         finally:
             sys.argv = old_argv
+    
+    def test_main_split(self):
+        """Test main with split command (lines 327-330)."""
+        # Create state file first
+        state = {'iteration': 10, 'config': {'goal': 'Test'}}
+        with open(STATE_FILE, 'w') as f:
+            json.dump(state, f)
+        
+        old_argv = sys.argv
+        try:
+            sys.argv = ['autoresearch_resilience.py', 'split', '--iteration', '10']
+            main()
+        finally:
+            sys.argv = old_argv
+
+
+class TestMainBlock(unittest.TestCase):
+    """Test __main__ block execution."""
+    
+    @patch('autoresearch_resilience.main')
+    def test_main_block(self, mock_main):
+        """Test that __main__ block calls main() (line 337)."""
+        mock_main.return_value = None
+        
+        # Simulate running as __main__
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("__main__", os.path.join(
+            os.path.dirname(__file__), '..', 'scripts', 'autoresearch_resilience.py'))
+        module = importlib.util.module_from_spec(spec)
+        
+        # Should call main() and exit
+        try:
+            spec.loader.exec_module(module)
+        except SystemExit:
+            pass  # Expected
 
 
 if __name__ == '__main__':

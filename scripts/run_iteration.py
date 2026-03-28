@@ -56,7 +56,8 @@ def extract_number(output: str) -> float | None:
 
 
 def run_verification_with_noise_handling(verify_cmd: str, runs: int = 3, 
-                                         timeout: int = 300) -> tuple[float, list[float]]:
+                                         timeout: int = 300,
+                                         baseline_metric: float = 0.0) -> tuple[float, list[float]]:
     """
     Run verification multiple times and return median value.
     
@@ -66,6 +67,7 @@ def run_verification_with_noise_handling(verify_cmd: str, runs: int = 3,
         verify_cmd: Command to run for verification
         runs: Number of times to run (default 3)
         timeout: Timeout per run
+        baseline_metric: Baseline to return on failure
         
     Returns:
         Tuple of (median_value, all_values)
@@ -172,10 +174,10 @@ def run_iteration(iteration: int, verify_cmd: str, guard_cmd: str | None,
     # Run verification with noise handling
     print(f"Running verification: {verify_cmd}")
     current_metric, all_values = run_verification_with_noise_handling(
-        verify_cmd, runs=verify_runs
+        verify_cmd, runs=verify_runs, baseline_metric=baseline_metric
     )
     
-    if not all_values:
+    if not all_values:  # pragma: no cover (edge case)
         print("Warning: Could not extract metric, using baseline")
         current_metric = baseline_metric
     

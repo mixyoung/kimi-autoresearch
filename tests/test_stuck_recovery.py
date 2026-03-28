@@ -105,6 +105,15 @@ class TestLoadResults(unittest.TestCase):
         result = load_results()
         
         self.assertEqual(len(result), 2)
+    
+    def test_load_results_exception(self):
+        """Test loading results when exception occurs."""
+        # Create a directory instead of file to cause exception
+        os.makedirs('autoresearch-results.tsv')
+        
+        result = load_results()
+        
+        self.assertEqual(result, [])
 
 
 class TestAnalyzeStuckPattern(unittest.TestCase):
@@ -307,6 +316,35 @@ class TestCmdCheck(unittest.TestCase):
         
         self.assertEqual(result, 2)
         self.assertIn('STUCK DETECTED', output)
+    
+    @patch('autoresearch_stuck_recovery.load_state')
+    @patch('autoresearch_stuck_recovery.load_results')
+    def test_check_stuck_json(self, mock_load_results, mock_load_state):
+        """Test check when stuck with JSON output."""
+        mock_load_state.return_value = {
+            'consecutive_discards': 5,
+            'pivot_count': 2,
+            'config': {'goal': 'Test'},
+            'strategy': 'test',
+            'last_error': 'error'
+        }
+        mock_load_results.return_value = []
+        
+        args = MagicMock()
+        args.json = True
+        
+        captured = io.StringIO()
+        old_stdout = sys.stdout
+        sys.stdout = captured
+        
+        result = cmd_check(args)
+        
+        sys.stdout = old_stdout
+        output = captured.getvalue()
+        
+        self.assertEqual(result, 2)
+        data = json.loads(output)
+        self.assertTrue(data['is_stuck'])
 
 
 class TestCmdTrigger(unittest.TestCase):
@@ -335,6 +373,99 @@ class TestCmdTrigger(unittest.TestCase):
         
         self.assertEqual(result, 0)
         self.assertIn('Not stuck enough', output)
+    
+    @patch('autoresearch_stuck_recovery.load_state')
+    @patch('autoresearch_stuck_recovery.load_results')
+    def test_trigger_stuck_with_json(self, mock_load_results, mock_load_state):
+        """Test trigger when stuck with JSON output."""
+        mock_load_state.return_value = {
+            'consecutive_discards': 5,
+            'pivot_count': 2,
+            'config': {'goal': 'Test'},
+            'strategy': 'test',
+            'last_error': 'error'
+        }
+        mock_load_results.return_value = []
+        
+        args = MagicMock()
+        args.json = True
+        args.quiet = False
+        args.output = None
+        
+        captured = io.StringIO()
+        old_stdout = sys.stdout
+        sys.stdout = captured
+        
+        result = cmd_trigger(args)
+        
+        sys.stdout = old_stdout
+        output = captured.getvalue()
+        
+        self.assertEqual(result, 0)
+        data = json.loads(output)
+        self.assertTrue(data['triggered'])
+        self.assertEqual(data['action'], 'web_search')
+    
+    @patch('autoresearch_stuck_recovery.load_state')
+    @patch('autoresearch_stuck_recovery.load_results')
+    def test_trigger_stuck_with_output_file(self, mock_load_results, mock_load_state):
+        """Test trigger when stuck with output file."""
+        mock_load_state.return_value = {
+            'consecutive_discards': 5,
+            'pivot_count': 2,
+            'config': {'goal': 'Test'},
+            'strategy': 'test',
+            'last_error': 'error'
+        }
+        mock_load_results.return_value = []
+        
+        args = MagicMock()
+        args.json = False
+        args.quiet = True
+        args.output = 'test_output.json'
+        
+        try:
+            result = cmd_trigger(args)
+            
+            self.assertEqual(result, 0)
+            self.assertTrue(os.path.exists('test_output.json'))
+            with open('test_output.json', 'r') as f:
+                data = json.load(f)
+            self.assertTrue(data['triggered'])
+        finally:
+            if os.path.exists('test_output.json'):
+                os.remove('test_output.json')
+    
+    @patch('autoresearch_stuck_recovery.load_state')
+    @patch('autoresearch_stuck_recovery.load_results')
+    def test_trigger_stuck_but_not_search_action(self, mock_load_results, mock_load_state):
+        """Test trigger when stuck but action is not 'search'."""
+        # Stuck but with pivot action (not search)
+        mock_load_state.return_value = {
+            'consecutive_discards': 5,
+            'pivot_count': 0,  # Less than 2 pivots
+            'config': {'goal': 'Test'},
+            'strategy': 'test',
+            'last_error': 'error'
+        }
+        mock_load_results.return_value = []
+        
+        args = MagicMock()
+        args.json = False
+        args.quiet = False
+        args.output = None
+        
+        captured = io.StringIO()
+        old_stdout = sys.stdout
+        sys.stdout = captured
+        
+        result = cmd_trigger(args)
+        
+        sys.stdout = old_stdout
+        output = captured.getvalue()
+        
+        self.assertEqual(result, 1)  # Returns 1 when stuck but action is not search
+        self.assertIn("action is 'pivot', not 'search'", output)
 
 
 class TestCmdSimulate(unittest.TestCase):

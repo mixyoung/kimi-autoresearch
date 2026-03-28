@@ -171,6 +171,28 @@ class TestExtractNumber(unittest.TestCase):
         result = extract_number('Files: 10, Coverage: 85%')
         # Should match percentage first if present
         self.assertEqual(result, 85.0)
+    
+    def test_extract_value_error(self):
+        """Test handling of ValueError during float conversion."""
+        # This covers lines 71-72 in autoresearch_exec.py
+        # We need to trigger a ValueError in the float conversion
+        # by mocking re.search to return a group that can't be converted
+        import re
+        original_search = re.search
+        
+        def mock_search(*args, **kwargs):
+            match = original_search(*args, **kwargs)
+            if match and args[0] == r'(\d+\.?\d*)':
+                # Create a mock match that returns invalid float string
+                class MockMatch:
+                    def group(self, n):
+                        return 'not_a_number'
+                return MockMatch()
+            return match
+        
+        with patch('re.search', side_effect=mock_search):
+            result = extract_number('Value: 42')
+            self.assertIsNone(result)
 
 
 class TestInitRun(unittest.TestCase):
@@ -457,6 +479,56 @@ class TestExecLoop(unittest.TestCase):
         result = exec_loop(config)
         
         self.assertTrue(result['success'])
+    
+    @patch('autoresearch_exec.get_baseline')
+    @patch('autoresearch_exec.init_run')
+    @patch('autoresearch_exec.run_command')
+    def test_exec_loop_target_reached_higher(self, mock_run, mock_init, mock_baseline):
+        """Test exec loop when target is reached with higher direction (lines 227-229)."""
+        mock_init.return_value = True
+        mock_run.side_effect = [
+            (0, 'Health OK'),  # health check
+            (0, 'Coverage: 90%')  # iteration verify - above target
+        ]
+        mock_baseline.return_value = (True, 85.0)
+        
+        config = {
+            'goal': 'Test',
+            'metric': 'coverage',
+            'verify': 'npm test',
+            'direction': 'higher',
+            'iterations': 10,
+            'target': 88.0
+        }
+        
+        result = exec_loop(config)
+        
+        self.assertTrue(result['success'])
+    
+    @patch('autoresearch_exec.get_baseline')
+    @patch('autoresearch_exec.init_run')
+    @patch('autoresearch_exec.run_command')
+    def test_exec_loop_discard_count(self, mock_run, mock_init, mock_baseline):
+        """Test exec loop tracking discard count (lines 219-220)."""
+        mock_init.return_value = True
+        mock_run.side_effect = [
+            (0, 'Health OK'),  # health check
+            (0, 'Coverage: 80%'),  # iteration verify - worse (higher direction: 80 < 85)
+        ]
+        mock_baseline.return_value = (True, 85.0)
+        
+        config = {
+            'goal': 'Test',
+            'metric': 'coverage',
+            'verify': 'npm test',
+            'direction': 'higher',  # Higher is better, but we got 80 < 85 (worse)
+            'iterations': 1
+        }
+        
+        result = exec_loop(config)
+        
+        self.assertTrue(result['success'])
+        self.assertEqual(result['summary']['discarded'], 1)
 
 
 class TestExecCheck(unittest.TestCase):
@@ -673,6 +745,28 @@ class TestMain(unittest.TestCase):
 
 # Import subprocess for the TimeoutExpired exception
 import subprocess
+
+
+class TestMainBlock(unittest.TestCase):
+    """Test __main__ block execution."""
+    
+    @patch('autoresearch_exec.main')
+    def test_main_block(self, mock_main):
+        """Test that __main__ block calls main()."""
+        mock_main.return_value = None
+        
+        # Simulate running as __main__
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("__main__", os.path.join(
+            os.path.dirname(__file__), '..', 'scripts', 'autoresearch_exec.py'))
+        module = importlib.util.module_from_spec(spec)
+        
+        # Should call main() and exit
+        try:
+            spec.loader.exec_module(module)
+        except SystemExit:
+            pass  # Expected
+
 
 if __name__ == '__main__':
     unittest.main()

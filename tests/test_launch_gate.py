@@ -357,6 +357,139 @@ class TestMain(unittest.TestCase):
             self.assertEqual(data['action'], 'fresh')
         finally:
             sys.argv = old_argv
+    
+    def test_main_decide_action_text(self):
+        """Test main deciding action with text format."""
+        old_argv = sys.argv
+        try:
+            sys.argv = ['autoresearch_launch_gate.py', '--format', 'text']
+            captured = io.StringIO()
+            old_stdout = sys.stdout
+            sys.stdout = captured
+            
+            try:
+                main()
+            except SystemExit as e:
+                self.assertEqual(e.code, 0)  # fresh start returns 0
+            
+            sys.stdout = old_stdout
+            output = captured.getvalue()
+            
+            self.assertIn('Launch Decision', output)
+            self.assertIn('Action:', output)
+            self.assertIn('Reason:', output)
+        finally:
+            sys.argv = old_argv
+    
+    def test_main_block_exit_code(self):
+        """Test main with block action returns exit code 1."""
+        # Create state that will cause block
+        state = {'status': 'completed'}
+        with open(STATE_FILE, 'w') as f:
+            json.dump(state, f)
+        
+        old_argv = sys.argv
+        try:
+            sys.argv = ['autoresearch_launch_gate.py', '--force-resume', '--format', 'text']
+            captured = io.StringIO()
+            old_stdout = sys.stdout
+            sys.stdout = captured
+            
+            with self.assertRaises(SystemExit) as cm:
+                main()
+            
+            sys.stdout = old_stdout
+            self.assertEqual(cm.exception.code, 1)
+        finally:
+            sys.argv = old_argv
+    
+    def test_main_needs_confirmation_exit_code(self):
+        """Test main with needs_confirmation action returns exit code 2."""
+        # Create state that will cause needs_confirmation
+        state = {'status': 'running', 'iteration': 5}
+        with open(STATE_FILE, 'w') as f:
+            json.dump(state, f)
+        
+        # Create inconsistent results
+        with open(RESULTS_FILE, 'w') as f:
+            f.write("iteration\tcommit\tmetric\tdelta\tstatus\n")
+            f.write("0\tabc\t100\t0\tbaseline\n")
+        
+        old_argv = sys.argv
+        try:
+            sys.argv = ['autoresearch_launch_gate.py', '--format', 'text']
+            captured = io.StringIO()
+            old_stdout = sys.stdout
+            sys.stdout = captured
+            
+            with self.assertRaises(SystemExit) as cm:
+                main()
+            
+            sys.stdout = old_stdout
+            self.assertEqual(cm.exception.code, 2)
+        finally:
+            sys.argv = old_argv
+    
+    def test_main_resume_with_mode_text(self):
+        """Test main resume with text format showing mode."""
+        # Create consistent state
+        state = {'status': 'interrupted', 'iteration': 1}
+        with open(STATE_FILE, 'w') as f:
+            json.dump(state, f)
+        
+        with open(RESULTS_FILE, 'w') as f:
+            f.write("iteration\tcommit\tmetric\tdelta\tstatus\n")
+            f.write("0\tabc\t100\t0\tbaseline\n")
+            f.write("1\tdef\t90\t-10\tkeep\n")
+        
+        old_argv = sys.argv
+        try:
+            sys.argv = ['autoresearch_launch_gate.py', '--format', 'text']
+            captured = io.StringIO()
+            old_stdout = sys.stdout
+            sys.stdout = captured
+            
+            try:
+                main()
+            except SystemExit as e:
+                self.assertEqual(e.code, 0)
+            
+            sys.stdout = old_stdout
+            output = captured.getvalue()
+            
+            self.assertIn('Launch Decision', output)
+            self.assertIn('Action:', output)
+            self.assertIn('Mode:', output)  # Should show mode for resume
+        finally:
+            sys.argv = old_argv
+    
+    def test_main_check_only_with_state_text(self):
+        """Test main check-only with existing state and text format."""
+        # Create state
+        state = {'status': 'running', 'iteration': 3}
+        with open(STATE_FILE, 'w') as f:
+            json.dump(state, f)
+        
+        old_argv = sys.argv
+        try:
+            sys.argv = ['autoresearch_launch_gate.py', '--check-only', '--format', 'text']
+            captured = io.StringIO()
+            old_stdout = sys.stdout
+            sys.stdout = captured
+            
+            try:
+                main()
+            except SystemExit as e:
+                pass
+            
+            sys.stdout = old_stdout
+            output = captured.getvalue()
+            
+            self.assertIn('Launch Gate Check', output)
+            self.assertIn('Can resume:', output)
+            self.assertIn('Status:', output)  # Should show status when state exists
+        finally:
+            sys.argv = old_argv
 
 
 if __name__ == '__main__':

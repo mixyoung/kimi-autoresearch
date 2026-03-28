@@ -115,6 +115,21 @@ class TestGetGitStatus(unittest.TestCase):
         self.assertEqual(status['branch'], 'main')
         self.assertFalse(status['is_detached'])
         self.assertTrue(status['has_changes'])
+    
+    @patch('autoresearch_commit_gate.run_git')
+    @patch('autoresearch_commit_gate.is_git_repo')
+    def test_empty_lines_in_status(self, mock_is_repo, mock_run_git):
+        """Test status with empty lines in porcelain output."""
+        mock_is_repo.return_value = True
+        mock_run_git.side_effect = [
+            (0, 'main'),  # symbolic-ref returns branch
+            (0, ' M file.txt\n\n M another.txt\n'),  # status with empty lines
+        ]
+        
+        status = get_git_status()
+        
+        self.assertTrue(status['is_repo'])
+        self.assertTrue(status['has_changes'])
 
 
 class TestCheckScopeSafety(unittest.TestCase):
@@ -125,6 +140,12 @@ class TestCheckScopeSafety(unittest.TestCase):
         self.temp_dir = tempfile.mkdtemp()
         self.old_cwd = os.getcwd()
         os.chdir(self.temp_dir)
+        
+        # Initialize git repo for git ls-files tests
+        import subprocess
+        subprocess.run(['git', 'init'], capture_output=True)
+        subprocess.run(['git', 'config', 'user.email', 'test@test.com'], capture_output=True)
+        subprocess.run(['git', 'config', 'user.name', 'Test'], capture_output=True)
     
     def tearDown(self):
         """Clean up."""
@@ -175,6 +196,22 @@ class TestCheckScopeSafety(unittest.TestCase):
         self.assertTrue(result['exists'])
         # The function only warns for actual protected patterns in the files list
         # Since we're not checking .git/config, no warnings should be generated
+    
+    @patch('autoresearch_commit_gate.run_git')
+    @patch('autoresearch_commit_gate.is_git_repo')
+    def test_scope_untracked_file(self, mock_is_repo, mock_run_git):
+        """Test scope with untracked file."""
+        mock_is_repo.return_value = True
+        mock_run_git.return_value = (1, '')  # ls-files returns error (file not tracked)
+        
+        # Create test file
+        with open('test1.py', 'w') as f:
+            f.write('test')
+        
+        result = check_scope_safety('*.py')
+        
+        self.assertTrue(result['exists'])
+        self.assertTrue(any('not tracked by git' in w for w in result['warnings']))
 
 
 class TestCommitGateCheck(unittest.TestCase):
@@ -242,6 +279,54 @@ class TestCommitGateCheck(unittest.TestCase):
             
             self.assertFalse(result['passed'])
             self.assertTrue(any('WARNING (strict mode)' in e for e in result['errors']))
+    
+    @patch('autoresearch_commit_gate.get_git_status')
+    @patch('autoresearch_commit_gate.os.path.isdir')
+    def test_companion_repo_not_safe(self, mock_isdir, mock_get_status):
+        """Test companion repo that is not safe."""
+        mock_get_status.side_effect = [
+            {  # Primary repo
+                'is_repo': True,
+                'can_commit': True,
+                'branch': 'main',
+                'errors': []
+            },
+            {  # Companion repo - not safe
+                'is_repo': True,
+                'can_commit': False,
+                'errors': ['Detached HEAD'],
+                'branch': None
+            }
+        ]
+        mock_isdir.return_value = True
+        
+        result = commit_gate_check(companion_repos=['/path/to/repo'])
+        
+        self.assertFalse(result['passed'])
+        self.assertTrue(any('Companion repo not safe' in e for e in result['errors']))
+    
+    @patch('autoresearch_commit_gate.get_git_status')
+    def test_scope_check_errors(self, mock_get_status):
+        """Test scope check with errors."""
+        mock_get_status.return_value = {
+            'is_repo': True,
+            'can_commit': True,
+            'branch': 'main',
+            'errors': []
+        }
+        
+        # Mock scope check to return errors
+        with patch('autoresearch_commit_gate.check_scope_safety') as mock_scope:
+            mock_scope.return_value = {
+                'is_safe': False,
+                'errors': ['No files match scope'],
+                'warnings': []
+            }
+            
+            result = commit_gate_check(scope='*.nonexistent')
+            
+            self.assertFalse(result['passed'])
+            self.assertTrue(any('No files match' in e for e in result['errors']))
 
 
 class TestMain(unittest.TestCase):
@@ -302,6 +387,86 @@ class TestMain(unittest.TestCase):
             sys.argv = ['autoresearch_commit_gate.py', '--json']
             result = main()
             self.assertEqual(result, 0)
+        finally:
+            sys.argv = old_argv
+    
+    @patch('autoresearch_commit_gate.commit_gate_check')
+    def test_main_with_scope_check(self, mock_check):
+        """Test main with scope check output."""
+        mock_check.return_value = {
+            'passed': True,
+            'primary_repo': {'branch': 'main', 'can_commit': True},
+            'scope_check': {'scope': '*.py', 'files': ['test.py'], 'is_safe': True},
+            'companion_repos': {},
+            'errors': [],
+            'warnings': []
+        }
+        
+        old_argv = sys.argv
+        try:
+            sys.argv = ['autoresearch_commit_gate.py', '--scope', '*.py']
+            result = main()
+            self.assertEqual(result, 0)
+        finally:
+            sys.argv = old_argv
+    
+    @patch('autoresearch_commit_gate.commit_gate_check')
+    def test_main_with_companion_repos(self, mock_check):
+        """Test main with companion repos output."""
+        mock_check.return_value = {
+            'passed': True,
+            'primary_repo': {'branch': 'main', 'can_commit': True},
+            'scope_check': {},
+            'companion_repos': {'/path/to/repo': {'branch': 'feature'}},
+            'errors': [],
+            'warnings': []
+        }
+        
+        old_argv = sys.argv
+        try:
+            sys.argv = ['autoresearch_commit_gate.py', '--companion-repo', '/path/to/repo']
+            result = main()
+            self.assertEqual(result, 0)
+        finally:
+            sys.argv = old_argv
+    
+    @patch('autoresearch_commit_gate.commit_gate_check')
+    def test_main_with_warnings(self, mock_check):
+        """Test main with warnings output."""
+        mock_check.return_value = {
+            'passed': True,
+            'primary_repo': {'branch': 'main', 'can_commit': True},
+            'scope_check': {},
+            'companion_repos': {},
+            'errors': [],
+            'warnings': ['Some warning about protected path']
+        }
+        
+        old_argv = sys.argv
+        try:
+            sys.argv = ['autoresearch_commit_gate.py']
+            result = main()
+            self.assertEqual(result, 0)
+        finally:
+            sys.argv = old_argv
+    
+    @patch('autoresearch_commit_gate.commit_gate_check')
+    def test_main_with_warnings_and_strict(self, mock_check):
+        """Test main with warnings in strict mode (warnings treated as errors)."""
+        mock_check.return_value = {
+            'passed': False,
+            'primary_repo': {'branch': 'main', 'can_commit': True},
+            'scope_check': {},
+            'companion_repos': {},
+            'errors': ['WARNING (strict mode): Some warning'],
+            'warnings': ['Some warning']
+        }
+        
+        old_argv = sys.argv
+        try:
+            sys.argv = ['autoresearch_commit_gate.py', '--strict']
+            result = main()
+            self.assertEqual(result, 1)
         finally:
             sys.argv = old_argv
 

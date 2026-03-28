@@ -218,6 +218,36 @@ class TestCmdLaunchGate(unittest.TestCase):
         
         call_args = mock_run_script.call_args[0][1]
         self.assertIn('--force-fresh', call_args)
+    
+    @patch('autoresearch_main.run_script')
+    def test_cmd_launch_gate_force_resume(self, mock_run_script):
+        """Test launch-gate with force-resume (line 82)."""
+        mock_run_script.return_value = (0, 'Resume')
+        
+        args = MagicMock()
+        args.force_fresh = False
+        args.force_resume = True
+        args.json = False
+        
+        result = cmd_launch_gate(args)
+        
+        call_args = mock_run_script.call_args[0][1]
+        self.assertIn('--force-resume', call_args)
+    
+    @patch('autoresearch_main.run_script')
+    def test_cmd_launch_gate_json(self, mock_run_script):
+        """Test launch-gate with json format (line 84)."""
+        mock_run_script.return_value = (0, '{"action": "resume"}')
+        
+        args = MagicMock()
+        args.force_fresh = False
+        args.force_resume = False
+        args.json = True
+        
+        result = cmd_launch_gate(args)
+        
+        call_args = mock_run_script.call_args[0][1]
+        self.assertIn('--format=json', call_args)
 
 
 class TestCmdDecide(unittest.TestCase):
@@ -444,6 +474,19 @@ class TestCmdLang(unittest.TestCase):
         
         self.assertEqual(result, 0)
         self.assertIn('中文', output)
+    
+    @patch('autoresearch_main.set_locale')
+    def test_cmd_lang_set_locale_error(self, mock_set_locale):
+        """Test setting locale when set_locale returns False (line 163)."""
+        mock_set_locale.return_value = False
+        
+        args = MagicMock()
+        args.locale = 'invalid'
+        
+        result = cmd_lang(args)
+        
+        # Should return 0 even if set_locale fails
+        self.assertEqual(result, 0)
 
 
 class TestCmdSearch(unittest.TestCase):
@@ -465,6 +508,26 @@ class TestCmdSearch(unittest.TestCase):
         self.assertEqual(result, 0)
         call_args = mock_run_script.call_args[0][1]
         self.assertIn('check', call_args)
+    
+    @patch('autoresearch_main.run_script')
+    def test_cmd_search_check_with_options(self, mock_run_script):
+        """Test search check with state-file and force options (lines 188, 190)."""
+        mock_run_script.return_value = (0, 'Not stuck')
+        
+        args = MagicMock()
+        args.subcommand = 'check'
+        args.state_file = '/path/to/state.json'
+        args.force = True
+        args.json = False
+        
+        result = cmd_search(args)
+        
+        self.assertEqual(result, 0)
+        call_args = mock_run_script.call_args[0][1]
+        self.assertIn('check', call_args)
+        self.assertIn('--state-file', call_args)
+        self.assertIn('/path/to/state.json', call_args)
+        self.assertIn('--force', call_args)
     
     @patch('autoresearch_main.run_script')
     def test_cmd_search_query(self, mock_run_script):
@@ -534,6 +597,57 @@ class TestCmdRalph(unittest.TestCase):
         call_args = mock_run_script.call_args[0][1]
         self.assertIn('stop', call_args)
         self.assertIn('--reason', call_args)
+    
+    @patch('autoresearch_main.run_script')
+    def test_cmd_ralph_set_agent(self, mock_run_script):
+        """Test ralph set-agent command (lines 221-224)."""
+        mock_run_script.return_value = (0, 'Agent set')
+        
+        args = MagicMock()
+        args.ralph_command = 'set-agent'
+        args.agent = 'okabe'
+        args.agent_file = None
+        
+        result = cmd_ralph(args)
+        
+        self.assertEqual(result, 0)
+        call_args = mock_run_script.call_args[0][1]
+        self.assertIn('set-agent', call_args)
+        self.assertIn('--agent', call_args)
+        self.assertIn('okabe', call_args)
+    
+    @patch('autoresearch_main.run_script')
+    def test_cmd_ralph_set_agent_file(self, mock_run_script):
+        """Test ralph set-agent with agent-file (lines 223-224)."""
+        mock_run_script.return_value = (0, 'Agent set')
+        
+        args = MagicMock()
+        args.ralph_command = 'set-agent'
+        args.agent = None
+        args.agent_file = '/path/to/agent.json'
+        
+        result = cmd_ralph(args)
+        
+        self.assertEqual(result, 0)
+        call_args = mock_run_script.call_args[0][1]
+        self.assertIn('set-agent', call_args)
+        self.assertIn('--agent-file', call_args)
+    
+    @patch('autoresearch_main.run_script')
+    def test_cmd_ralph_check_stop(self, mock_run_script):
+        """Test ralph check-stop command (lines 227-228)."""
+        mock_run_script.return_value = (0, 'Continue')
+        
+        args = MagicMock()
+        args.ralph_command = 'check-stop'
+        args.current_metric = 42.5
+        
+        result = cmd_ralph(args)
+        
+        self.assertEqual(result, 0)
+        call_args = mock_run_script.call_args[0][1]
+        self.assertIn('check-stop', call_args)
+        self.assertIn('--current-metric', call_args)
 
 
 class TestMain(unittest.TestCase):
@@ -582,6 +696,27 @@ class TestMain(unittest.TestCase):
 
 # Import subprocess for the TimeoutExpired exception
 import subprocess
+
+class TestMainBlock(unittest.TestCase):
+    """Test __main__ block execution."""
+    
+    @patch('autoresearch_main.main')
+    def test_main_block(self, mock_main):
+        """Test that __main__ block calls main() (line 417)."""
+        mock_main.return_value = None
+        
+        # Simulate running as __main__
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("__main__", os.path.join(
+            os.path.dirname(__file__), '..', 'scripts', 'autoresearch_main.py'))
+        module = importlib.util.module_from_spec(spec)
+        
+        # Should call main() and exit
+        try:
+            spec.loader.exec_module(module)
+        except SystemExit:
+            pass  # Expected
+
 
 if __name__ == '__main__':
     unittest.main()

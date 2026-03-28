@@ -134,7 +134,7 @@ class TestGenerateDaemonPrompt(unittest.TestCase):
         self.assertIn('<choice>STOP</choice>', prompt)
     
     def test_prompt_with_agent(self):
-        """Test generating prompt with agent config."""
+        """Test generating prompt with agent config (lines 65-66)."""
         config = {
             'goal': 'Test',
             'scope': '.',
@@ -148,6 +148,22 @@ class TestGenerateDaemonPrompt(unittest.TestCase):
         prompt = generate_daemon_prompt(config)
         
         self.assertIn('okabe', prompt)
+    
+    def test_prompt_with_agent_file(self):
+        """Test generating prompt with agent file (lines 67-68)."""
+        config = {
+            'goal': 'Test',
+            'scope': '.',
+            'verify': '',
+            'direction': 'lower',
+            'iterations': 10,
+            'loop_control': {},
+            'agent_config': {'agent': None, 'agent_file': '/path/to/agent.json'}
+        }
+        
+        prompt = generate_daemon_prompt(config)
+        
+        self.assertIn('agent.json', prompt)
 
 
 class TestCmdStart(unittest.TestCase):
@@ -228,6 +244,66 @@ class TestCmdStart(unittest.TestCase):
         
         self.assertEqual(result, 1)
         self.assertIn('already running', output)
+    
+    def test_start_with_agent(self):
+        """Test starting daemon with agent config (lines 225-226)."""
+        args = MagicMock()
+        args.goal = 'Test goal'
+        args.scope = '.'
+        args.verify = 'echo test'
+        args.direction = 'lower'
+        args.iterations = 10
+        args.target = None
+        args.max_steps_per_turn = 50
+        args.max_retries_per_step = 3
+        args.max_ralph_iterations = 0
+        args.agent = 'okabe'
+        args.agent_file = None
+        
+        captured = io.StringIO()
+        old_stdout = sys.stdout
+        sys.stdout = captured
+        
+        result = cmd_start(args)
+        
+        sys.stdout = old_stdout
+        output = captured.getvalue()
+        
+        self.assertEqual(result, 0)
+        
+        # Check state was saved with agent config
+        state = load_daemon_state()
+        self.assertEqual(state['config']['agent_config']['agent'], 'okabe')
+    
+    def test_start_with_agent_file(self):
+        """Test starting daemon with agent file (lines 227-228)."""
+        args = MagicMock()
+        args.goal = 'Test goal'
+        args.scope = '.'
+        args.verify = 'echo test'
+        args.direction = 'lower'
+        args.iterations = 10
+        args.target = None
+        args.max_steps_per_turn = 50
+        args.max_retries_per_step = 3
+        args.max_ralph_iterations = 0
+        args.agent = None
+        args.agent_file = '/path/to/custom_agent.json'
+        
+        captured = io.StringIO()
+        old_stdout = sys.stdout
+        sys.stdout = captured
+        
+        result = cmd_start(args)
+        
+        sys.stdout = old_stdout
+        output = captured.getvalue()
+        
+        self.assertEqual(result, 0)
+        
+        # Check state was saved with agent file config
+        state = load_daemon_state()
+        self.assertEqual(state['config']['agent_config']['agent_file'], '/path/to/custom_agent.json')
 
 
 class TestCmdStatus(unittest.TestCase):
@@ -295,6 +371,65 @@ class TestCmdStatus(unittest.TestCase):
         self.assertEqual(result, 0)
         self.assertIn('running', output)
         self.assertIn('Test goal', output)
+    
+    def test_status_with_start_time_and_task_id(self):
+        """Test status with start_time and task_id (lines 283, 286)."""
+        state = {
+            'status': 'running',
+            'current_iteration': 5,
+            'max_iterations': 100,
+            'start_time': '2024-01-01T12:00:00',
+            'task_id': 'task-12345',
+            'config': {'goal': 'Test goal'}
+        }
+        with open(DAEMON_STATE_FILE, 'w') as f:
+            json.dump(state, f)
+        
+        args = MagicMock()
+        
+        captured = io.StringIO()
+        old_stdout = sys.stdout
+        sys.stdout = captured
+        
+        result = cmd_status(args)
+        
+        sys.stdout = old_stdout
+        output = captured.getvalue()
+        
+        self.assertEqual(result, 0)
+        self.assertIn('2024-01-01', output)
+        self.assertIn('task-12345', output)
+    
+    def test_status_with_log_file(self):
+        """Test status with log file display (lines 299-304)."""
+        state = {
+            'status': 'running',
+            'current_iteration': 5,
+            'max_iterations': 100,
+            'config': {'goal': 'Test goal'}
+        }
+        with open(DAEMON_STATE_FILE, 'w') as f:
+            json.dump(state, f)
+        
+        # Create log file
+        with open('autoresearch-daemon.log', 'w') as f:
+            f.write('Line 1\n')
+            f.write('Line 2\n')
+            f.write('Line 3\n')
+        
+        args = MagicMock()
+        
+        captured = io.StringIO()
+        old_stdout = sys.stdout
+        sys.stdout = captured
+        
+        result = cmd_status(args)
+        
+        sys.stdout = old_stdout
+        output = captured.getvalue()
+        
+        self.assertEqual(result, 0)
+        self.assertIn('Line 3', output)
 
 
 class TestCmdPause(unittest.TestCase):
@@ -521,6 +656,27 @@ class TestMain(unittest.TestCase):
                 self.assertEqual(e.code, 1)
         finally:
             sys.argv = old_argv
+
+
+class TestMainBlock(unittest.TestCase):
+    """Test __main__ block execution."""
+    
+    @patch('autoresearch_daemon.main')
+    def test_main_block(self, mock_main):
+        """Test that __main__ block calls main() (line 419)."""
+        mock_main.return_value = None
+        
+        # Simulate running as __main__
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("__main__", os.path.join(
+            os.path.dirname(__file__), '..', 'scripts', 'autoresearch_daemon.py'))
+        module = importlib.util.module_from_spec(spec)
+        
+        # Should call main() and exit
+        try:
+            spec.loader.exec_module(module)
+        except SystemExit:
+            pass  # Expected
 
 
 if __name__ == '__main__':

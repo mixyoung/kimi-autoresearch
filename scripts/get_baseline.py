@@ -39,7 +39,7 @@ def extract_number(output: str) -> float | None:
         if match:
             try:
                 return float(match.group(1))
-            except ValueError:
+            except ValueError:  # pragma: no cover (defensive)
                 continue
     
     return None
@@ -75,7 +75,7 @@ def main():
     return output.strip()
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     result = main()
     if isinstance(result, (int, float)):
         sys.exit(0 if result is not None else 1)

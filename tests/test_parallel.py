@@ -85,6 +85,22 @@ class TestParallelExperiment(unittest.TestCase):
     
     @patch('shutil.rmtree')
     @patch.object(ParallelExperiment, 'run_git')
+    def test_create_worktree_removes_existing(self, mock_run_git, mock_rmtree):
+        """Test worktree creation removes existing path (line 46)."""
+        mock_run_git.return_value = (0, 'OK')
+        
+        # Create existing worktree path
+        worktree_path = os.path.join(self.temp_dir, '.autoresearch-worktree-test-worker')
+        os.makedirs(worktree_path)
+        
+        hypothesis = {'description': 'Test hypothesis'}
+        path = self.exp.create_worktree('test-worker', hypothesis)
+        
+        self.assertIsNotNone(path)
+        mock_rmtree.assert_called_once_with(worktree_path)
+    
+    @patch('shutil.rmtree')
+    @patch.object(ParallelExperiment, 'run_git')
     def test_create_worktree_failure(self, mock_run_git, mock_rmtree):
         """Test failed worktree creation."""
         mock_run_git.return_value = (1, 'Failed to create worktree')
@@ -142,7 +158,7 @@ class TestParallelExperiment(unittest.TestCase):
     
     @patch('subprocess.run')
     def test_run_verification_timeout(self, mock_run):
-        """Test verification timeout."""
+        """Test verification timeout (line 103)."""
         mock_run.side_effect = subprocess.TimeoutExpired(cmd='test', timeout=300)
         
         worktree = {'name': 'test', 'path': '/tmp/test'}
@@ -150,6 +166,47 @@ class TestParallelExperiment(unittest.TestCase):
         
         self.assertFalse(result['success'])
         self.assertEqual(result['error'], 'Timeout')
+    
+    @patch('subprocess.run')
+    def test_run_verification_exception(self, mock_run):
+        """Test verification with exception (lines 108-109)."""
+        mock_run.side_effect = Exception('Command failed')
+        
+        worktree = {'name': 'test', 'path': '/tmp/test'}
+        result = self.exp.run_verification(worktree, 'npm test')
+        
+        self.assertFalse(result['success'])
+        self.assertIn('Command failed', result['error'])
+    
+    @patch('subprocess.run')
+    def test_run_verification_value_error(self, mock_run):
+        """Test verification with ValueError during float conversion (lines 93-94)."""
+        mock_run.return_value = MagicMock(
+            returncode=0,
+            stdout='Coverage: abc%',  # Invalid number format
+            stderr=''
+        )
+        
+        worktree = {'name': 'test', 'path': '/tmp/test'}
+        result = self.exp.run_verification(worktree, 'npm test')
+        
+        # Should handle ValueError gracefully
+        self.assertTrue(result['success'])
+        self.assertIsNone(result['metric'])
+    
+    @patch.object(ParallelExperiment, 'create_worktree')
+    def test_run_parallel_no_worktrees(self, mock_create):
+        """Test run_parallel when no worktrees are created (line 127)."""
+        mock_create.return_value = None  # All worktree creations fail
+        
+        hypotheses = [
+            {'id': 1, 'description': 'Approach A'},
+        ]
+        
+        result = self.exp.run_parallel(hypotheses, 'npm test')
+        
+        self.assertFalse(result['success'])
+        self.assertEqual(result['error'], 'No worktrees created')
     
     @patch.object(ParallelExperiment, 'run_verification')
     @patch.object(ParallelExperiment, 'apply_hypothesis')
@@ -380,10 +437,66 @@ class TestCmdRun(unittest.TestCase):
         
         self.assertEqual(result, 1)
         mock_cleanup.assert_called_once()
+    
+    @patch.object(ParallelExperiment, 'cleanup')
+    @patch.object(ParallelExperiment, 'run_parallel')
+    def test_cmd_run_with_best_result(self, mock_run, mock_cleanup):
+        """Test cmd_run with best result display (lines 204-206, 210)."""
+        mock_run.return_value = {
+            'success': True,
+            'results': [
+                {'success': True, 'metric': 80.0, 'worktree': 'worker-1'},
+                {'success': True, 'metric': 90.0, 'worktree': 'worker-2'},
+            ],
+            'best': {'worktree': 'worker-1', 'metric': 80.0}
+        }
+        
+        args = MagicMock()
+        args.verify = 'npm test'
+        args.hypotheses_file = None
+        args.repo = self.temp_dir
+        args.workers = 3
+        args.keep = False
+        args.json = False
+        
+        captured = io.StringIO()
+        old_stdout = sys.stdout
+        sys.stdout = captured
+        
+        result = cmd_run(args)
+        
+        sys.stdout = old_stdout
+        output = captured.getvalue()
+        
+        self.assertEqual(result, 0)
+        self.assertIn('worker-1', output)
+        self.assertIn('Best result', output)
 
 
 class TestCmdStatus(unittest.TestCase):
     """Test cmd_status function."""
+    
+    @patch('subprocess.run')
+    def test_cmd_status_with_autoresearch_worktrees(self, mock_run):
+        """Test cmd_status with autoresearch worktrees (line 240)."""
+        mock_run.return_value = MagicMock(
+            returncode=0,
+            stdout='/path/to/repo    abc123 [main]\n/path/to/.autoresearch-worktree-test  def456 [branch]'
+        )
+        
+        args = MagicMock()
+        
+        captured = io.StringIO()
+        old_stdout = sys.stdout
+        sys.stdout = captured
+        
+        result = cmd_status(args)
+        
+        sys.stdout = old_stdout
+        output = captured.getvalue()
+        
+        self.assertEqual(result, 0)
+        self.assertIn('Active autoresearch worktrees', output)
     
     @patch('subprocess.run')
     def test_cmd_status_success(self, mock_run):
@@ -508,6 +621,27 @@ class TestMain(unittest.TestCase):
 
 # Import subprocess for the TimeoutExpired exception
 import subprocess
+
+class TestMainBlock(unittest.TestCase):
+    """Test __main__ block execution."""
+    
+    @patch('autoresearch_parallel.main')
+    def test_main_block(self, mock_main):
+        """Test that __main__ block calls main() (line 345)."""
+        mock_main.return_value = None
+        
+        # Simulate running as __main__
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("__main__", os.path.join(
+            os.path.dirname(__file__), '..', 'scripts', 'autoresearch_parallel.py'))
+        module = importlib.util.module_from_spec(spec)
+        
+        # Should call main() and exit
+        try:
+            spec.loader.exec_module(module)
+        except SystemExit:
+            pass  # Expected
+
 
 if __name__ == '__main__':
     unittest.main()

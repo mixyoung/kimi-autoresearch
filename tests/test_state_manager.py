@@ -6,8 +6,8 @@ import json
 import os
 import sys
 import unittest
+import tempfile
 from pathlib import Path
-from tempfile import TemporaryDirectory
 
 sys.path.insert(0, str(Path(__file__).parent.parent / 'scripts'))
 
@@ -15,7 +15,8 @@ from state_manager import (
     load_state,
     save_state,
     update_iteration_status,
-    log_lesson
+    log_lesson,
+    main
 )
 
 
@@ -23,13 +24,14 @@ class TestLoadState(unittest.TestCase):
     """Test state loading."""
     
     def setUp(self):
-        self.temp_dir = TemporaryDirectory()
+        self.temp_dir = tempfile.mkdtemp()
         self.old_cwd = os.getcwd()
-        os.chdir(self.temp_dir.name)
+        os.chdir(self.temp_dir)
     
     def tearDown(self):
         os.chdir(self.old_cwd)
-        self.temp_dir.cleanup()
+        import shutil
+        shutil.rmtree(self.temp_dir, ignore_errors=True)
     
     def test_load_state_default(self):
         """Test loading state when no file exists."""
@@ -77,18 +79,31 @@ class TestLoadState(unittest.TestCase):
         self.assertEqual(state['baseline'], 50)
         self.assertEqual(state['best'], 45)
 
+    def test_load_state_invalid_json(self):
+        """Test loading state with invalid JSON."""
+        # Create invalid JSON file
+        with open('autoresearch-state.json', 'w') as f:
+            f.write('invalid json {')
+        
+        state = load_state()
+        
+        # Should return default state
+        self.assertEqual(state['version'], '2.0')
+        self.assertEqual(state['iteration'], 0)
+
 
 class TestSaveState(unittest.TestCase):
     """Test state saving."""
     
     def setUp(self):
-        self.temp_dir = TemporaryDirectory()
+        self.temp_dir = tempfile.mkdtemp()
         self.old_cwd = os.getcwd()
-        os.chdir(self.temp_dir.name)
+        os.chdir(self.temp_dir)
     
     def tearDown(self):
         os.chdir(self.old_cwd)
-        self.temp_dir.cleanup()
+        import shutil
+        shutil.rmtree(self.temp_dir, ignore_errors=True)
     
     def test_save_state_creates_file(self):
         """Test that save_state creates the state file."""
@@ -118,13 +133,14 @@ class TestUpdateIterationStatus(unittest.TestCase):
     """Test iteration status updates."""
     
     def setUp(self):
-        self.temp_dir = TemporaryDirectory()
+        self.temp_dir = tempfile.mkdtemp()
         self.old_cwd = os.getcwd()
-        os.chdir(self.temp_dir.name)
+        os.chdir(self.temp_dir)
     
     def tearDown(self):
         os.chdir(self.old_cwd)
-        self.temp_dir.cleanup()
+        import shutil
+        shutil.rmtree(self.temp_dir, ignore_errors=True)
     
     def test_update_status_keep(self):
         """Test update with keep status."""
@@ -181,13 +197,14 @@ class TestLogLesson(unittest.TestCase):
     """Test lesson logging."""
     
     def setUp(self):
-        self.temp_dir = TemporaryDirectory()
+        self.temp_dir = tempfile.mkdtemp()
         self.old_cwd = os.getcwd()
-        os.chdir(self.temp_dir.name)
+        os.chdir(self.temp_dir)
     
     def tearDown(self):
         os.chdir(self.old_cwd)
-        self.temp_dir.cleanup()
+        import shutil
+        shutil.rmtree(self.temp_dir, ignore_errors=True)
     
     def test_log_lesson_creates_file(self):
         """Test that log_lesson creates the lessons file."""
@@ -234,13 +251,14 @@ class TestStateIntegrity(unittest.TestCase):
     """Test state integrity across operations."""
     
     def setUp(self):
-        self.temp_dir = TemporaryDirectory()
+        self.temp_dir = tempfile.mkdtemp()
         self.old_cwd = os.getcwd()
-        os.chdir(self.temp_dir.name)
+        os.chdir(self.temp_dir)
     
     def tearDown(self):
         os.chdir(self.old_cwd)
-        self.temp_dir.cleanup()
+        import shutil
+        shutil.rmtree(self.temp_dir, ignore_errors=True)
     
     def test_full_workflow(self):
         """Test full state workflow."""
@@ -262,6 +280,242 @@ class TestStateIntegrity(unittest.TestCase):
         self.assertEqual(loaded['iteration'], 4)
         self.assertEqual(loaded['consecutive_discards'], 0)  # reset by pivot
         self.assertEqual(loaded['pivot_count'], 1)
+
+
+class TestMain(unittest.TestCase):
+    """Test main CLI function."""
+    
+    def setUp(self):
+        self.temp_dir = tempfile.mkdtemp()
+        self.old_cwd = os.getcwd()
+        os.chdir(self.temp_dir)
+    
+    def tearDown(self):
+        os.chdir(self.old_cwd)
+        import shutil
+        shutil.rmtree(self.temp_dir, ignore_errors=True)
+    
+    def test_main_load(self):
+        """Test main with load action."""
+        # Create state
+        state = {'version': '2.0', 'iteration': 5}
+        with open('autoresearch-state.json', 'w') as f:
+            json.dump(state, f)
+        
+        old_argv = sys.argv
+        try:
+            sys.argv = ['state_manager.py', '--action', 'load']
+            
+            from io import StringIO
+            captured = StringIO()
+            old_stdout = sys.stdout
+            sys.stdout = captured
+            
+            main()
+            
+            sys.stdout = old_stdout
+            output = captured.getvalue()
+            
+            # Should be valid JSON
+            result = json.loads(output)
+            self.assertEqual(result['iteration'], 5)
+        finally:
+            sys.argv = old_argv
+    
+    def test_main_save(self):
+        """Test main with save action."""
+        old_argv = sys.argv
+        try:
+            sys.argv = [
+                'state_manager.py',
+                '--action', 'save',
+                '--key', 'baseline',
+                '--value', '100'
+            ]
+            
+            from io import StringIO
+            captured = StringIO()
+            old_stdout = sys.stdout
+            sys.stdout = captured
+            
+            main()
+            
+            sys.stdout = old_stdout
+            output = captured.getvalue()
+            
+            self.assertIn('Saved: baseline = 100', output)
+            
+            # Verify file was created
+            self.assertTrue(os.path.exists('autoresearch-state.json'))
+        finally:
+            sys.argv = old_argv
+    
+    def test_main_save_missing_args(self):
+        """Test main with save action missing args."""
+        old_argv = sys.argv
+        try:
+            sys.argv = [
+                'state_manager.py',
+                '--action', 'save',
+                '--key', 'baseline'
+                # Missing --value
+            ]
+            
+            with self.assertRaises(SystemExit):
+                main()
+        finally:
+            sys.argv = old_argv
+    
+    def test_main_save_numeric_value(self):
+        """Test main with save action and numeric value."""
+        old_argv = sys.argv
+        try:
+            sys.argv = [
+                'state_manager.py',
+                '--action', 'save',
+                '--key', 'metric',
+                '--value', '42.5'
+            ]
+            
+            main()
+            
+            # Load and verify
+            with open('autoresearch-state.json', 'r') as f:
+                state = json.load(f)
+            
+            self.assertEqual(state['metric'], 42.5)
+        finally:
+            sys.argv = old_argv
+    
+    def test_main_save_int_value(self):
+        """Test main with save action and integer value."""
+        old_argv = sys.argv
+        try:
+            sys.argv = [
+                'state_manager.py',
+                '--action', 'save',
+                '--key', 'count',
+                '--value', '42'
+            ]
+            
+            main()
+            
+            # Load and verify
+            with open('autoresearch-state.json', 'r') as f:
+                state = json.load(f)
+            
+            # Should be stored as int since 42.0 == int(42)
+            self.assertEqual(state['count'], 42)
+        finally:
+            sys.argv = old_argv
+    
+    def test_main_update_status(self):
+        """Test main with update-status action."""
+        old_argv = sys.argv
+        try:
+            sys.argv = [
+                'state_manager.py',
+                '--action', 'update-status',
+                '--status', 'keep'
+            ]
+            
+            from io import StringIO
+            captured = StringIO()
+            old_stdout = sys.stdout
+            sys.stdout = captured
+            
+            main()
+            
+            sys.stdout = old_stdout
+            output = captured.getvalue()
+            
+            # Should be valid JSON
+            result = json.loads(output)
+            self.assertEqual(result['iteration'], 1)
+            self.assertEqual(result['consecutive_discards'], 0)
+        finally:
+            sys.argv = old_argv
+    
+    def test_main_update_status_missing_status(self):
+        """Test main with update-status missing status arg."""
+        old_argv = sys.argv
+        try:
+            sys.argv = [
+                'state_manager.py',
+                '--action', 'update-status'
+                # Missing --status
+            ]
+            
+            with self.assertRaises(SystemExit):
+                main()
+        finally:
+            sys.argv = old_argv
+    
+    def test_main_reset(self):
+        """Test main with reset action."""
+        # Create state file
+        with open('autoresearch-state.json', 'w') as f:
+            json.dump({'test': 'data'}, f)
+        
+        old_argv = sys.argv
+        try:
+            sys.argv = ['state_manager.py', '--action', 'reset']
+            
+            from io import StringIO
+            captured = StringIO()
+            old_stdout = sys.stdout
+            sys.stdout = captured
+            
+            main()
+            
+            sys.stdout = old_stdout
+            output = captured.getvalue()
+            
+            self.assertIn('State reset', output)
+            self.assertFalse(os.path.exists('autoresearch-state.json'))
+        finally:
+            sys.argv = old_argv
+    
+    def test_main_log_lesson(self):
+        """Test main with log-lesson action."""
+        old_argv = sys.argv
+        try:
+            sys.argv = [
+                'state_manager.py',
+                '--action', 'log-lesson',
+                '--lesson', 'Test lesson',
+                '--lesson-type', 'positive'
+            ]
+            
+            from io import StringIO
+            captured = StringIO()
+            old_stdout = sys.stdout
+            sys.stdout = captured
+            
+            main()
+            
+            sys.stdout = old_stdout
+            output = captured.getvalue()
+            
+            self.assertIn('Lesson logged', output)
+            self.assertTrue(os.path.exists('autoresearch-lessons.md'))
+        finally:
+            sys.argv = old_argv
+    
+    def test_main_log_lesson_missing_lesson(self):
+        """Test main with log-lesson missing lesson arg."""
+        old_argv = sys.argv
+        try:
+            sys.argv = [
+                'state_manager.py',
+                '--action', 'log-lesson'
+                # Missing --lesson
+            ]
+            
+            with self.assertRaises(SystemExit):
+                main()
+        finally:
+            sys.argv = old_argv
 
 
 if __name__ == '__main__':

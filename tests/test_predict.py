@@ -45,6 +45,53 @@ class TestAnalyzeWithPersona(unittest.TestCase):
         self.assertIn('concerns', result)
         self.assertIn('recommendations', result)
     
+    def test_analyze_with_concerns_and_recommendations_output(self):
+        """Test cmd_analyze output with concerns and recommendations (lines 146-153)."""
+        # Mock generate_analysis to return data with concerns/recommendations
+        mock_analysis = {
+            'timestamp': '2024-01-01',
+            'context': {'file': 'test.py'},
+            'individual_analyses': {
+                'architect': {
+                    'persona': 'System Architect',
+                    'focus': 'Design',
+                    'questions_considered': ['Q1'],
+                    'assessment': 'Good',
+                    'concerns': ['Concern 1', 'Concern 2'],  # Lines 146-148
+                    'recommendations': ['Rec 1', 'Rec 2']   # Lines 151-153
+                }
+            },
+            'consensus': {
+                'agreements': [],
+                'disagreements': [],
+                'final_recommendations': []
+            }
+        }
+        
+        with patch('autoresearch_predict.generate_analysis', return_value=mock_analysis):
+            args = MagicMock()
+            args.file = 'test.py'
+            args.description = 'Test'
+            args.goal = None
+            args.personas = 'architect'
+            args.json = False
+            args.output = None
+            
+            captured = io.StringIO()
+            old_stdout = sys.stdout
+            sys.stdout = captured
+            
+            result = cmd_analyze(args)
+            
+            sys.stdout = old_stdout
+            output = captured.getvalue()
+            
+            self.assertEqual(result, 0)
+            self.assertIn('Concerns:', output)
+            self.assertIn('Concern 1', output)
+            self.assertIn('Recommendations:', output)
+            self.assertIn('Rec 1', output)
+    
     def test_analyze_security(self):
         """Test analyzing with security persona."""
         context = {'file': 'test.py', 'description': 'Test'}
@@ -237,6 +284,49 @@ class TestCmdAnalyze(unittest.TestCase):
             data = json.load(f)
             self.assertIn('timestamp', data)
             self.assertIn('individual_analyses', data)
+    
+    @patch('autoresearch_predict.generate_analysis')
+    def test_cmd_analyze_with_disagreements(self, mock_generate):
+        """Test analyze command with disagreements in consensus (lines 167-169)."""
+        mock_generate.return_value = {
+            'timestamp': '2024-01-01',
+            'context': {'file': 'test.py'},
+            'individual_analyses': {
+                'architect': {
+                    'persona': 'System Architect',
+                    'focus': 'Design',
+                    'assessment': 'Good',
+                    'concerns': [],
+                    'recommendations': []
+                }
+            },
+            'consensus': {
+                'agreements': ['Agreement 1'],
+                'disagreements': ['Disagreement 1', 'Disagreement 2'],  # Lines 167-169
+                'final_recommendations': [{'priority': 'HIGH', 'item': 'Fix this'}]
+            }
+        }
+        
+        args = MagicMock()
+        args.file = 'test.py'
+        args.description = 'Test'
+        args.goal = 'Test goal'
+        args.personas = 'architect'
+        args.json = False
+        args.output = None
+        
+        captured = io.StringIO()
+        old_stdout = sys.stdout
+        sys.stdout = captured
+        
+        result = cmd_analyze(args)
+        
+        sys.stdout = old_stdout
+        output = captured.getvalue()
+        
+        self.assertEqual(result, 0)
+        self.assertIn('Disagreements', output)
+        self.assertIn('Disagreement 1', output)
 
 
 class TestCmdListPersonas(unittest.TestCase):
@@ -340,6 +430,27 @@ class TestMain(unittest.TestCase):
             self.assertEqual(result, 1)
         finally:
             sys.argv = old_argv
+
+
+class TestMainBlock(unittest.TestCase):
+    """Test __main__ block execution."""
+    
+    @patch('autoresearch_predict.main')
+    def test_main_block(self, mock_main):
+        """Test that __main__ block calls main() (lines 248-249)."""
+        mock_main.return_value = 0
+        
+        # Simulate running as __main__
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("__main__", os.path.join(
+            os.path.dirname(__file__), '..', 'scripts', 'autoresearch_predict.py'))
+        module = importlib.util.module_from_spec(spec)
+        
+        # Should call main() and exit
+        try:
+            spec.loader.exec_module(module)
+        except SystemExit:
+            pass  # Expected
 
 
 if __name__ == '__main__':

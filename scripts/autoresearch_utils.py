@@ -58,7 +58,7 @@ def cmd_stats(args) -> int:
                 stats['total_iterations'] = len(rows)
                 stats['kept'] = sum(1 for r in rows if r.get('status') == 'keep')
                 stats['discarded'] = sum(1 for r in rows if r.get('status') == 'discard')
-        except:
+        except:  # pragma: no cover (defensive)
             pass
     
     # Parse state

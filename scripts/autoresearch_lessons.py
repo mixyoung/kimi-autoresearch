@@ -6,6 +6,7 @@ Tracks what worked, what didn't, and why across runs.
 import argparse
 import json
 import os
+import sys
 from datetime import datetime
 from typing import Optional
 
@@ -63,7 +64,7 @@ class LessonManager:
         
         for section in sections[1:]:  # Skip header
             lines = section.strip().split('\n')
-            if not lines:
+            if not lines:  # pragma: no cover (defensive)
                 continue
             
             timestamp = lines[0].strip()

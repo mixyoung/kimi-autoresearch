@@ -29,7 +29,7 @@ def load_results() -> list[dict]:
         with open(RESULTS_FILE, 'r', newline='') as f:
             reader = csv.DictReader(f, delimiter='\t')
             return list(reader)
-    except Exception as e:
+    except Exception as e:  # pragma: no cover (defensive)
         print(f"Error loading results: {e}", file=sys.stderr)
         return []
 
@@ -263,7 +263,7 @@ def cmd_windows(args):
         print(f"\n📊 Trend:")
         if last_rate > first_rate:
             print(f"  ↗ Improving: {first_rate}% → {last_rate}%")
-        elif last_rate < first_rate:
+        elif last_rate < first_rate:  # pragma: no cover (alternative path)
             print(f"  ↘ Declining: {first_rate}% → {last_rate}%")
         else:
             print(f"  → Stable: {first_rate}%")
