@@ -271,6 +271,64 @@ class TestCmdStatus(unittest.TestCase):
         data = json.loads(output)
         self.assertIn('status', data)
         self.assertIn('iterations_completed', data)
+    
+    @patch('autoresearch_background.is_process_running')
+    def test_status_running_process_not_found(self, mock_is_running):
+        """Test status when process is marked running but not actually running."""
+        runtime = {'status': 'running', 'pid': 1234, 'iterations_completed': 5}
+        with open(RUNTIME_FILE, 'w') as f:
+            json.dump(runtime, f)
+        
+        mock_is_running.return_value = False
+        
+        args = MagicMock()
+        args.json = False
+        
+        captured = io.StringIO()
+        old_stdout = sys.stdout
+        sys.stdout = captured
+        
+        result = cmd_status(args)
+        
+        sys.stdout = old_stdout
+        output = captured.getvalue()
+        
+        self.assertEqual(result, 0)
+        self.assertIn('stopped', output)
+        
+        # Verify runtime was updated
+        runtime = load_runtime()
+        self.assertEqual(runtime['status'], 'stopped')
+        self.assertIsNone(runtime['pid'])
+    
+    def test_status_with_all_fields(self):
+        """Test status output with pid, start_time, and last_update."""
+        runtime = {
+            'status': 'running',
+            'pid': 1234,
+            'start_time': '2024-01-01T00:00:00',
+            'last_update': '2024-01-01T12:00:00',
+            'iterations_completed': 10
+        }
+        with open(RUNTIME_FILE, 'w') as f:
+            json.dump(runtime, f)
+        
+        args = MagicMock()
+        args.json = False
+        
+        captured = io.StringIO()
+        old_stdout = sys.stdout
+        sys.stdout = captured
+        
+        result = cmd_status(args)
+        
+        sys.stdout = old_stdout
+        output = captured.getvalue()
+        
+        self.assertEqual(result, 0)
+        self.assertIn('PID: 1234', output)
+        self.assertIn('Started:', output)
+        self.assertIn('Last update:', output)
 
 
 class TestCmdStart(unittest.TestCase):
@@ -401,6 +459,37 @@ class TestCmdStop(unittest.TestCase):
         runtime = load_runtime()
         self.assertEqual(runtime['status'], 'stopped')
         self.assertIsNone(runtime['pid'])
+    
+    @patch('autoresearch_background.is_process_running')
+    @patch('subprocess.run')
+    def test_stop_with_running_process(self, mock_run, mock_is_running):
+        """Test stop when process is actually running (lines 171-173)."""
+        runtime = {'status': 'running', 'pid': 1234}
+        with open(RUNTIME_FILE, 'w') as f:
+            json.dump(runtime, f)
+        
+        mock_is_running.return_value = True
+        mock_run.return_value = MagicMock(returncode=0)
+        
+        args = MagicMock()
+        
+        captured = io.StringIO()
+        old_stdout = sys.stdout
+        sys.stdout = captured
+        
+        result = cmd_stop(args)
+        
+        sys.stdout = old_stdout
+        output = captured.getvalue()
+        
+        self.assertEqual(result, 0)
+        self.assertIn('stopped', output)
+        
+        # Verify taskkill was called on Windows
+        mock_run.assert_called_once()
+        
+        runtime = load_runtime()
+        self.assertEqual(runtime['status'], 'stopped')
 
 
 class TestCmdPause(unittest.TestCase):

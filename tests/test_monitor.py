@@ -182,6 +182,37 @@ class TestProgressTracker(unittest.TestCase):
         self.assertIn('Kept:', report)
         self.assertIn('Baseline:', report)
     
+    def test_generate_text_report_with_trends_and_config(self):
+        """Test generate_text_report with trends and config (lines 154-157, 172-176)."""
+        # Create results file with enough data for trends
+        data = []
+        for i in range(15):
+            metric = 100 - i * 2
+            data.append([str(i), 'abc', str(metric), str(-2), 'keep', 'Desc', '2024-01-01'])
+        self.create_results_file(data)
+        
+        # Create state file with config
+        state = {
+            'goal': 'Test Goal',
+            'direction': 'lower',
+            'target': '90',
+            'config': {
+                'goal': 'Test Goal',
+                'direction': 'lower',
+                'target': '90'
+            }
+        }
+        with open(STATE_FILE, 'w') as f:
+            json.dump(state, f)
+        
+        report = self.tracker.generate_text_report()
+        
+        self.assertIn('Progress Report', report)
+        self.assertIn('Trends', report)  # Lines 154-157
+        self.assertIn('Configuration', report)  # Lines 172-176
+        self.assertIn('Goal:', report)
+        self.assertIn('Direction:', report)
+    
     def test_generate_html_dashboard_empty(self):
         """Test generate_html_dashboard with no data."""
         html = self.tracker.generate_html_dashboard()

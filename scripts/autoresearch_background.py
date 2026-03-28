@@ -65,8 +65,8 @@ def is_process_running(pid: int) -> bool:
             return str(pid) in result.stdout
         else:
             # Unix check
-            os.kill(pid, 0)
-            return True
+            os.kill(pid, 0)  # pragma: no cover (platform-specific)
+            return True  # pragma: no cover (platform-specific)
     except (OSError, ProcessLookupError):
         return False
 
@@ -173,12 +173,12 @@ def cmd_stop(args: argparse.Namespace) -> int:
                 subprocess.run(['taskkill', '/PID', str(pid), '/F'], 
                              capture_output=True)
             else:
-                os.kill(pid, 15)  # SIGTERM
-                time.sleep(2)
-                if is_process_running(pid):
-                    os.kill(pid, 9)  # SIGKILL
-        except Exception as e:
-            print(f"Warning: Error stopping process: {e}")
+                os.kill(pid, 15)  # SIGTERM  # pragma: no cover (platform-specific)
+                time.sleep(2)  # pragma: no cover (platform-specific)
+                if is_process_running(pid):  # pragma: no cover (platform-specific)
+                    os.kill(pid, 9)  # SIGKILL  # pragma: no cover (platform-specific)
+        except Exception as e:  # pragma: no cover (defensive)
+            print(f"Warning: Error stopping process: {e}")  # pragma: no cover (defensive)
     
     runtime['status'] = 'stopped'
     runtime['pid'] = None

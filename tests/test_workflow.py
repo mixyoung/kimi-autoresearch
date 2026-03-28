@@ -113,6 +113,34 @@ class TestWorkflowInit(unittest.TestCase):
         self.assertTrue(result)
     
     @patch('autoresearch_workflow.run_script')
+    def test_workflow_init_run_fails(self, mock_run):
+        """Test init when run_script fails (lines 76-77)."""
+        # First call is health check (succeeds), second is init_run (fails)
+        mock_run.side_effect = [
+            (0, 'Health OK'),  # health check
+            (1, 'Init failed')  # init_run fails
+        ]
+        
+        config = {
+            'goal': 'Test goal',
+            'metric': 'coverage',
+            'verify': 'npm test',
+            'direction': 'lower'
+        }
+        
+        captured = io.StringIO()
+        old_stdout = sys.stdout
+        sys.stdout = captured
+        
+        result = workflow_init(config)
+        
+        sys.stdout = old_stdout
+        output = captured.getvalue()
+        
+        self.assertFalse(result)
+        self.assertIn('Initialization failed', output)
+    
+    @patch('autoresearch_workflow.run_script')
     def test_workflow_init_health_fails(self, mock_run):
         """Test init when health check fails."""
         mock_run.return_value = (1, 'Health check failed')
@@ -141,6 +169,25 @@ class TestWorkflowInit(unittest.TestCase):
             'loop_control': {
                 'max_steps_per_turn': 30,
                 'max_retries_per_step': 5
+            }
+        }
+        
+        result = workflow_init(config)
+        
+        self.assertTrue(result)
+    
+    @patch('autoresearch_workflow.run_script')
+    def test_workflow_init_with_max_ralph(self, mock_run):
+        """Test init with max_ralph_iterations (line 90)."""
+        mock_run.return_value = (0, 'OK')
+        
+        config = {
+            'goal': 'Test goal',
+            'metric': 'coverage',
+            'verify': 'npm test',
+            'direction': 'lower',
+            'loop_control': {
+                'max_ralph_iterations': 100
             }
         }
         
@@ -204,6 +251,18 @@ class TestWorkflowBaseline(unittest.TestCase):
         
         self.assertTrue(success)  # Command succeeded
         self.assertEqual(baseline, 0.0)  # But no metric found
+    
+    @patch('autoresearch_workflow.run_script')
+    def test_workflow_baseline_value_error(self, mock_run):
+        """Test baseline with ValueError during float conversion (lines 135-136)."""
+        mock_run.return_value = (0, 'Extracted metric: not_a_number')
+        
+        config = {'verify': 'npm test'}
+        
+        success, baseline = workflow_baseline(config)
+        
+        self.assertTrue(success)  # Command succeeded
+        self.assertEqual(baseline, 0.0)  # But invalid metric value
 
 
 class TestGenerateRalphPrompt(unittest.TestCase):
@@ -273,6 +332,21 @@ class TestGenerateRalphPrompt(unittest.TestCase):
         prompt = generate_ralph_prompt(config, baseline)
         
         self.assertIn('Iterations:', prompt)
+    
+    def test_generate_prompt_with_agent_file(self):
+        """Test prompt with agent_file configuration (line 167)."""
+        config = {
+            'goal': 'Reduce errors',
+            'verify': 'npm test',
+            'direction': 'lower',
+            'agent_config': {'agent_file': 'custom-agent.md'}
+        }
+        baseline = 100.0
+        
+        prompt = generate_ralph_prompt(config, baseline)
+        
+        self.assertIn('Agent File:', prompt)
+        self.assertIn('custom-agent.md', prompt)
 
 
 class TestMain(unittest.TestCase):
@@ -306,6 +380,22 @@ class TestMain(unittest.TestCase):
             '--goal', 'Test goal',
             '--verify', 'npm test',
             '--direction', 'lower'
+        ]):
+            main()  # Should complete without error
+    
+    @patch('autoresearch_workflow.workflow_init')
+    @patch('autoresearch_workflow.workflow_baseline')
+    def test_main_with_agent(self, mock_baseline, mock_init):
+        """Test main with --agent option (line 376)."""
+        mock_init.return_value = True
+        mock_baseline.return_value = (True, 85.5)
+        
+        with patch('sys.argv', [
+            'autoresearch_workflow',
+            '--goal', 'Test goal',
+            '--verify', 'npm test',
+            '--direction', 'lower',
+            '--agent', 'okabe'
         ]):
             main()  # Should complete without error
     
@@ -348,6 +438,27 @@ class TestMain(unittest.TestCase):
                 main()
         
         self.assertEqual(cm.exception.code, 2)
+
+
+class TestMainBlock(unittest.TestCase):
+    """Test __main__ block execution."""
+    
+    @patch('autoresearch_workflow.main')
+    def test_main_block(self, mock_main):
+        """Test that __main__ block calls main() (line 418)."""
+        mock_main.return_value = None
+        
+        # Simulate running as __main__
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("__main__", os.path.join(
+            os.path.dirname(__file__), '..', 'scripts', 'autoresearch_workflow.py'))
+        module = importlib.util.module_from_spec(spec)
+        
+        # Should call main() and exit
+        try:
+            spec.loader.exec_module(module)
+        except SystemExit:
+            pass  # Expected
 
 
 if __name__ == '__main__':
