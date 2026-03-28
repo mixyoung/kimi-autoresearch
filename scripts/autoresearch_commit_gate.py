@@ -65,7 +65,9 @@ def get_git_status(cwd: Optional[str] = None) -> dict:
     # Check status
     code, output = run_git(['status', '--porcelain'], cwd=cwd)
     if code == 0:
-        lines = output.strip().split('\n') if output.strip() else []
+        # Don't strip leading whitespace - it's part of the format
+        lines = output.split('\n') if output else []
+        lines = [line for line in lines if line]  # Remove empty lines only
         
         for line in lines:
             if not line:
