@@ -15,7 +15,7 @@
 
 ## ❤️ 赞助商
 
-<details>
+<details open>
 <summary>点击折叠 - 支持本项目</summary>
 
 ### 🚀 MiniMax - Mini 价格 Max 性能
