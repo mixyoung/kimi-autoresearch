@@ -1,5 +1,16 @@
 # Kimi Autoresearch
 
+[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/mixyoung/kimi-autoresearch/releases)
+[![License](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/)
+[![Last Commit](https://img.shields.io/github/last-commit/mixyoung/kimi-autoresearch.svg)](https://github.com/mixyoung/kimi-autoresearch/commits/main)
+[![GitHub Stars](https://img.shields.io/github/stars/mixyoung/kimi-autoresearch?style=social)](https://github.com/mixyoung/kimi-autoresearch/stargazers)
+
+[![Code Size](https://img.shields.io/github/languages/code-size/mixyoung/kimi-autoresearch.svg)](https://github.com/mixyoung/kimi-autoresearch)
+[![Issues](https://img.shields.io/github/issues/mixyoung/kimi-autoresearch.svg)](https://github.com/mixyoung/kimi-autoresearch/issues)
+[![Downloads](https://img.shields.io/github/downloads/mixyoung/kimi-autoresearch/total.svg)](https://github.com/mixyoung/kimi-autoresearch/releases)
+[![Release Date](https://img.shields.io/github/release-date/mixyoung/kimi-autoresearch.svg)](https://github.com/mixyoung/kimi-autoresearch/releases)
+
 面向 **Kimi Code CLI** 的自主迭代优化工具。类似 [codex-autoresearch](https://github.com/leolilinxiao/codex-autoresearch)，但专为 Kimi 打造。
 
 ## 快速开始
