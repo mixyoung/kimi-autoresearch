@@ -24,6 +24,8 @@
 
 👉 [立即订阅 MiniMax](https://platform.minimaxi.com/subscribe/coding-plan?code=A5zNv8IduW&source=link)
 
+🎁 **专属优惠**：点击上方链接享 MiniMax Token Plan 专属 88 折优惠！
+
 </details>
 
 ## 快速开始
