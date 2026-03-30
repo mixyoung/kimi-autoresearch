@@ -24,9 +24,8 @@
 
 **MiniMax M2.7** 是 MiniMax 首个深度参与自我迭代的模型，可自主构建复杂 Agent Harness，并基于 Agent Teams、复杂 Skills、Tool Search Tool 等能力完成高复杂度生产力任务。
 
-🎁 **专属优惠**：点击上方链接享 MiniMax Token Plan 专属 88 折优惠！
-
 👉 [立即订阅 MiniMax](https://platform.minimaxi.com/subscribe/coding-plan?code=A5zNv8IduW&source=link)
+🎁 **专属优惠**：点击上方链接享 MiniMax Token Plan 专属 88 折优惠！
 
 </details>
 
